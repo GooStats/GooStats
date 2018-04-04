@@ -1,0 +1,15 @@
+-Iinclude
+-I../include
+-I../../.
+-I../.././include
+-I../.././Modules/Borexino/include
+-I../.././Modules/Borexino/data
+-I ../.././Modules/Juno/include
+-I../.././GooFit/include
+-I../../../include
+-I../../PDFs/include
+-I/home/xding/software/root-gcc4.9/root/include
+-std=c++11
+-Werror=return-type
+-Wall
+-Wextra

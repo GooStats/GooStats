@@ -1,0 +1,39 @@
+#ifndef MultiVariatePdf_ICC
+#define MultiVariatePdf_ICC
+// S. Davini, “Measurement of the pep and CNO solar neutrino interaction rates in Borexino-I,” Springer International Publishing, Cham, 2013. page 96
+template<>
+EXEC_TARGET fptype MVLL<MultiVariatePdf::MVLLType::StefanoDavini>(const fptype k_fp,const fptype n0_fp,const fptype n1_fp,const fptype m0,const fptype m1) {
+  fptype total_prob = 0;
+  const int k(static_cast<int>(FLOOR(k_fp)));
+  const int n0(static_cast<int>(FLOOR(n0_fp)));
+  const int n1(static_cast<int>(FLOOR(n1_fp)));
+  auto log_prob = [](int k,fptype m,int n) { return lgamma(fptype(n+k+1))+k*LOG(m)-(n+k+1)*LOG(m+1)-lgamma(fptype(k+1))-lgamma(fptype(n+1)); };
+  if((m0>0)&&(m1>0)) {
+    for(int i=0; i<=k; ++i)
+      total_prob += EXP(log_prob( (k-i),m0,n0) + log_prob(i,m1,n1));
+//    //if(k== 1&&n0 ==1645&& n1 ==14) {
+//    if(n0==1645) {
+//      int i = 0;
+//      printf("(%d %lf %d)->%le + (%d %lf %d %.20le)->%le -> %le exp %le || (%d %lf %d)->%le + (%d %lf %d)->%le -> %le exp %le || sum %le logsum %le\n",
+//          (k-i),m0,n0, log_prob(  (k-i),m0,n0) ,
+//          i,m1,n1,n1_fp,log_prob(i,m1,n1),
+//          log_prob(  (k-i),m0,n0)+log_prob(i,m1,n1),
+//          EXP(log_prob(  (k-i),m0,n0)+log_prob(i++,m1,n1)),
+//          (k-i),m0,n0, log_prob(  (k-i),m0,n0) ,
+//          i,m1,n1,log_prob(i,m1,n1),
+//          log_prob(  (k-i),m0,n0)+log_prob(i,m1,n1),
+//          EXP(log_prob(  (k-i),m0,n0)+log_prob(i,m1,n1)),
+//          EXP(log_prob(  (k-0),m0,n0)+log_prob(0,m1,n1))+EXP(log_prob(  (k-1),m0,n0)+log_prob(1,m1,n1)),
+//          EVALLOG(EXP(log_prob(  (k-0),m0,n0)+log_prob(0,m1,n1))+EXP(log_prob(  (k-1),m0,n0)+log_prob(1,m1,n1))));
+//    }
+    return EVALLOG(total_prob);
+  } else if((m0==0)&&(m1>0))
+    return log_prob( k, m1, n1);
+  else if((m1==0)&&(m0>0))
+    return log_prob( k, m0, n0);
+  else if((m0==0)&&(m1==0)&&(k==0))
+    return 0;
+  else
+    return -1e308;
+}
+#endif

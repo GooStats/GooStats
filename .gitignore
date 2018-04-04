@@ -1,0 +1,10 @@
+*.png
+*.eps
+*.root
+*.pdf
+*.sh
+*log
+log*
+core.*
+*~
+.*.sw*

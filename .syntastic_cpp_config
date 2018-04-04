@@ -1,0 +1,12 @@
+-I.
+-Iinclude
+-IModules/Borexino/include
+-IModules/Borexino/data
+-IModules/Juno/include
+-IGooFit/include
+-I/home/xding/software/root-gcc4.9/root/include
+-IPDFs/include
+-std=c++11
+-Werror=return-type
+-Wall
+-Wextra
