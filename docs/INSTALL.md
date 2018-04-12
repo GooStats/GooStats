@@ -22,11 +22,11 @@ Tips:
   and only one CPU, if you turn on OpenMP, the code will be super slow. I might solve it in the future,
   currently I just turn off the OpenMP in GooFit.
 
-2. Then, try to compile the test project <naive-Juno>
+2. Then, try to compile the test project <naive-Reactor>
 
 		mkdir ../build_GooStats
-		cd ../GooStats/Modules/naive-Juno
+		cd ../GooStats/Modules/naive-Reactor
 		#I have writte a Makefile so you can just type make
 		make
-		./juno IBD.cfg
+		./reactor IBD.cfg
 3. Start write your own project, see the development guide.

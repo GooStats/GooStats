@@ -5,7 +5,7 @@
   - The backend is [GooFit](http://github.com/GooFit/GooFit) on nVidia GPU, and the code is tuned and validated on GPU.
 ## With a few lines of code, you will be able to use GooFit as low level engine and produce nice plots
   - with a few more lines, you will be able to do joint analysis of multiple datasets. 
-  - Look at Modules/naive-Juno as an example.
+  - Look at Modules/naive-Reactor as an example.
   - Here are some screen shots of the text/TTree output and plot produced, as well as user code.
   
 <img src="plot.png" width="450"><img src="TTreeOutput.png" width="400"> 
