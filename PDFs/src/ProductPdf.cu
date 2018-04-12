@@ -10,8 +10,6 @@
 #include "ProductPdf.h"
 #include <utility>
 #include "SumPdf.h"
-extern MEM_CONSTANT fptype* dev_componentWorkSpace[100];
-extern DEVICE_VECTOR<fptype>* componentWorkSpace[100];
 
 EXEC_TARGET fptype device_ProductPdfsExtSimple (fptype* evt, fptype* p, unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 
@@ -70,7 +68,7 @@ void ProductPdf::register_components(const std::vector<PdfBase*> &comps,int N) {
     PdfBase *pdf = components.at(w);
     assert(pdf);
     const int workSpaceIndex = SumPdf::registerFunc(components.at(w));
-    assert(workSpaceIndex<100);
+    assert(workSpaceIndex<NPDFSIZE_SumPdf);
     componentWorkSpace[workSpaceIndex] = new DEVICE_VECTOR<fptype>(N);
     fptype *dev_address = thrust::raw_pointer_cast(componentWorkSpace[workSpaceIndex]->data());
     MEMCPY_TO_SYMBOL(dev_componentWorkSpace, &dev_address, sizeof(fptype*), workSpaceIndex*sizeof(fptype*), cudaMemcpyHostToDevice); 

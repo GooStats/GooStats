@@ -17,6 +17,9 @@ class DumperPdf;
 class SumLikelihoodPdf;
 class BinnedDataSet;
 #include <memory>
+#define NPDFSIZE_SumPdf 500
+extern MEM_CONSTANT fptype* dev_componentWorkSpace[NPDFSIZE_SumPdf];
+extern DEVICE_VECTOR<fptype>* componentWorkSpace[NPDFSIZE_SumPdf];
 
 class SumPdf : public GooPdf {
 public:

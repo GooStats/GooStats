@@ -106,7 +106,9 @@ std::string TextOutputManager::prettify_speciesName(std::string orig) {
     }
     start = end;
   } while (start < orig.size());
-  while(result.find("_")!=std::string::npos)
-    result.replace(result.find("_"),1," ");
+  for(size_t i = 0;i<result.size();++i) {
+    if(result[i]=='_' && (i==result.size()-1 || result[i+1]!='{'))
+      result[i]=' ';
+  }
   return result;
 }

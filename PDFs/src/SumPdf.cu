@@ -10,9 +10,9 @@
 #include "SumPdf.h"
 #include <utility>
 std::map<PdfBase*,int> SumPdf::funMap;
-MEM_CONSTANT fptype* dev_componentWorkSpace[100];
-DEVICE_VECTOR<fptype>* componentWorkSpace[100];
-MEM_CONSTANT fptype* dev_raw_masks[100];
+MEM_CONSTANT fptype* dev_componentWorkSpace[NPDFSIZE_SumPdf];
+DEVICE_VECTOR<fptype>* componentWorkSpace[NPDFSIZE_SumPdf];
+MEM_CONSTANT fptype* dev_raw_masks[20];
 int SumPdf::maskId = 0;
 std::map<BinnedDataSet*,int> SumPdf::maskmap;
 
@@ -150,7 +150,7 @@ void SumPdf::register_components(const std::vector<PdfBase*> &comps,int N) {
     assert(pdf);
     if(funMap.find( pdf ) == funMap.end()) {
       const int workSpaceIndex = registerFunc(components.at(w));
-      assert(workSpaceIndex<100);
+      assert(workSpaceIndex<NPDFSIZE_SumPdf);
       componentWorkSpace[workSpaceIndex] = new DEVICE_VECTOR<fptype>(N);
       fptype *dev_address = thrust::raw_pointer_cast(componentWorkSpace[workSpaceIndex]->data());
       MEMCPY_TO_SYMBOL(dev_componentWorkSpace, &dev_address, sizeof(fptype*), workSpaceIndex*sizeof(fptype*), cudaMemcpyHostToDevice); 
@@ -220,7 +220,7 @@ void SumPdf::copyHistogramToDevice(const BinnedDataSet* mask,int id) {
   DEVICE_VECTOR<fptype>* dev_mask= new DEVICE_VECTOR<fptype>(host_histogram);  
   static fptype* dev_address[1];
   dev_address[0] = thrust::raw_pointer_cast(dev_mask->data());
-  assert(id<100);
+  assert(id<NPDFSIZE_SumPdf);
   MEMCPY_TO_SYMBOL(dev_raw_masks, dev_address, sizeof(fptype*), id*sizeof(fptype*), cudaMemcpyHostToDevice); 
 #ifdef convolution_CHECK
   fptype *raw_dn_addr[1];
@@ -258,7 +258,7 @@ __host__ double SumPdf::sumOfNll (int numVars) const {
       dev_sumV.begin(),
       modalor);
   thrust::host_vector<fptype> sumV = dev_sumV;
-  thrust::host_vector<fptype> fVal[100];
+  thrust::host_vector<fptype> fVal[200];
   for(unsigned int j = 0;j<components.size();++j) {
     const int workSpaceIndex = funMap.at(components.at(j));
     fVal[workSpaceIndex] = *(componentWorkSpace[workSpaceIndex]);

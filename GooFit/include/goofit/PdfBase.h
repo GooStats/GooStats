@@ -20,7 +20,7 @@ typedef thrust::zip_iterator<EventTuple> EventIterator;
 
 const int maxDataSet = 500;
 const int maxParams = 500;
-const int maxIndicies = 4000;
+const int maxIndicies = 5000;
 extern fptype* dev_event_array[maxDataSet];
 extern fptype host_normalisation[maxIndicies];
 extern fptype host_params[maxParams];

@@ -7,6 +7,7 @@ cuda_add_more_library(GooStatsPDFs
   HistogramPdf.cu
   MultiVariatePdf.cu
   PdfCache.cu
+  RangedExpPdf.cu
   ProductPdf.cu
   SumLikelihoodPdf.cu
   SumPdf.cu)
