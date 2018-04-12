@@ -8,6 +8,13 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "Mach4GGResponseFunctionPdf.h"
+#ifdef RPF_CHECK
+#define DEBUG_MACH4_GG_RPF \
+    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf)\n", \
+	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta ); 
+#else
+#define DEBUG_MACH4_GG_RPF ;
+#endif
 
 // Nonlinearity model reference: (Mach4 Quenching)
 //   [1] R. N. Saldanha, “Precision Measurement of the 7 Be Solar Neutrino Interaction Rate in Borexino,” Princeton University, 2012.
@@ -46,8 +53,7 @@
     /* get alpha and beta from momentums */ \
     const fptype alpha = moment_2*moment_2/(moment_4 - moment_2*moment_2); \
     const fptype beta = alpha/moment_2; \
-/*    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf)\n", */\
-/*	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta ); */\
+    DEBUG_MACH4_GG_RPF; \
     return (EXP(LOG(2.) \
 	  + alpha*LOG(beta) \
 	  + LOG(Evis)*(2.*alpha -1.) \

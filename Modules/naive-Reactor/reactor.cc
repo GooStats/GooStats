@@ -7,10 +7,6 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "goofit/FitManager.h"
-#include <iostream>
-#include <sys/time.h>
-#include <sys/times.h>
 #include "ReactorAnalysisManager.h"
 #include "InputManager.h"
 #include "ReactorInputBuilder.h"

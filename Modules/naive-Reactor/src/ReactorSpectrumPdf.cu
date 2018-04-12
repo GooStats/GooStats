@@ -26,8 +26,7 @@ EXEC_TARGET fptype device_ReactorSpectrum (fptype* evt, fptype* p, unsigned int*
   const fptype phiPu239 = EXP(RO_CACHE(Pu239p[0]) + RO_CACHE(Pu239p[1])*E + RO_CACHE(Pu239p[2])*E*E);
   const fptype phiPu241 = EXP(RO_CACHE(Pu241p[0]) + RO_CACHE(Pu241p[1])*E + RO_CACHE(Pu241p[2])*E*E);
   const fptype ret = phiU235*U235+phiU238*U238+phiPu239*Pu239+phiPu241*Pu241;
-//#define DEBUG
-#ifdef DEBUG
+#ifdef convolution_CHECK
   printf("%d %lf -> (%lf / %lf %lf %lf) %lf %lf %lf %lf %lf\n",THREADIDX, E, 
 	 U235,U235p[0],U235p[1],U235p[2],
 	 phiU235,phiU238,Pu239,Pu241,ret);
