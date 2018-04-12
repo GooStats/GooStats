@@ -7,10 +7,10 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "JunoDatasetController.h"
+#include "ReactorDatasetController.h"
 #include "ConfigsetManager.h"
 #include "GooStatsException.h"
-bool JunoDatasetController::collectInputs(DatasetManager *dataset) {
+bool ReactorDatasetController::collectInputs(DatasetManager *dataset) {
   bool ok = this->SimpleDatasetController::collectInputs(dataset);
   if(!ok) return false;
   try {

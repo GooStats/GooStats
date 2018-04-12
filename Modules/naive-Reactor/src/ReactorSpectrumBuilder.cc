@@ -7,11 +7,11 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "JunoSpectrumBuilder.h"
+#include "ReactorSpectrumBuilder.h"
 #include "DatasetManager.h"
 #include "ReactorSpectrumPdf.h"
 #include "GooStatsException.h"
-GooPdf *JunoSpectrumBuilder::buildSpectrum(const std::string &name,
+GooPdf *ReactorSpectrumBuilder::buildSpectrum(const std::string &name,
     DatasetManager *dataset) {
   GooPdf *pdf = this->BasicSpectrumBuilder::buildSpectrum(name,dataset);
   if(pdf) return pdf;
@@ -24,7 +24,7 @@ GooPdf *JunoSpectrumBuilder::buildSpectrum(const std::string &name,
     return nullptr;
   }
 }
-GooPdf *JunoSpectrumBuilder::buildReactor(const std::string &name,
+GooPdf *ReactorSpectrumBuilder::buildReactor(const std::string &name,
     DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
   Variable *E = dataset->get<Variable*>(name); 
@@ -35,7 +35,7 @@ GooPdf *JunoSpectrumBuilder::buildReactor(const std::string &name,
 #include "goofit/PDFs/ExpPdf.hh"
 #include "NewExpPdf.hh"
 #include "ProductPdf.h"
-GooPdf *JunoSpectrumBuilder::buildOscillatedReactor(const std::string &name,
+GooPdf *ReactorSpectrumBuilder::buildOscillatedReactor(const std::string &name,
     DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
   Variable *Evis = dataset->get<Variable*>(name); 

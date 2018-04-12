@@ -7,11 +7,14 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef JunoInputBuilder_H
-#define JunoInputBuilder_H
-#include "SimpleInputBuilder.h"
-class JunoInputBuilder : public SimpleInputBuilder {
+#ifndef ReactorAnalysisManager_H
+#define ReactorAnalysisManager_H
+#include "AnalysisManager.h"
+class ReactorAnalysisManager : public AnalysisManager {
   public:
-    std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) final;
+    ReactorAnalysisManager() {}
+
+    bool init() final;
+    bool finish() final;
 };
 #endif

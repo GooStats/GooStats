@@ -7,13 +7,11 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef JunoDatasetControllers_H
-#define JunoDatasetControllers_H
-#include "SimpleDatasetController.h"
-class JunoDatasetController : public SimpleDatasetController {
+#ifndef ReactorInputBuilder_H
+#define ReactorInputBuilder_H
+#include "SimpleInputBuilder.h"
+class ReactorInputBuilder : public SimpleInputBuilder {
   public:
-    JunoDatasetController(ConfigsetManager *_c) : SimpleDatasetController(_c) { };
-    //! we need to set fraction and coefficient here
-    bool collectInputs(DatasetManager *) final;
+    std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) final;
 };
 #endif

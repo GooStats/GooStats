@@ -11,19 +11,19 @@
 #include <iostream>
 #include <sys/time.h>
 #include <sys/times.h>
-#include "JunoAnalysisManager.h"
+#include "ReactorAnalysisManager.h"
 #include "InputManager.h"
-#include "JunoInputBuilder.h"
-#include "JunoSpectrumBuilder.h"
+#include "ReactorInputBuilder.h"
+#include "ReactorSpectrumBuilder.h"
 #include "OutputManager.h"
 #include "SimpleOutputBuilder.h"
 #include "SimplePlotManager.h"
 
 int main (int argc, char** argv) {
-  AnalysisManager *ana = new JunoAnalysisManager();
+  AnalysisManager *ana = new ReactorAnalysisManager();
   InputManager *inputManager = new InputManager(argc,argv);
-  InputBuilder *builder = new JunoInputBuilder();
-  builder->installSpectrumBuilder(new JunoSpectrumBuilder());
+  InputBuilder *builder = new ReactorInputBuilder();
+  builder->installSpectrumBuilder(new ReactorSpectrumBuilder());
   inputManager->setInputBuilder(builder);
   ana->setInputManager(inputManager);
   OutputManager *outManager = new OutputManager();

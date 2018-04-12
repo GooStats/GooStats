@@ -1,0 +1,7 @@
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+add_subdirectory(src)
+add_executable(reactor reactor.cc)
+target_compile_features(reactor PRIVATE cxx_range_for)
+target_link_libraries(reactor reactor_module reactor_gpu_module)
+target_link_libraries(reactor GooStatsLib GooStatsLib_gpu GooStatsPDFs GOOFIT::goofit_lib)
+target_link_libraries(reactor AllGPU)

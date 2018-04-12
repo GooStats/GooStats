@@ -7,14 +7,10 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef JunoAnalysisManager_H
-#define JunoAnalysisManager_H
-#include "AnalysisManager.h"
-class JunoAnalysisManager : public AnalysisManager {
-  public:
-    JunoAnalysisManager() {}
-
-    bool init() final;
-    bool finish() final;
-};
-#endif
+#include "ReactorInputBuilder.h"
+#include "ReactorDatasetController.h"
+std::vector<std::shared_ptr<DatasetController>> ReactorInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
+  std::vector<std::shared_ptr<DatasetController>> controllers;
+  controllers.push_back(std::shared_ptr<DatasetController>(new ReactorDatasetController(configset)));
+  return controllers;
+}

@@ -7,15 +7,15 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-/*! \class JunoSpectrumBuilder
+/*! \class ReactorSpectrumBuilder
  *  \brief example builder class used by InputManager
  *
  *   This is a utlity class and is responsible for building the Configset 
  */
-#ifndef JunoSpectrumBuilder_H
-#define JunoSpectrumBuilder_H
+#ifndef ReactorSpectrumBuilder_H
+#define ReactorSpectrumBuilder_H
 #include "BasicSpectrumBuilder.h"
-class JunoSpectrumBuilder : public BasicSpectrumBuilder {
+class ReactorSpectrumBuilder : public BasicSpectrumBuilder {
   public:
     GooPdf *buildSpectrum(const std::string &, DatasetManager *) final;
   private:

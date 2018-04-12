@@ -7,7 +7,7 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "JunoAnalysisManager.h"
+#include "ReactorAnalysisManager.h"
 #include <memory>
 
 #include "goofit/PDFs/ExpPdf.hh"
@@ -17,7 +17,7 @@
 #include "TH1D.h"
 #include "TF1.h"
 #include "InputManager.h"
-bool JunoAnalysisManager::init() {
+bool ReactorAnalysisManager::init() {
   this->AnalysisManager::init();
 
 //  DatasetManager *dataset = *inputManager->Datasets().begin();
@@ -37,7 +37,7 @@ bool JunoAnalysisManager::init() {
 
   return true;
 }
-bool JunoAnalysisManager::finish() {
+bool ReactorAnalysisManager::finish() {
   this->AnalysisManager::finish();
 //  std::cout<<"Correct answer: alpha=-0.2, beta=-0.025"<<std::endl;
   return true;
