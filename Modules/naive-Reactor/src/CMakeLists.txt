@@ -6,5 +6,7 @@ add_library(reactor_module
   ReactorSpectrumBuilder.cc)
 cuda_add_more_library(reactor_gpu_module
   ReactorSpectrumPdf.cu
-  NewExpPdf.cu)
+  NewExpPdf.cu
+  NeutrinoOscillationPdf.cu
+  IBDPdf.cu)
 target_link_libraries(reactor_gpu_module AllGPU)

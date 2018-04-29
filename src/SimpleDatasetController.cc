@@ -94,18 +94,45 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	  ::atof(configset->query("LY_min").c_str()),
 	  ::atof(configset->query("LY_max").c_str()));
       NL.push_back(LY);
-      Variable *qc1 = configset->createVar("qc1",
-	  ::atof(configset->query("qc1_init").c_str()),
-	  ::atof(configset->query("qc1_err").c_str()),
-	  ::atof(configset->query("qc1_min").c_str()),
-	  ::atof(configset->query("qc1_max").c_str()));
-      NL.push_back(qc1);
-      Variable *qc2 = configset->createVar("qc2",
-	  ::atof(configset->query("qc2_init").c_str()),
-	  ::atof(configset->query("qc2_err").c_str()),
-	  ::atof(configset->query("qc2_min").c_str()),
-	  ::atof(configset->query("qc2_max").c_str()));
-      NL.push_back(qc2);
+      if(configset->has("NLtype") && configset->query("NLtype")=="expPar") {
+	Variable *NL_b = configset->createVar("NL_b",
+	    ::atof(configset->query("NL_b_init").c_str()),
+	    ::atof(configset->query("NL_b_err").c_str()),
+	    ::atof(configset->query("NL_b_min").c_str()),
+	    ::atof(configset->query("NL_b_max").c_str()));
+	NL.push_back(NL_b);
+	Variable *NL_c = configset->createVar("NL_c",
+	    ::atof(configset->query("NL_c_init").c_str()),
+	    ::atof(configset->query("NL_c_err").c_str()),
+	    ::atof(configset->query("NL_c_min").c_str()),
+	    ::atof(configset->query("NL_c_max").c_str()));
+	NL.push_back(NL_c);
+	Variable *NL_e = configset->createVar("NL_e",
+	    ::atof(configset->query("NL_e_init").c_str()),
+	    ::atof(configset->query("NL_e_err").c_str()),
+	    ::atof(configset->query("NL_e_min").c_str()),
+	    ::atof(configset->query("NL_e_max").c_str()));
+	NL.push_back(NL_e);
+	Variable *NL_f = configset->createVar("NL_f",
+	    ::atof(configset->query("NL_f_init").c_str()),
+	    ::atof(configset->query("NL_f_err").c_str()),
+	    ::atof(configset->query("NL_f_min").c_str()),
+	    ::atof(configset->query("NL_f_max").c_str()));
+	NL.push_back(NL_f);
+      } else {
+	Variable *qc1 = configset->createVar("qc1",
+	    ::atof(configset->query("qc1_init").c_str()),
+	    ::atof(configset->query("qc1_err").c_str()),
+	    ::atof(configset->query("qc1_min").c_str()),
+	    ::atof(configset->query("qc1_max").c_str()));
+	NL.push_back(qc1);
+	Variable *qc2 = configset->createVar("qc2",
+	    ::atof(configset->query("qc2_init").c_str()),
+	    ::atof(configset->query("qc2_err").c_str()),
+	    ::atof(configset->query("qc2_min").c_str()),
+	    ::atof(configset->query("qc2_max").c_str()));
+	NL.push_back(qc2);
+      }
       dataset->set("NL",NL);
       std::vector<Variable*> res;
       Variable *v1 = configset->createVar("v1",
@@ -114,12 +141,12 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	  ::atof(configset->query("v1_min").c_str()),
 	  ::atof(configset->query("v1_max").c_str()));
       res.push_back(v1);
-      Variable *vT = configset->createVar("vT",
-	  ::atof(configset->query("vT_init").c_str()),
-	  ::atof(configset->query("vT_err").c_str()),
-	  ::atof(configset->query("vT_min").c_str()),
-	  ::atof(configset->query("vT_max").c_str()));
-      res.push_back(vT);
+      Variable *sigmaT = configset->createVar("sigmaT",
+	  ::atof(configset->query("sigmaT_init").c_str()),
+	  ::atof(configset->query("sigmaT_err").c_str()),
+	  ::atof(configset->query("sigmaT_min").c_str()),
+	  ::atof(configset->query("sigmaT_max").c_str()));
+      res.push_back(sigmaT);
       dataset->set("res",res);
     }
   } catch (GooStatsException &ex) {

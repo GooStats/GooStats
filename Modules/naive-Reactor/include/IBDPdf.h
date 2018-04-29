@@ -7,17 +7,16 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef ReactorSpectrumPdf_H
-#define ReactorSpectrumPdf_H
+#ifndef IBDPdf_H
+#define IBDPdf_H
 
-#include "goofit/PDFs/GooPdf.h"
+#include "goofit/PDFs/GooPdf.h" 
 
-// unit: neutrino / cm^2 / day
-class ReactorSpectrumPdf : public GooPdf {
-  public:
-    ReactorSpectrumPdf (std::string n, Variable *x, const std::vector<Variable *> &fractions,
-	const std::vector<double> &coefficients,fptype power,fptype distance);
+class IBDPdf : public GooPdf {
+public:
+  IBDPdf (std::string n, Variable *eNeu); // ePos dos not include the energy of two gammas. They will be included by the response function
     __host__ virtual fptype normalise () const;
+
 };
 
 #endif

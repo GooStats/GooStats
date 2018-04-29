@@ -2,11 +2,13 @@ cuda_add_more_library(GooStatsPDFs
   DarkNoiseConvolutionPdf.cu
   DumperPdf.cu
   GeneralConvolutionPdf.cu
-  Mach4GGResponseFunctionPdf.cu
-  Mach4GGResponseFunctionPdf_impl.cu
+  ResponseFunctionPdf.cu
+  ResponseFunctionPdf_impl.cu
+  ResponseFunctionPdf_NLRES.cu
   HistogramPdf.cu
   MultiVariatePdf.cu
   PdfCache.cu
+  PullPdf.cu
   RangedExpPdf.cu
   ProductPdf.cu
   SumLikelihoodPdf.cu

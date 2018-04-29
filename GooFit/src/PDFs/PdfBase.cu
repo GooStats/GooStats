@@ -6,16 +6,6 @@
 // sit in its own object file; it must go in the CUDAglob.cu. So it's
 // off on its own in this inline-cuda file, which GooPdf.cu
 // should include.
-#ifdef SEPARABLE
-extern MEM_CONSTANT fptype cuda_array[maxParams];           // Holds device-side fit parameters. 
-extern MEM_CONSTANT unsigned int paramIndices[maxIndicies];  // Holds functor-specific indices into cuda_array. Also overloaded to hold integer constants (ie parameters that cannot vary.) 
-extern MEM_CONSTANT fptype functorConstants[maxParams];    // Holds non-integer constants. Notice that first entry is number of events. 
-extern MEM_CONSTANT fptype normalisationFactors[maxParams]; 
-
-extern MEM_DEVICE void* device_function_table[200];
-extern void* host_function_table[200];
-extern unsigned int num_device_functions;
-#endif
 
 #ifdef CUDAPRINT
 __host__ void PdfBase::copyParams(const std::vector<double>& pars) const {

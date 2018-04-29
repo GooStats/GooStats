@@ -6,6 +6,7 @@ add_library(GooStatsLib
   ConfigsetManager.cc
   DatasetManager.cc
   SimpleDatasetController.cc
+  PullDatasetController.cc
   SimpleInputBuilder.cc
   SimpleOptionParser.cc
   SimplePlotManager.cc

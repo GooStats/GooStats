@@ -123,7 +123,7 @@ __host__ void PdfBase::getObservables (std::vector<Variable*>& ret) const {
 }
 
 __host__ unsigned int PdfBase::registerConstants (unsigned int amount) {
-  assert(totalConstants + amount < maxParams);
+  assert(totalConstants + amount < maxConsts);
   cIndex = totalConstants;
   totalConstants += amount; 
   return cIndex; 

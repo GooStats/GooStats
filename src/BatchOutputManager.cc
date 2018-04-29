@@ -29,7 +29,6 @@ bool BatchOutputManager::run() {
 }
 bool BatchOutputManager::finish() {
   flush_tree();
-  out->Close();
   return true;
 }
 void BatchOutputManager::flush_tree() {
