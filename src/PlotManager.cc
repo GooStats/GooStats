@@ -58,10 +58,14 @@ void PlotManager::set_gStyle() {
   gStyle->SetTitleSize(0.04,"x");
   gStyle->SetTitleOffset(1.15,"x");
   gStyle->SetTitleOffset(1.35,"yz");
-  gStyle->SetOptLogy(1);
+  //gStyle->SetOptLogy(1);
 }
-void PlotManager::draw(const std::vector<DatasetManager*> &datasets) {
-  auto cc = drawSingleGroup("merged",datasets);
+void PlotManager::draw(const std::vector<DatasetManager*> &ds) {
+  std::vector<DatasetManager*> drawable_datasets;
+  for(auto d:ds) {
+    if(d->has<std::vector<std::string>>("components")) drawable_datasets.push_back(d);
+  }
+  auto cc = drawSingleGroup("merged",drawable_datasets);
   if(createPdf()) cc->Print((outName()+".pdf").c_str(),"Title:merged");
 }
 TCanvas *PlotManager::drawSingleGroup(const std::string &name,const std::vector<DatasetManager*> &datasets) {
@@ -115,13 +119,13 @@ void PlotManager::draw(SumPdf *sumpdf,std::map<std::string,Config> config) {
   //  for (int i = 1; i <= npe->numbins; ++i)  {
   //    std::cout<<"data: "<<i<<" "<<data_spectra->getBinContent(i)<<std::endl;
   //  }
-  TH1D *xvarHist = new TH1D(sumpdf->getName().c_str(), 
-			    sumpdf->getName().c_str(),
+  TH1D *xvarHist = new TH1D((sumpdf->getName()+"_data").c_str(), 
+			    (sumpdf->getName()+"_data").c_str(),
 			    npe->numbins, npe->lowerlimit, npe->upperlimit);
   xvarHist->GetXaxis()->SetNoExponent();
   xvarHist->GetXaxis()->SetTitle(npeName.c_str());
-  xvarHist->GetYaxis()->SetTitle(Form("Events / (day #times ktons #times %d %s)",
-				      int(floor((npe->upperlimit-npe->lowerlimit)/npe->numbins)),npeName.c_str()));
+  xvarHist->GetYaxis()->SetTitle(Form("Events / (day #times ktons #times %.2lf %s)",
+				      (npe->upperlimit-npe->lowerlimit)/npe->numbins,npeName.c_str()));
   xvarHist->GetXaxis()->CenterTitle();
   xvarHist->GetYaxis()->CenterTitle();
   leg->AddEntry(xvarHist,TextOutputManager::data(sumpdf->getName(),

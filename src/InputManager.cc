@@ -79,14 +79,17 @@ void InputManager::fill_rawSpectrumProvider() {
 void InputManager::initialize_datasets() {
   for(auto dataset : datasets) {
     dataset->initialize();
-    builder->buildRawSpectra(dataset.get(),provider.get());
-    builder->buildComponenets(dataset.get(),provider.get());
+    if(dataset->has<std::vector<std::string>>("components")) {
+      builder->buildRawSpectra(dataset.get(),provider.get());
+      builder->buildComponenets(dataset.get(),provider.get());
+    }
     builder->configParameters(dataset.get());
     dataset->buildLikelihood();
   }
 }
 void InputManager::buildTotalPdf() {
   totalPdf = std::shared_ptr<GooPdf>(builder->buildTotalPdf(Datasets()));
+  if(configsets.front()->hasAndYes("chisquareFit")) totalPdf->setFitControl(new BinnedChisqFit); // ugly
 }
 std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomData() {
   std::map<DatasetManager*,std::unique_ptr<fptype []>> datas;

@@ -17,10 +17,20 @@
 #include "TH1D.h"
 #include "TF1.h"
 #include "InputManager.h"
+#include "TRandom.h"
 bool ReactorAnalysisManager::init() {
   this->AnalysisManager::init();
 
+ auto deltaM2s = inputManager->Datasets().front()->get<std::vector<Variable*>>("deltaM2s");
+ if(this->inputManager->Configsets().front()->has("seed"))
+   gRandom->SetSeed(::atoi(this->inputManager->Configsets().front()->query("seed").c_str()));
+ else
+   gRandom->SetSeed(time(nullptr));
  inputManager->fillRandomData();
+ this->run();
+ deltaM2s[1]->value = - deltaM2s[1]->value;
+ deltaM2s[1]->lowerlimit = - deltaM2s[1]->upperlimit;
+ deltaM2s[1]->upperlimit = - deltaM2s[1]->lowerlimit;
  // Examples about how to do CPU version fit
  //DatasetManager *dataset = *inputManager->Datasets().begin();
  // Variable *Evis = dataset->get<Variable*>("Evis");

@@ -12,7 +12,7 @@
 #include "DatasetManager.h"
 #include "goofit/BinnedDataSet.h"
 #include "HistogramPdf.h"
-#include "Mach4GGResponseFunctionPdf.h"
+#include "ResponseFunctionPdf.h"
 #include "RawSpectrumProvider.h"
 #include "GeneralConvolutionPdf.h"
 GooPdf *SpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *dataset) {
@@ -48,7 +48,7 @@ GooPdf *SpectrumBuilder::buildMC(const std::string &name,
 }
 GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  GooPdf *resolutionPdf = new Mach4GGResponseFunctionPdf(pdfName+"_RPF",
+  GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type
@@ -61,7 +61,7 @@ GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *datase
 }
 GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  GooPdf *resolutionPdf = new Mach4GGResponseFunctionPdf(pdfName+"_RPF",
+  GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type
@@ -75,7 +75,7 @@ GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager 
 }
 GooPdf *SpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  GooPdf *resolutionPdf = new Mach4GGResponseFunctionPdf(pdfName,
+  GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type

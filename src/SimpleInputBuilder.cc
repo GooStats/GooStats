@@ -19,13 +19,14 @@
 #include "DatasetController.h"
 #include "SpectrumBuilder.h"
 #include "SimpleDatasetController.h"
+#include "PullDatasetController.h"
 #include "SimpleOptionParser.h"
 #include "SumLikelihoodPdf.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "HistogramPdf.h"
 #include "GeneralConvolutionPdf.h"
-#include "Mach4GGResponseFunctionPdf.h"
+#include "ResponseFunctionPdf.h"
 SimpleInputBuilder::SimpleInputBuilder() :
     folder(std::getenv("SimpleInputBuilderData")?std::getenv("SimpleInputBuilderData"):""),
     spcBuilder(std::make_shared<BasicSpectrumBuilder>())  { }
@@ -188,6 +189,9 @@ bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
 std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
+  for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
+    controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
+  }
   return controllers;
 }
 OptionManager *SimpleInputBuilder::createOptionManager() {

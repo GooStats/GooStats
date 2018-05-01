@@ -55,9 +55,11 @@ bool OutputManager::run() {
   outputBuilder->flushOstream(batchOut.get(),outputHelper.get(),std::cout);
   outputBuilder->draw(plot.get(),inputManager);
   batchOut->run();
+  plot->run();
   return true;
 }
 bool OutputManager::finish() {
   batchOut->finish();
+  plot->finish();
   return true;
 }

@@ -20,7 +20,8 @@ typedef thrust::zip_iterator<EventTuple> EventIterator;
 
 const int maxDataSet = 500;
 const int maxParams = 500;
-const int maxIndicies = 4000;
+const int maxConsts = 4000;
+const int maxIndicies = 8000;
 extern fptype* dev_event_array[maxDataSet];
 extern fptype host_normalisation[maxIndicies];
 extern fptype host_params[maxParams];
@@ -32,6 +33,14 @@ template<class T>
 class DumperPdf;
 class SumPdf;
 class SumLikelihoodPdf;
+extern MEM_CONSTANT fptype cuda_array[maxParams];           // Holds device-side fit parameters. 
+extern MEM_DEVICE unsigned int paramIndices[maxIndicies];  // Holds functor-specific indices into cuda_array. Also overloaded to hold integer constants (ie parameters that cannot vary.) 
+extern MEM_DEVICE fptype functorConstants[maxConsts];    // Holds non-integer constants. Notice that first entry is number of events. 
+extern MEM_CONSTANT fptype normalisationFactors[maxParams]; 
+
+extern MEM_DEVICE void* device_function_table[200];
+extern void* host_function_table[200];
+extern unsigned int num_device_functions;
 
 class PdfBase {
 

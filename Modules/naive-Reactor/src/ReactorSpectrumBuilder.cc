@@ -11,6 +11,8 @@
 #include "DatasetManager.h"
 #include "ReactorSpectrumPdf.h"
 #include "GooStatsException.h"
+#include "IBDPdf.h"
+#include "NeutrinoOscillationPdf.h"
 GooPdf *ReactorSpectrumBuilder::buildSpectrum(const std::string &name,
     DatasetManager *dataset) {
   GooPdf *pdf = this->BasicSpectrumBuilder::buildSpectrum(name,dataset);
@@ -19,34 +21,37 @@ GooPdf *ReactorSpectrumBuilder::buildSpectrum(const std::string &name,
   if(type=="Reactor") {
     return buildReactor(name,dataset);
   } else if(type=="OscillatedReactor") {
-    return buildReactor(name,dataset);
+    return buildOscillatedReactor(name,dataset);
   } else {
     return nullptr;
   }
 }
+#include "ProductPdf.h"
 GooPdf *ReactorSpectrumBuilder::buildReactor(const std::string &name,
     DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
-  Variable *E = dataset->get<Variable*>(name); 
-  return new ReactorSpectrumPdf(name,E,
-      dataset->get<std::vector<Variable*>>("fractions"),
-      dataset->get<std::vector<double>>("coefficients"));
+  return _buildOscillatedReactor(name,dataset,false);
 }
-#include "goofit/PDFs/ExpPdf.hh"
-#include "NewExpPdf.hh"
-#include "ProductPdf.h"
 GooPdf *ReactorSpectrumBuilder::buildOscillatedReactor(const std::string &name,
     DatasetManager *dataset) {
+  return _buildOscillatedReactor(name,dataset,true);
+}
+GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
+    DatasetManager *dataset,bool oscOn) {
   std::string pdfName = dataset->name()+"."+name;
-  Variable *Evis = dataset->get<Variable*>(name); 
-  GooPdf *reactor = buildReactor(name+"_noOsc",dataset);
-  Variable* alpha = new Variable("alpha", -0.2, 0.1, -10, 10);
-  ExpPdf* exp1 = new ExpPdf(pdfName+"_exppdf", Evis, alpha); 
-  Variable* beta = new Variable("beta", -0.025, 0.1, -10, 10);
-  NewExpPdf* exp2 = new NewExpPdf(pdfName+"_newExppdf", Evis, beta); 
+  Variable *E = dataset->get<Variable*>(name); 
+  GooPdf *reactor = new ReactorSpectrumPdf(pdfName+"_reactor",E,
+      dataset->get<std::vector<Variable*>>("fractions"),
+      dataset->get<std::vector<double>>("coefficients"),
+      dataset->get<double>("reactorPower"),
+      dataset->get<double>("distance"));
+ GooPdf *ibd = new IBDPdf(pdfName+"_IBD",E);
+  GooPdf *osc = new NeutrinoOscillationPdf(pdfName+"_osc",E,
+      dataset->get<std::vector<Variable*>>("sinThetas"),
+      dataset->get<std::vector<Variable*>>("deltaM2s"),
+      dataset->get<double>("distance"));
   std::vector<PdfBase*> components;
   components.push_back(reactor);
-  components.push_back(exp1);
-  components.push_back(exp2);
-  return new ProductPdf(name,components,Evis);
+  if(oscOn) components.push_back(osc);
+  components.push_back(ibd);
+  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"),1.806);
 }

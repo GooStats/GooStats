@@ -54,6 +54,43 @@ bool ReactorDatasetController::collectInputs(DatasetManager *dataset) {
     coefficients.push_back(::atof(configset->query("Huber_Pu241_1").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_Pu241_2").c_str()));
     dataset->set("coefficients", coefficients);
+    dataset->set("reactorPower", ::atof(configset->query("reactorPower").c_str()));
+    dataset->set("distance", ::atof(configset->query("distance").c_str()));
+    dataset->set("NHatomPerkton", ::atof(configset->query("NHatomPerkton").c_str()));
+    std::vector<Variable*> sinTheta_2s;
+    Variable *sinTheta12_2 = configset->createVar("sinTheta12_2",
+	::atof(configset->query("sinTheta12_2_init").c_str()),
+	::atof(configset->query("sinTheta12_2_err").c_str()),
+	::atof(configset->query("sinTheta12_2_min").c_str()),
+	::atof(configset->query("sinTheta12_2_max").c_str()));
+    sinTheta_2s.push_back(sinTheta12_2);
+    Variable *sinTheta13_2 = configset->createVar("sinTheta13_2",
+	::atof(configset->query("sinTheta13_2_init").c_str()),
+	::atof(configset->query("sinTheta13_2_err").c_str()),
+	::atof(configset->query("sinTheta13_2_min").c_str()),
+	::atof(configset->query("sinTheta13_2_max").c_str()));
+    sinTheta_2s.push_back(sinTheta13_2);
+    Variable *sinTheta23_2 = configset->createVar("sinTheta23_2",
+	::atof(configset->query("sinTheta23_2_init").c_str()),
+	::atof(configset->query("sinTheta23_2_err").c_str()),
+	::atof(configset->query("sinTheta23_2_min").c_str()),
+	::atof(configset->query("sinTheta23_2_max").c_str()));
+    sinTheta_2s.push_back(sinTheta23_2);
+    dataset->set("sinThetas", sinTheta_2s);
+    std::vector<Variable*> deltaM2s;
+    Variable *deltaM221 = configset->createVar("deltaM221",
+	::atof(configset->query("deltaM221_init").c_str()),
+	::atof(configset->query("deltaM221_err").c_str()),
+	::atof(configset->query("deltaM221_min").c_str()),
+	::atof(configset->query("deltaM221_max").c_str()));
+    deltaM2s.push_back(deltaM221);
+    Variable *deltaM231 = configset->createVar("deltaM231",
+	::atof(configset->query("deltaM231_init").c_str()),
+	::atof(configset->query("deltaM231_err").c_str()),
+	::atof(configset->query("deltaM231_min").c_str()),
+	::atof(configset->query("deltaM231_max").c_str()));
+    deltaM2s.push_back(deltaM231);
+    dataset->set("deltaM2s", deltaM2s);
   } catch (GooStatsException &ex) {
     std::cout<<"Exception caught during fetching parameter configurations. probably you missed iterms in your configuration files. Read the READ me to find more details"<<std::endl;
     std::cout<<"If you think this is a bug, please email to Xuefeng Ding<xuefeng.ding.physics@gmail.com> or open an issue on github"<<std::endl;

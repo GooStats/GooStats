@@ -7,17 +7,20 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef ReactorSpectrumPdf_H
-#define ReactorSpectrumPdf_H
+#ifndef NeutrinoOscillationPdf_H
+#define NeutrinoOscillationPdf_H
 
-#include "goofit/PDFs/GooPdf.h"
+#include "goofit/PDFs/GooPdf.h" 
 
-// unit: neutrino / cm^2 / day
-class ReactorSpectrumPdf : public GooPdf {
-  public:
-    ReactorSpectrumPdf (std::string n, Variable *x, const std::vector<Variable *> &fractions,
-	const std::vector<double> &coefficients,fptype power,fptype distance);
+class NeutrinoOscillationPdf : public GooPdf {
+public:
+  NeutrinoOscillationPdf (std::string n, Variable *eNeu, std::vector<Variable*> sinThetas_2, std::vector<Variable*>deltaM2s, fptype distance);
     __host__ virtual fptype normalise () const;
+
+
+
+private:
+
 };
 
 #endif

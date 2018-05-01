@@ -17,7 +17,13 @@
 #include "SumPdf.h"
 #include "TMath.h"
 #include "PlotManager.h"
-void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *) {
+void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *inputManager) {
+  for(auto dataset : inputManager->Datasets()) {
+    double exposure = dataset->get<double>("exposure");
+    outHelper->registerTerm(dataset->name()+".exposure", [=](InputManager *) -> double {
+      return exposure;
+    });
+  }
   outHelper->registerTerm("chi2", [](InputManager *inputManager) -> double {
     GooPdf *pdf = inputManager->getTotalPdf();
     pdf->setFitControl(new BinnedChisqFit);

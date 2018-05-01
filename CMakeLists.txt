@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.4)
 project(GOOSTATS CXX)
 
+file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
+message(STATUS ${LOC_PATH})
+if(EXISTS ${LOC_PATH})
+    message(FATAL_ERROR "You cannot build in the source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory.")
+endif()
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
