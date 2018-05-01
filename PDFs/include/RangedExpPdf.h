@@ -7,17 +7,19 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef ReactorSpectrumPdf_H
-#define ReactorSpectrumPdf_H
+#ifndef RangedExpPdf_H
+#define RangedExpPdf_H
 
 #include "goofit/PDFs/GooPdf.h"
 
-// unit: neutrino / cm^2 / day
-class ReactorSpectrumPdf : public GooPdf {
-  public:
-    ReactorSpectrumPdf (std::string n, Variable *x, const std::vector<Variable *> &fractions,
-	const std::vector<double> &coefficients,fptype power,fptype distance);
-    __host__ virtual fptype normalise () const;
+class RangedExpPdf : public GooPdf {
+public:
+
+  RangedExpPdf (std::string n, Variable *npe,Variable* p0, Variable* p1, fptype x_L, fptype x_H, bool inversed);
+  __host__ virtual fptype normalise () const;
+
+protected:
+  std::vector<unsigned int> pindices;
 };
 
 #endif

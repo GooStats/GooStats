@@ -25,11 +25,16 @@ EXEC_TARGET fptype device_ReactorSpectrum (fptype* evt, fptype* p, unsigned int*
   const fptype phiU238 = EXP(RO_CACHE(U238p[0]) + RO_CACHE(U238p[1])*E + RO_CACHE(U238p[2])*E*E);
   const fptype phiPu239 = EXP(RO_CACHE(Pu239p[0]) + RO_CACHE(Pu239p[1])*E + RO_CACHE(Pu239p[2])*E*E);
   const fptype phiPu241 = EXP(RO_CACHE(Pu241p[0]) + RO_CACHE(Pu241p[1])*E + RO_CACHE(Pu241p[2])*E*E);
-  const fptype ret = phiU235*U235+phiU238*U238+phiPu239*Pu239+phiPu241*Pu241;
-#ifdef convolution_CHECK
-  printf("%d %lf -> (%lf / %lf %lf %lf) %lf %lf %lf %lf %lf\n",THREADIDX, E, 
+  const fptype power = RO_CACHE(functorConstants[cIndex+12]);
+  const fptype unitE = U235*201.7+U238*205.0+Pu239*210.0+Pu241*212.4;
+  const fptype distance = RO_CACHE(functorConstants[cIndex+13]);
+  // unit: neutrino / cm^2 / day
+  const fptype ret = power/unitE*(phiU235*U235+phiU238*U238+phiPu239*Pu239+phiPu241*Pu241)*5.392661498e26/(4*3.1415926535*distance*distance);
+#ifdef RPF_CHECK
+if(THREADIDX==0)
+  printf("%d %lf -> (%lf / %lf %lf %lf) phi %lf Pth %lf unitE %lf L %lf %le\n",THREADIDX, E, 
 	 U235,U235p[0],U235p[1],U235p[2],
-	 phiU235,phiU238,Pu239,Pu241,ret);
+	 phiU235,power,unitE,distance,ret);
 #endif
   return ret;
 }
@@ -37,17 +42,20 @@ EXEC_TARGET fptype device_ReactorSpectrum (fptype* evt, fptype* p, unsigned int*
 MEM_DEVICE device_function_ptr ptr_to_ReactorSpectrum = device_ReactorSpectrum; 
 
 __host__ ReactorSpectrumPdf::ReactorSpectrumPdf (std::string n, Variable *_x,
-    const std::vector<Variable*> &fractions,const std::vector<double> &coefficients)
+    const std::vector<Variable*> &fractions,const std::vector<double> &coefficients,fptype power,fptype distance /*km*/)
   : GooPdf(_x, n) 
 {
   std::vector<unsigned int> pindices;
   for(auto fraction : fractions)
     pindices.push_back(registerParameter(fraction));
   GET_FUNCTION_ADDR(ptr_to_ReactorSpectrum);
-  pindices.push_back(registerConstants(12));/*6*/ 
+  pindices.push_back(registerConstants(14));/*6*/ 
   fptype toCopy[12];
   for(int i = 0;i<12;++i) toCopy[i] = coefficients[i];
   MEMCPY_TO_SYMBOL(functorConstants, toCopy, 12*sizeof(fptype), cIndex*sizeof(fptype), cudaMemcpyHostToDevice); 
+  MEMCPY_TO_SYMBOL(functorConstants, &power, sizeof(fptype), (cIndex+12)*sizeof(fptype), cudaMemcpyHostToDevice); 
+  distance*=100000; // km to cm
+  MEMCPY_TO_SYMBOL(functorConstants, &distance, sizeof(fptype), (cIndex+13)*sizeof(fptype), cudaMemcpyHostToDevice); 
   initialise(pindices); 
 }
 __host__ fptype ReactorSpectrumPdf::normalise () const {

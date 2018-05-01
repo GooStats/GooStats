@@ -20,11 +20,11 @@ class BinnedDataSet;
 class ProductPdf : public GooPdf {
 public:
 
-  ProductPdf (std::string n, const std::vector<PdfBase*> &comps, Variable *npe);
+  ProductPdf (std::string n, const std::vector<PdfBase*> &comps, Variable *npe,fptype norm = 1,fptype shift = 0);
   __host__ virtual fptype normalise () const;
 
 protected:
-  void set_startstep(fptype norm);
+  void set_startstep(fptype norm,fptype shift); 
   void register_components(const std::vector<PdfBase*> &comps,int N);
   std::vector<unsigned int> pindices;
   fptype* dev_iConsts; 

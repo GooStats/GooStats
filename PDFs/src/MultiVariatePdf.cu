@@ -163,9 +163,6 @@ __host__ fptype MultiVariatePdf::sumOfNll (int __attribute__((__unused__)) numVa
   return logL;
 }
 void MultiVariatePdf::calculate_m0m1() const {
-#ifdef SEPARABLE
-  extern DEVICE_VECTOR<fptype>* componentWorkSpace[100];
-#endif
   fptype N0 = 0,N1 = 0;
   auto rateIdit = rate_0.begin();
   for(auto pdfId : pdf_0) {

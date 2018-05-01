@@ -21,5 +21,7 @@ class ReactorSpectrumBuilder : public BasicSpectrumBuilder {
   private:
     SpectrumBuilderFun buildReactor;
     SpectrumBuilderFun buildOscillatedReactor;
+  private:
+    GooPdf *_buildOscillatedReactor(const std::string &name,DatasetManager *dataset,bool oscOn);
 };
 #endif

@@ -7,28 +7,24 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef Mach4GGResponseFunctionPdf_H
-#define Mach4GGResponseFunctionPdf_H
+#ifndef ResponseFunctionPdf_H
+#define ResponseFunctionPdf_H
 
 #include "goofit/PDFs/GooPdf.h" 
 // 0 correspond to the index of observables
-#define Mach4GG_NL_index 1
-#define Mach4GG_Res_index 4
-#define Mach4GG_feq_index 6
-#define Mach4GG_shiftE_index 7
-#define Mach4GG_peakE_index 7
+#define _NL_index 2
 
-class Mach4GGResponseFunctionPdf : public GooPdf {
+class ResponseFunctionPdf : public GooPdf {
   public:
     // normal
-    Mach4GGResponseFunctionPdf (std::string n, 
+    ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
         string response_function, string quenching_model, 
 	std::vector<Variable*> NL,
 	std::vector<Variable*> res,
 	double feq);
     // shifted
-    Mach4GGResponseFunctionPdf (std::string n, 
+    ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
         string response_function, string quenching_model, 
 	std::vector<Variable*> NL,
@@ -36,7 +32,7 @@ class Mach4GGResponseFunctionPdf : public GooPdf {
 	double feq,
 	Variable *npeShift);
     // peak
-    Mach4GGResponseFunctionPdf (std::string n, 
+    ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
         string response_function, string quenching_model, 
 	std::vector<Variable*> res,
@@ -44,12 +40,18 @@ class Mach4GGResponseFunctionPdf : public GooPdf {
 	Variable *peakEvis);
     __host__ fptype integrate (fptype , fptype ) const { return 1; }
     __host__ virtual bool hasAnalyticIntegral () const {return true;} 
+    enum class NL { Mach4, expPar };
+    enum class Mean { normal, peak, shifted };
+    enum class RES { charge, pol3 };
   private:
     void insertResponseFunctionAndNLPar(const std::vector<Variable*> &quenching_par,
 	const std::vector<Variable*> &res,double feq);
-    enum class RPFtype { normal, shifted, scaled, peak };
-    void chooseFunctionPtr(Variable *npe,const std::string &response_function,const std::string &quenching_model,const RPFtype rpf_type) const;
+    void chooseFunctionPtr(Variable *npe,const std::string &response_function,const std::string &quenching_model,const Mean rpf_type) const;
     std::vector<unsigned int> pindices; 
 };
+
+template<ResponseFunctionPdf::NL nl> EXEC_TARGET fptype GetNL(fptype *evt,fptype *p,unsigned int *indices);
+template<ResponseFunctionPdf::Mean type> EXEC_TARGET fptype GetMean(fptype mu,fptype *p,unsigned int *indices);
+template<ResponseFunctionPdf::RES res> EXEC_TARGET fptype GetVariance(fptype mu,fptype *p,unsigned int *indices);
 
 #endif

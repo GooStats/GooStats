@@ -226,6 +226,7 @@ __host__ fptype GeneralConvolutionPdf::normalise () const {
   thrust::counting_iterator<int> binIndex(0); 
 
   if (model->parametersChanged()) {
+    model->normalise();  // this is needed for the GeneralConvolution
     thrust::constant_iterator<fptype*> model_startendN(dev_iConsts+3); 
     thrust::constant_iterator<int> model_eventSize(1);
     // Calculate model function at every point in integration space
@@ -239,6 +240,7 @@ __host__ fptype GeneralConvolutionPdf::normalise () const {
   }
 
   if (resolution->parametersChanged()) {
+    resolution->normalise();  // this is needed for the GeneralConvolution
     thrust::constant_iterator<int> res_eventSize(2);
     thrust::constant_iterator<fptype*> res_startendN(dev_iConsts); 
     BinnedMetricTaker resalor(resolution, getMetricPointer("ptr_to_Eval")); 
