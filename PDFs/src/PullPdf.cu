@@ -21,10 +21,11 @@ __host__ PullPdf::PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype
 
 __host__ double PullPdf::calculateNLL () const {
   const double counts = masstime*host_params[index];
-  const double constTerm(IsChisquareFit()?(0.5*log(2*M_PI_L*sigma*sigma)):0);
+  double ret = pow((counts-mean)/sigma,2);
+  if(!IsChisquareFit()) ret = ret/2+0.5*log(2*M_PI_L*sigma*sigma);
 #ifdef NLL_CHECK
-  printf("log(L) %.12le pull\n",(counts-mean)*(counts-mean)/(2*sigma*sigma)+constTerm);
+  printf("log(L) %.12le pull chisquare? %s\n",ret, IsChisquareFit()?"yes":"no");
 #endif
-  return (counts-mean)*(counts-mean)/(2*sigma*sigma)+constTerm;
+  return ret;
 }
 
