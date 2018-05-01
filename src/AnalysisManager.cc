@@ -29,6 +29,7 @@ bool AnalysisManager::init() {
   if(outputManager) outputManager->init();
 
   sumpdf = inputManager->getTotalPdf();
+  inputManager->cachePars();
   return true;
 }
 #include "goofit/FitManager.h"
@@ -36,6 +37,7 @@ bool AnalysisManager::init() {
 #include <sys/time.h>
 #include <sys/times.h>
 bool AnalysisManager::run() {
+  inputManager->resetPars();
   fitManager = std::make_shared<FitManager>(sumpdf);
   fitManager->setMaxCalls(500000);
   clock_t startCPU, stopCPU; 
@@ -55,6 +57,7 @@ bool AnalysisManager::run() {
   myCPU = stopProc.tms_utime - startProc.tms_utime;
   std::cout << "Processor time: " << (myCPU / CLOCKS_PER_SEC) << std::endl;
   sumpdf->printProfileInfo(); 
+
   fitManager->getMinuitValues();
 
   if(outputManager) outputManager->run();

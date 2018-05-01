@@ -107,6 +107,9 @@ std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomDat
   }
   return datas;
 }
+const OptionManager* InputManager::GlobalOption() const {
+  return static_cast<OptionManager*>(configsets.front().get());
+}
 std::vector<ConfigsetManager*> InputManager::Configsets() {
   std::vector<ConfigsetManager*> configsets_;
   for(auto configset: configsets) {
@@ -120,4 +123,22 @@ std::vector<DatasetManager*> InputManager::Datasets() {
     datasets_.push_back(dataset.get());
   }
   return datasets_;
+}
+void InputManager::cachePars() {
+  std::vector<Variable*> pars;
+  getTotalPdf()->getParameters(pars);
+  cachedParsInit.clear();
+  cachedParsErr.clear();
+  for(auto par : pars) {
+    cachedParsInit.push_back(par->value);
+    cachedParsErr.push_back(par->error);
+  }
+}
+void InputManager::resetPars() {
+  std::vector<Variable*> pars;
+  getTotalPdf()->getParameters(pars);
+  for(size_t i = 0;i<pars.size();++i) {
+    pars.at(i)->value = cachedParsInit.at(i);
+    pars.at(i)->error = cachedParsErr.at(i);
+  }
 }
