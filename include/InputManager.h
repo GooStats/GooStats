@@ -43,16 +43,22 @@ class InputManager {
     virtual void initialize_datasets();
     virtual void buildTotalPdf();
     std::map<DatasetManager*,std::unique_ptr<fptype []>> fillRandomData();
+    const OptionManager* GlobalOption() const;
     std::vector<ConfigsetManager*> Configsets();
     std::vector<DatasetManager*> Datasets();
     const std::string &getOutputFileName() { return outName; }
     GooPdf *getTotalPdf() { return totalPdf.get(); };
+    void cachePars();
+    void resetPars();
   protected:
     std::shared_ptr<InputBuilder> builder;
     std::shared_ptr<ParSyncManager> parManager;
     std::shared_ptr<GooPdf> totalPdf;
     std::shared_ptr<RawSpectrumProvider> provider;
     std::string outName;
+  private:
+    std::vector<double> cachedParsInit;
+    std::vector<double> cachedParsErr;
 
     /**
      *  \defgroup Dataset part responsible for dataset

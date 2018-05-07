@@ -13,7 +13,6 @@ void BasicSpectrumBuilder::AddSiblings(ISpectrumBuilder *s) {
   siblings.push_back(std::shared_ptr<ISpectrumBuilder>(s));
 }
 GooPdf *BasicSpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *dataset) {
-  const std::string &type = dataset->get<std::string>(name+"_type");
   for(auto sibling : siblings) {
     GooPdf *pdf = sibling->buildSpectrum(name,dataset);
     if(pdf) return pdf;
