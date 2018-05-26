@@ -30,7 +30,7 @@ EXEC_TARGET fptype device_SumPdfsExt (fptype* evt, fptype* p, unsigned int* indi
     const fptype curr = dev_componentWorkSpace[workSpaceIndex][npe_bin];
     ret += weight * curr; // normalization is always 1
 #ifdef convolution_CHECK
-    if(THREADIDX==0)
+    if(npe_bin==0)
       //  if(THREADIDX==10)
       printf("+ npe %.1lf npebin %d ret %.10lf w %.10lf wk %d cur %.10lf\n",npe_val,npe_bin,ret,weight,workSpaceIndex,curr);
 #endif
@@ -49,7 +49,7 @@ EXEC_TARGET fptype device_SumPdfsExtMask (fptype* evt, fptype* p, unsigned int* 
   const int Ncomps = RO_CACHE(indices[2]); 
   fptype ret = 0;
 #ifdef convolution_CHECK
-  if(THREADIDX==0)
+  if(npe_bin==0)
     printf("cIndex %d npe %.5le npelo %.5le npestep %.5le npebin %d Ncomps %d \n",cIndex,npe_val,npe_lo,npe_step,npe_bin,Ncomps);
 #endif
   for (int par = 0; par < Ncomps; ++par) {

@@ -34,6 +34,7 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
     ret += dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
   }
 #if defined(NLL_CHECK) || defined(RPF_CHECK) || defined(convolution_CHECK) || defined(NL_CHECK) || defined(spectrum_CHECK) || defined(Quenching_CHECK) || defined(Mask_CHECK)
+  printf("final log(L) %.12le\n",ret);
   std::cerr<<"Debug abort."<<std::endl;
   std::abort();
 #endif

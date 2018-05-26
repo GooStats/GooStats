@@ -39,11 +39,11 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
 			  + LOG(Evis)*(2.*alpha -1.) 
 			  + -beta*Evis*Evis 
 			  - ::lgamma(alpha)));  
-#ifdef RPF_CHECK
-  if(fabs(mu-Evis)<sqrt(variance)*0.2) 
-    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
-	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
-#endif
+//#ifdef RPF_CHECK
+//  if(fabs(mu-Evis)<sqrt(variance)*0.2) 
+//    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
+//	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
+//#endif
   return ret; 
 } 
 MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_normal = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::Mach4, ResponseFunctionPdf::Mean::normal, ResponseFunctionPdf::RES::charge>;
