@@ -230,7 +230,7 @@ void SumPdf::copyHistogramToDevice(const BinnedDataSet* mask,int id) {
   fptype *host_array = new fptype[numbins];
   MEMCPY(host_array,raw_dn_addr[0],numbins*sizeof(fptype),cudaMemcpyDeviceToHost);
   for(int i = 0;i<numbins;++i) {
-    std::cout<<id<<" : "<<i<<"-->"<<host_array[i]<<std::endl;
+    std::cout<<id<<" : "<<i+shift<<"-->"<<host_array[i]<<std::endl;
   }
   delete [] host_array;
 #endif

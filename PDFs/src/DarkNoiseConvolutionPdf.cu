@@ -24,10 +24,9 @@ EXEC_TARGET fptype device_ConvolveDnHisto(fptype* evt, fptype* p, unsigned int* 
     ret += model*resol;
 #ifdef convolution_CHECK
   const fptype npe = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])];
-    //if(npe==240.5)
     if(npe==85.5)
-    printf("x1 %.2lf x2 %.2lf x3 %.2lf npe %.1lf lo %d npeb %d mb %d rb %d dnmax %d M %.14le R %.14le ret %.14le\n",
-        npe_bin-dn+npe_lo+0.5,dn+0.5,npe,npe,npe_lo,npe_bin,npe_bin-dn,dn,dn_max,model,resol,ret);
+      printf("x1 %.2lf x2 %.2lf x3 %.2lf npe %.1lf lo %d npeb %d mb %d rb %d dnmax %d M %.14le R %.14le ret %.14le\n",
+	  npe_bin-dn+npe_lo+0.5,dn+0.5,npe,npe,npe_lo,npe_bin,npe_bin-dn,dn,dn_max,model,resol,ret);
 #endif
   }
   return ret; 

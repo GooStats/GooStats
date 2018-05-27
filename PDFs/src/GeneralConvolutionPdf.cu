@@ -65,12 +65,12 @@ EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* p, unsigned
   }
   const fptype model_last = RO_CACHE(dev_modWorkSpace_general[workSpaceIndex][intvar_numbins-1]);
   ret    += model_last*(model_last==0 ? 0 : RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+(intvar_numbins-1)*obs_numbins]));
-//#ifdef convolution_CHECK
-//  { int intvar_bin = (intvar_numbins-1); const fptype model = model_last; const fptype resol = model_last==0?0:RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+(intvar_numbins-1)*obs_numbins]);
-//    int factor = 1;
-//    if(obs_val==300.5)
-//      printf("%s npe %.1lf e %d M %.10le R %.10le F %.10le sum %.10le\n",__func__,obs_val,intvar_bin,model,resol,factor*model*resol/3*intvar_step,ret/3*intvar_step); }
-//#endif
+#ifdef convolution_CHECK
+  { int intvar_bin = (intvar_numbins-1); const fptype model = model_last; const fptype resol = model_last==0?0:RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+(intvar_numbins-1)*obs_numbins]);
+    int factor = 1;
+    if(obs_val==300.5)
+      printf("%s npe %.1lf e %d M %.10le R %.10le F %.10le sum %.10le\n",__func__,obs_val,intvar_bin,model,resol,factor*model*resol/3*intvar_step,ret/3*intvar_step); }
+#endif
   ret /= 3;
   ret *= intvar_step;
   return ret; 
