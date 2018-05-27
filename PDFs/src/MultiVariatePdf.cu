@@ -155,7 +155,7 @@ __host__ fptype MultiVariatePdf::sumOfNll (int __attribute__((__unused__)) numVa
     MEMCPY_FROM_SYMBOL(&m1,dev_mv_m1,sizeof(fptype),MVid*sizeof(fptype),cudaMemcpyDeviceToHost);
     for(unsigned int i = 0;i<logLs.size();++i) {
       sum+=logLs[i];
-      printf("log(L)MV %.15le e %lf user %lf k %.2lf n0 %.2lf n1 %.2lf m0 %.15le m1 %.15le L %.15le\n",
+      printf("log(L)MV %.15le e %lf user %lf\n k %.2lf n0 %.2lf n1 %.2lf m0 %.10le m1 %.10le L %.15le\n",
           sum,(startbin+endbin)/2.+static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit),(i+0.5)*de+lo,
           k[i],n0[i],n1[i],m0,m1,logLs[i]);
     }
@@ -203,8 +203,8 @@ void MultiVariatePdf::calculate_m0m1() const {
   fptype host_m0 = N0/(N0+N1)*sum_k/(I0+Nbin);
   fptype host_m1 = N1/(N0+N1)*sum_k/(I1+Nbin);
 #ifdef NLL_CHECK
-  printf("n %d i %d Ni %lf Nsum %lf sum_k %.1lf Ii %.1lf Nbin %d\n",2,0,N0,N0+N1,sum_k,I0,Nbin);
-  printf("n %d i %d Ni %lf Nsum %lf sum_k %.1lf Ii %.1lf Nbin %d\n",2,1,N1,N0+N1,sum_k,I1,Nbin);
+  printf("n %d i %d Ni %.15le Nsum %.15le sum_k %.1lf Ii %.1lf Nbin %d\n",2,0,N0,N0+N1,sum_k,I0,Nbin);
+  printf("n %d i %d Ni %.15le Nsum %.15le sum_k %.1lf Ii %.1lf Nbin %d\n",2,1,N1,N0+N1,sum_k,I1,Nbin);
 #endif
   MEMCPY_TO_SYMBOL(dev_mv_m0,&host_m0,sizeof(fptype),MVid*sizeof(fptype),cudaMemcpyHostToDevice);
   MEMCPY_TO_SYMBOL(dev_mv_m1,&host_m1,sizeof(fptype),MVid*sizeof(fptype),cudaMemcpyHostToDevice);
