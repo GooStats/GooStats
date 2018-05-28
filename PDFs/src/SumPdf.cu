@@ -16,6 +16,40 @@ MEM_CONSTANT fptype* dev_raw_masks[20];
 int SumPdf::maskId = 0;
 std::map<BinnedDataSet*,int> SumPdf::maskmap;
 
+EXEC_TARGET fptype device_SumPdfsExt_withSys (fptype* evt, fptype* p, unsigned int* indices) { 
+  const int cIndex = RO_CACHE(indices[1]); 
+  const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
+  const fptype npe_lo = RO_CACHE(functorConstants[cIndex]);
+  const fptype npe_step = RO_CACHE(functorConstants[cIndex+1]);
+  const int npe_bin = (int) FLOOR((npe_val-npe_lo)/npe_step); // no problem with FLOOR: start from 0.5, which corresponse to bin=0
+  const int Ncomps = RO_CACHE(indices[2]); 
+  fptype ret = 0;
+  for (int par = 0; par < Ncomps; ++par) {
+    const int workSpaceIndex = RO_CACHE(indices[par+3]);
+    const fptype weight = RO_CACHE(p[RO_CACHE(indices[par+3+Ncomps])]);
+    const int i = RO_CACHE(indices[par+3+Ncomps+Ncomps]);
+    const fptype sysi = i?RO_CACHE(p[i]):1;
+    const fptype curr = dev_componentWorkSpace[workSpaceIndex][npe_bin];
+    ret += weight * sysi * curr; // normalization is always 1
+#ifdef convolution_CHECK
+    if(npe_bin==0)
+      //  if(THREADIDX==10)
+      printf("+ npe %.1lf npebin %d ret %.10lf w %.10lf wk %d cur %.10lf sysi %d sys %.10lf\n",npe_val,npe_bin,ret,weight,workSpaceIndex,curr,i,sysi);
+#endif
+  }
+  const int i = RO_CACHE(indices[Ncomps+3+Ncomps+Ncomps]);
+  const fptype sys = i?RO_CACHE(p[i]):1;
+  ret *= RO_CACHE(functorConstants[cIndex+2]) * sys; // exposure
+#ifdef convolution_CHECK
+    if(npe_bin==0)
+      //  if(THREADIDX==10)
+      printf("+ npe %.1lf npebin %d ret %.10lf sysi %d sys %.10lf\n",npe_val,npe_bin,ret,i,sys);
+#endif
+  //  printf("npe %.1lf ret %.10lf\n",npe_val,ret);
+
+  return ret; 
+}
+
 EXEC_TARGET fptype device_SumPdfsExt (fptype* evt, fptype* p, unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 
   const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
@@ -85,9 +119,44 @@ EXEC_TARGET fptype device_SumPdfsExtSimple (fptype* evt, fptype* p, unsigned int
   return ret; 
 }
 
+
+MEM_DEVICE device_function_ptr ptr_to_SumPdfsExt_withSys = device_SumPdfsExt_withSys; 
 MEM_DEVICE device_function_ptr ptr_to_SumPdfsExt = device_SumPdfsExt; 
 MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtMask = device_SumPdfsExtMask; 
 MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtSimple = device_SumPdfsExtSimple; 
+
+  SumPdf::SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<Variable*> &sysi,Variable *sys,const std::vector<PdfBase*> &comps,Variable *npe)
+  : GooPdf(npe, n) 
+  , norm(norm_)
+    , extended(true), _weights(weights),dataset(nullptr)
+{
+  assert(weights.size() == comps.size());
+  assert(weights.size() == sysi.size());
+  assert(norm>0);
+  set_startstep(norm);
+  register_components(comps,npe->numbins);
+
+  for (unsigned int w = 0; w < weights.size(); ++w) {
+    assert(weights.at(w));
+    pindices.push_back(registerParameter(weights[w])); 
+  }
+
+  for (unsigned int w = 0; w < sysi.size(); ++w) {
+    if(sysi.at(w)) 
+      pindices.push_back(registerParameter(sysi[w])); 
+    else
+      pindices.push_back(0);
+  }
+
+  if(sys)
+    pindices.push_back(registerParameter(sys));
+  else
+    pindices.push_back(0);
+
+  GET_FUNCTION_ADDR(ptr_to_SumPdfsExt_withSys);
+
+  initialise(pindices); 
+} 
 
   SumPdf::SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<PdfBase*> &comps,Variable *npe)
   : GooPdf(npe, n) 
@@ -236,6 +305,7 @@ void SumPdf::copyHistogramToDevice(const BinnedDataSet* mask,int id) {
 #endif
 }
 #ifdef NLL_CHECK
+#include "GooStatsNLLCheck.h"
 __host__ double SumPdf::sumOfNll (int numVars) const {
   static thrust::plus<fptype> cudaPlus;
   thrust::constant_iterator<int> eventSize(numVars); 
@@ -269,13 +339,15 @@ __host__ double SumPdf::sumOfNll (int numVars) const {
   for(unsigned int i = 0;i<logL.size();++i) {
     double binVolume = host_array[i*3+2];
     sum+= logL[i];
-    printf("log(L) %.12le b %lf M %lf tot %.12le\n",sum,host_array[i*3],host_array[i*3+1],sumV[i]*binVolume);
+//    printf("log(L) %.12le b %lf M %lf tot %.12le\n",sum,host_array[i*3],host_array[i*3+1],sumV[i]*binVolume);
+    GooStatsNLLCheck::get()->record_LL(i,host_array[i*3],host_array[i*3+1],sumV[i]*binVolume,logL[i]);
     for(unsigned int j = 0;j<components.size();++j) {
       const int workSpaceIndex = funMap.at(components.at(j));
       double result = fVal[workSpaceIndex][i]*norm*binVolume*host_params[host_indices[parameters+3+j+components.size()]];
-      printf(" %s %.12le",components.at(j)->getName().c_str(),result);
+//      printf(" %s %.12le",components.at(j)->getName().c_str(),result);
+      GooStatsNLLCheck::get()->record_species(i,components.at(j)->getName(),result);
     }
-    printf("\n");
+//    printf("\n");
   }
   if(first) { sum = 0; first = false; } else first = true;
   delete host_array;
@@ -349,7 +421,7 @@ double SumPdf::Chi2() {
 }
 int SumPdf::NDF() {
   int NnonZeroBins = 0; {
-    BinnedDataSet *data = getData();
+    getData();
     for(unsigned int i = 0; i < numEntries; ++i) {
       if(dataset->getBinContent(i)>0) NnonZeroBins++;
     }

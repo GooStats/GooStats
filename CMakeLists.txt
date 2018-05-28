@@ -16,12 +16,21 @@ set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Werror=return-type ${CMAKE_CXX_FLAGS
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 message(STATUS ${CMAKE_MODULE_PATH})
 include(CUDAsafeAddLibraryAndExe)
+################################## google test
+enable_testing()
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+##################################
 
+### GOOFIT
 find_package(GOOFIT CONFIG REQUIRED)
 INITIALIZE_GOOFIT()
+#find_package(ROOT REQUIRED COMPONENTS RIO Net)
+include(${ROOT_USE_FILE}/../modules/RootNewMacros.cmake)
 
 set(GOOSTATS_NO_WARNING ON)
-if(GOOSTATS_NO_WARNING)
+if(GOOSTATS_NO_WARNING AND ${CUDA_VERSION} VERSION_GREATER 7.0)
+  message(STATUS "GooStats silent_thrust_warning enabled!")
 set(CUDA_NVCC_FLAGS
   "${CUDA_NVCC_FLAGS};-I${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
 include_directories("${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
@@ -38,19 +47,19 @@ if(MV_CHECK)
   add_definitions("-DMV_CHECK")
 endif()
 if(NLL_CHECK)
-    add_definitions("-DNLL_CHECK")
+  add_definitions("-DNLL_CHECK")
 endif()
 if(convolution_CHECK)
-    add_definitions("-Dconvolution_CHECK")
+  add_definitions("-Dconvolution_CHECK")
 endif()
 if(RPF_CHECK)
-    add_definitions("-DRPF_CHECK")
+  add_definitions("-DRPF_CHECK")
 endif()
 if(Quenching_CHECK)
-    add_definitions("-DQuenching_CHECK")
+  add_definitions("-DQuenching_CHECK")
 endif()
 if(Mask_CHECK)
-    add_definitions("-DMask_CHECK")
+  add_definitions("-DMask_CHECK")
 endif()
 
 
