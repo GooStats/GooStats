@@ -21,7 +21,8 @@ find_package(GOOFIT CONFIG REQUIRED)
 INITIALIZE_GOOFIT()
 
 set(GOOSTATS_NO_WARNING ON)
-if(GOOSTATS_NO_WARNING)
+if(GOOSTATS_NO_WARNING AND ${CUDA_VERSION} VERSION_GREATER 7.0)
+  message(STATUS "GooStats silent_thrust_warning enabled!")
 set(CUDA_NVCC_FLAGS
   "${CUDA_NVCC_FLAGS};-I${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
 include_directories("${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
