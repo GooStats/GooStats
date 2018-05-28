@@ -349,7 +349,7 @@ double SumPdf::Chi2() {
 }
 int SumPdf::NDF() {
   int NnonZeroBins = 0; {
-    BinnedDataSet *data = getData();
+    getData();
     for(unsigned int i = 0; i < numEntries; ++i) {
       if(dataset->getBinContent(i)>0) NnonZeroBins++;
     }
