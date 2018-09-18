@@ -24,6 +24,7 @@ extern DEVICE_VECTOR<fptype>* componentWorkSpace[NPDFSIZE_SumPdf];
 class SumPdf : public GooPdf {
 public:
 
+  SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<Variable*> &sysi,Variable *,const std::vector<PdfBase*> &comps,Variable *npe);
   SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &, const std::vector<PdfBase*> &comps, Variable *npe);
   SumPdf (std::string n, const std::vector<PdfBase*> &comps, const std::vector<const BinnedDataSet*> &mask,Variable *npe);
   SumPdf (std::string n, const std::vector<PdfBase*> &comps, Variable *npe);
