@@ -120,7 +120,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
 	if(th1) break;
       }
       if(!th1) {
-	std::cout<<"Cannot file <> from TFiles"<<std::endl;
+	std::cout<<"Cannot find file <> from TFiles"<<std::endl;
 	std::cout<<"List of TFiles ("<<sourceTFilesName.size()<<"): "<<std::endl;
 	for(size_t i = 0;i<sourceTFilesName.size();++i) {
 	  std::cout<<"["<<i<<"] <"<<sourceTFilesName.at(i)<<">"<<std::endl;
@@ -189,8 +189,9 @@ bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
 std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
+  if(configset->has("pullPars"))
   for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
-    controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
+      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
   }
   return controllers;
 }

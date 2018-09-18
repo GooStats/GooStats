@@ -49,3 +49,6 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
 MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_normal = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::Mach4, ResponseFunctionPdf::Mean::normal, ResponseFunctionPdf::RES::charge>;
 MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_peak = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::Mach4, ResponseFunctionPdf::Mean::peak, ResponseFunctionPdf::RES::charge>;
 MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_shifted = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::Mach4, ResponseFunctionPdf::Mean::shifted, ResponseFunctionPdf::RES::charge>;
+MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_normal = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::expPar, ResponseFunctionPdf::Mean::normal, ResponseFunctionPdf::RES::charge>;
+MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_peak = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::expPar, ResponseFunctionPdf::Mean::peak, ResponseFunctionPdf::RES::charge>;
+MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_shifted = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::expPar, ResponseFunctionPdf::Mean::shifted, ResponseFunctionPdf::RES::charge>;
