@@ -33,7 +33,7 @@ SimpleInputBuilder::SimpleInputBuilder() :
 
 std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **argv) {
   if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [...]"<<std::endl;
+    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
@@ -42,7 +42,7 @@ std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **ar
 
 std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,char **argv) {
   if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [...]"<<std::endl;
+    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
@@ -54,7 +54,9 @@ std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,ch
 }
 
 ConfigsetManager *SimpleInputBuilder::buildConfigset(ParSyncManager *parManager,const InputConfig &config) {
-  return new ConfigsetManager(*parManager->createParSyncSet(config));
+  ConfigsetManager *configset = new ConfigsetManager(*parManager->createParSyncSet(config));
+  configset->setOptionManager(createOptionManager());
+  return configset;
 }
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,ConfigsetManager* configset) {
   if(!configset->has("inputSpectra")) return;
@@ -175,8 +177,11 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumPro
   return true;
 }
 
-bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,const std::string &configFile,OptionManager *optionManager) {
-  configset->setOptionManager(optionManager);
+bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,int argc,char **argv) {
+  configset->parse(argc,argv);
+  return true;
+}
+bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,const std::string &configFile) {
   configset->parse(configFile);
   return true;
 }

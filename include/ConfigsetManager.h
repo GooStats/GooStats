@@ -36,10 +36,12 @@ class ConfigsetManager : public BasicManager, public OptionManager {
     void setOptionManager(OptionManager *manager) { m_optionManager = std::shared_ptr<OptionManager>(manager); }
   public:
     bool parse(const std::string &fileName) override { return optionManager()->parse(fileName); }
+    bool parse(int argc,char **argv) override { return optionManager()->parse(argc,argv); }
     std::string query(const std::string &key) const override { return optionManager()->query(key); }
     bool has(const std::string &key) const override { return optionManager()->has(key); }
     bool yes(const std::string &key) const override { return optionManager()->yes(key); }
     bool hasAndYes(const std::string &key) const override { return optionManager()->hasAndYes(key); }
+    void printAllOptions() const override { return optionManager()->printAllOptions(); }
   private:
     OptionManager *optionManager();
     const OptionManager *optionManager() const;

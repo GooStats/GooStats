@@ -51,13 +51,13 @@ void ResponseFunctionPdf::insertResponseFunctionAndNLPar(
   std::cout<<"Dumping NL of <"<<getName()<<">:"<<std::endl;
   pindices.push_back(NL.size());
   for(unsigned int i = 0;i<NL.size();++i) { 
-    std::cout<<NL.at(i)->name<<" : "<<NL.at(i)<<std::endl;
+    std::cout<<NL.at(i)->name<<" : "<<NL.at(i)->value<<" ± "<<NL.at(i)->error<<" ( "<<NL.at(i)->lowerlimit<<" , "<<NL.at(i)->upperlimit<<" )"<<std::endl;
     pindices.push_back(registerParameter(NL.at(i)));/*1--3*/
   }
   pindices.push_back(res.size());
   std::cout<<"Dumping res of <"<<getName()<<">:"<<std::endl;
   for(unsigned int i = 0;i<res.size();++i) { 
-    std::cout<<res.at(i)->name<<" : "<<res.at(i)<<std::endl;
+    std::cout<<res.at(i)->name<<" : "<<res.at(i)->value<<" ± "<<res.at(i)->error<<" ( "<<res.at(i)->lowerlimit<<" , "<<res.at(i)->upperlimit<<" )"<<std::endl;
     pindices.push_back(registerParameter(res.at(i)));/*4--5*/ 
   } 
   pindices.push_back(registerConstants(1));/*6*/ 

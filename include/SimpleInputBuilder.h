@@ -48,7 +48,8 @@ class SimpleInputBuilder : public InputBuilder {
     //! provide the option manager
     OptionManager *createOptionManager() override;
     //! initialize the OptionManager part of ConfigsetManager, and parse the config file
-    bool fillOptions(ConfigsetManager *configset,const std::string &configFileName,OptionManager* _m) override;
+    bool fillOptions(ConfigsetManager *configset,int argc,char **argv) override;
+    bool fillOptions(ConfigsetManager *configset,const std::string &configFileName) override;
     //! build the total pdf from the datasets
     GooPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
   private:
