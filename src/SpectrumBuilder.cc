@@ -52,7 +52,7 @@ GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *datase
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq")); // peak position
@@ -65,7 +65,7 @@ GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager 
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),
@@ -79,7 +79,7 @@ GooPdf *SpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *da
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
       "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),
       dataset->get<Variable*>(name+"_Evis")); // peak position

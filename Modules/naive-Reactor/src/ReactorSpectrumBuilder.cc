@@ -53,5 +53,11 @@ GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
   components.push_back(reactor);
   if(oscOn) components.push_back(osc);
   components.push_back(ibd);
+  // final formula:
+  // f[x] = phi(E) [ #nu per day x MeV x cm^2 ]
+  // 		* sigma(E) [ cm^2 ]
+  // 		* Pee [ 1 ]
+  // 		* NHatmPerkm [ per kt ]
+  // 	unit: #IBD per (day x kt)
   return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"),1.806);
 }

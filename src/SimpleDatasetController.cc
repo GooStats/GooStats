@@ -119,6 +119,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	    ::atof(configset->query("NL_f_min").c_str()),
 	    ::atof(configset->query("NL_f_max").c_str()));
 	NL.push_back(NL_f);
+	dataset->set("NLtype",std::string("expPar"));
       } else {
 	Variable *qc1 = configset->createVar("qc1",
 	    ::atof(configset->query("qc1_init").c_str()),
@@ -132,6 +133,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	    ::atof(configset->query("qc2_min").c_str()),
 	    ::atof(configset->query("qc2_max").c_str()));
 	NL.push_back(qc2);
+	dataset->set("NLtype",std::string("Mach4"));
       }
       dataset->set("NL",NL);
       std::vector<Variable*> res;

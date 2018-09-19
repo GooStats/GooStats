@@ -59,6 +59,13 @@ bool ReactorAnalysisManager::run() {
       sumpdf->setData(data);
     }
     this->AnalysisManager::run();
+    auto deltaM2s = inputManager->Datasets().front()->get<std::vector<Variable*>>("deltaM2s");
+    inputManager->resetPars();
+    deltaM2s[1]->value = - deltaM2s[1]->value;
+    deltaM2s[1]->lowerlimit = - deltaM2s[1]->upperlimit;
+    deltaM2s[1]->upperlimit = - deltaM2s[1]->lowerlimit;
+    inputManager->cachePars();
+    this->AnalysisManager::run();
   }
   return true;
 }

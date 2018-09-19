@@ -27,7 +27,7 @@ template<> EXEC_TARGET fptype GetNL<ResponseFunctionPdf::NL::expPar>(fptype *evt
   const fptype e = RO_CACHE(p[RO_CACHE(indices[_NL_index+3])]); 
   const fptype f = RO_CACHE(p[RO_CACHE(indices[_NL_index+4])]); 
   const fptype X = LOG(Eraw);
-  return (1+X*b+X*X*c)/(1+X*e+X*X+f)*ly*Eraw;
+  return (1+X*b+X*X*c)/(1+X*e+X*X*f)*ly*Eraw;
 }
 
 template<> EXEC_TARGET fptype GetMean<ResponseFunctionPdf::Mean::normal>(fptype mu,fptype *,unsigned int *) {
