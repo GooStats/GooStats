@@ -37,10 +37,10 @@ EXEC_TARGET fptype device_ReactorSpectrum (fptype* evt, fptype* p, unsigned int*
   const fptype fissionRate = power*5.392661498e26/* GWxday -> MeV *//unitE; // unit: fission per day
   const fptype ret = fissionRate*nuEdNdE/(4*3.1415926535*distance*distance); // unit: #neutrino per (MeV x day x cm^2)
 #ifdef RPF_CHECK
-if(THREADIDX==0)
-  printf("%d %lf -> (%lf / %lf %lf %lf) phi %lf Pth %lf unitE %lf L %lf %le\n",THREADIDX, E, 
-	 U235,U235p[0],U235p[1],U235p[2],
-	 phiU235,power,unitE,distance,ret);
+  if(THREADIDX==0)
+    printf("%d %lf -> (%lf / %lf %lf %lf) phi %lf Pth %lf unitE %lf L %lf %le\n",THREADIDX, E, 
+	U235,U235p[0],U235p[1],U235p[2],
+	nuEdNdE,power,unitE,distance,ret);
 #endif
   return ret;
 }
@@ -49,7 +49,7 @@ MEM_DEVICE device_function_ptr ptr_to_ReactorSpectrum = device_ReactorSpectrum;
 
 __host__ ReactorSpectrumPdf::ReactorSpectrumPdf (std::string n, Variable *_x,
     const std::vector<Variable*> &fractions,const std::vector<double> &coefficients,fptype power,fptype distance /*km*/)
-  : GooPdf(_x, n) 
+: GooPdf(_x, n) 
 {
   std::vector<unsigned int> pindices;
   for(auto fraction : fractions)

@@ -70,36 +70,75 @@ extern MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_peak;
 extern MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_normal;
 extern MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_shifted;
 extern MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_expPar_peak;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_Mach4_normal;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_Mach4_shifted;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_Mach4_peak;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_expPar_normal;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_expPar_shifted;
+extern MEM_DEVICE device_function_ptr ptr_to_npe_ModifiedGaussian_expPar_peak;
 void ResponseFunctionPdf::chooseFunctionPtr(Variable *,const std::string &response_function,const std::string &quenching_model,const Mean rpf_type) const {
-  if(!((quenching_model == "Mach4" || quenching_model == "expPar")  && response_function == "GG")) 
-    abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only Mach4 + Generalized Gamma are implemented in this class. For more response function, please wait.");
-  if(quenching_model=="Mach4") {
-    switch(rpf_type) {
-      case Mean::normal:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_normal);
-	break;
-      case Mean::shifted:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_shifted);
-	break;
-      case Mean::peak:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_peak);
-	break;
-      default:
-	abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type<"<<static_cast<int>(rpf_type)<<"> for ["<<getName()<<"]"<<std::endl;
+  if(!((quenching_model == "Mach4" || quenching_model == "expPar")  && (response_function == "GG" || response_function == "MG"))) 
+    abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only Mach4/expPar + Generalized Gamma / Modified Gaussian are implemented in this class. For more response function, please wait.");
+  if(response_function == "GG") {
+    if(quenching_model=="Mach4") {
+      switch(rpf_type) {
+	case Mean::normal:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_normal);
+	  break;
+	case Mean::shifted:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_shifted);
+	  break;
+	case Mean::peak:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_Mach4_peak);
+	  break;
+	default:
+	  abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+      }
+    } else if(quenching_model=="expPar") {
+      switch(rpf_type) {
+	case Mean::normal:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_normal);
+	  break;
+	case Mean::shifted:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_shifted);
+	  break;
+	case Mean::peak:
+	  GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_peak);
+	  break;
+	default:
+	  abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+      }
     }
-  } else if(quenching_model=="expPar") {
-    switch(rpf_type) {
-      case Mean::normal:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_normal);
-	break;
-      case Mean::shifted:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_shifted);
-	break;
-      case Mean::peak:
-	GET_FUNCTION_ADDR(ptr_to_npe_GeneralizedGamma_expPar_peak);
-	break;
-      default:
-	abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+  } else if(response_function == "MG") {
+    if(quenching_model=="Mach4") {
+      switch(rpf_type) {
+	case Mean::normal:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_Mach4_normal);
+	  break;
+	case Mean::shifted:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_Mach4_shifted);
+	  break;
+	case Mean::peak:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_Mach4_peak);
+	  break;
+	default:
+	  abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+      }
+    } else if(quenching_model=="expPar") {
+      switch(rpf_type) {
+	case Mean::normal:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_expPar_normal);
+	  break;
+	case Mean::shifted:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_expPar_shifted);
+	  break;
+	case Mean::peak:
+	  GET_FUNCTION_ADDR(ptr_to_npe_ModifiedGaussian_expPar_peak);
+	  break;
+	default:
+	  abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " unknown RPF type. checking your code", this);  
+      }
     }
   }
 }

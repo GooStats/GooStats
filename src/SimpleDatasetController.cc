@@ -83,6 +83,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
       } 
     }
     if(useAna) {
+      dataset->set("RPFtype",configset->query("RPFtype"));
       if(configset->has("feq"))
 	dataset->set("feq",::atof(configset->query("feq").c_str()));
       else
@@ -149,6 +150,14 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	  ::atof(configset->query("sigmaT_min").c_str()),
 	  ::atof(configset->query("sigmaT_max").c_str()));
       res.push_back(sigmaT);
+      if(configset->query("RPFtype")=="MG") {
+	Variable *g2 = configset->createVar("g2",
+	    ::atof(configset->query("g2_init").c_str()),
+	    ::atof(configset->query("g2_err").c_str()),
+	    ::atof(configset->query("g2_min").c_str()),
+	    ::atof(configset->query("g2_max").c_str()));
+	res.push_back(g2);
+      }
       dataset->set("res",res);
     }
   } catch (GooStatsException &ex) {

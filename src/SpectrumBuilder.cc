@@ -51,7 +51,7 @@ GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *datase
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
+      dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
@@ -64,7 +64,7 @@ GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager 
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
+      dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
@@ -78,7 +78,7 @@ GooPdf *SpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *da
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
+      dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),

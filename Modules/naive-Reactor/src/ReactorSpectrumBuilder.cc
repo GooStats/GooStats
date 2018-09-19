@@ -59,5 +59,6 @@ GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
   // 		* Pee [ 1 ]
   // 		* NHatmPerkm [ per kt ]
   // 	unit: #IBD per (day x kt)
-  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"),1.806);
+  // here E is energy of the neutrino, rather than Evis
+  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"));
 }
