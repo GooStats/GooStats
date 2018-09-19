@@ -15,6 +15,7 @@
 #include "ResponseFunctionPdf.h"
 #include "RawSpectrumProvider.h"
 #include "GeneralConvolutionPdf.h"
+#include "IntegralInsideBinPdf.h"
 GooPdf *SpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *dataset) {
   GooPdf *pdf = this->BasicSpectrumBuilder::buildSpectrum(name,dataset);
   if(pdf) return pdf;
@@ -101,9 +102,13 @@ BinnedDataSet *SpectrumBuilder::loadRawSpectrum(Variable *x,const std::string &n
 }
 GooPdf *SpectrumBuilder::buildAnaBasic(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  return new GeneralConvolutionPdf(pdfName,
-      dataset->get<Variable*>("Evis"),
+  GooPdf *anaFinePdf = new GeneralConvolutionPdf(pdfName+"_fine",
+      dataset->get<Variable*>("EvisFine"),
       dataset->get<Variable*>(name+"_Eraw"),
       static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_ErawPdf")),
       static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_RPF")));
+  return new IntegralInsideBinPdf(pdfName,
+      dataset->get<Variable*>("Evis"),
+      static_cast<unsigned int>(dataset->get<int>("anaScaling")),
+      anaFinePdf);
 }

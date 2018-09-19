@@ -46,15 +46,16 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
   const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
   const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
   const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
-  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]); 
+  const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
+  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
+  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
   const int _Res_size = RO_CACHE(indices[_NL_index+_NL_size]);  /* light yield, npe/keV */ 
   const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
   const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
   const fptype feq = RO_CACHE(functorConstants[cIndex]);
   if(fabs(mu-Evis)<sqrt(variance)*0.2) 
-    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
-	   THREADIDX, Evis, ly, qc1_, qc2_, v1, sigmaT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
+    printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
+	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, sdn, v1, sigmaT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
 #endif
   return ret; 
 } 
@@ -75,9 +76,9 @@ EXEC_TARGET fptype device_npe_ModifiedGaussian (fptype* evt, fptype* p, unsigned
   /* calculate kappa */ 
   const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
   const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
-  const fptype g2 = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
-  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]); 
+  const fptype g2 = RO_CACHE(p[RO_CACHE(indices[_Res_index+3])]); 
+  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
+  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
   const int _Res_size = RO_CACHE(indices[_NL_index+_NL_size]);  /* light yield, npe/keV */ 
   const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
   const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
@@ -99,17 +100,10 @@ EXEC_TARGET fptype device_npe_ModifiedGaussian (fptype* evt, fptype* p, unsigned
     const fptype ly = RO_CACHE(p[RO_CACHE(indices[_NL_index+0])]);  /* light yield, npe/keV */ 
     const fptype qc1_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+1])]); 
     const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
-    const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
-    const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
-    const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-    const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]); 
-    const int _Res_size = RO_CACHE(indices[_NL_index+_NL_size]);  /* light yield, npe/keV */ 
-    const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
-    const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
-    const fptype feq = RO_CACHE(functorConstants[cIndex]);
+  const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
     if(fabs(mu-Evis)<sqrt(variance)*0.2) 
-      printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf %.1lf) (%.3lf) | (%lf %lf %lf) (%lf %lf) -> %lf\n", 
-	  THREADIDX, Evis, /**/ ly, qc1_, qc2_, /**/ v1, sigmaT, g2, /**/ feq, /**/ mu, variance, kappa, /**/ b,a, /**/ ret);
+      printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf %.3lf) (%.3lf) | (%lf %lf %lf) (%lf %lf) -> %lf\n", 
+	  THREADIDX, Evis, Eraw,/**/ ly, qc1_, qc2_, /**/ sdn, v1, sigmaT, g2, /**/ feq, /**/ mu, variance, kappa, /**/ b,a, /**/ ret);
   }
 #endif
   return ret; 

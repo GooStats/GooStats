@@ -49,12 +49,13 @@ template<> EXEC_TARGET fptype GetVariance<ResponseFunctionPdf::RES::charge>(fpty
   const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
   const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
   /* Resolution parameters */ 
-  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]); 
+  const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
+  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
+  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
   /* feq : equalization factor introduced to remove loss of channels */ 
   const int _Res_size = RO_CACHE(indices[_NL_index+_NL_size]);  /* light yield, npe/keV */ 
   const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
   const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
   const fptype feq = RO_CACHE(functorConstants[cIndex]);
-  return mu*(1.+v1) *feq + sigmaT*sigmaT*mu*mu;
+  return sdn*sdn + mu*(1.+v1) *feq + sigmaT*sigmaT*mu*mu;
 }

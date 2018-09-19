@@ -20,8 +20,17 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     Variable *Evis = configset->createVar(configset->query("EvisVariable"),0,0,
 	::atof(configset->query("Evis_min").c_str()),
 	::atof(configset->query("Evis_max").c_str()));
-    Evis->numbins = ::atof(configset->query("Evis_nbins").c_str());
+    Evis->numbins = ::atoi(configset->query("Evis_nbins").c_str());
     dataset->set("Evis", Evis);
+
+    if(configset->has("anaScaling")) {
+      Variable *EvisFine = configset->createVar(configset->query("EvisVariable")+"_fine",0,0,
+	  Evis->lowerlimit,Evis->upperlimit);
+      int scale = ::atoi(configset->query("anaScaling").c_str());
+      EvisFine->numbins = Evis->numbins*scale;
+      dataset->set("EvisFine", EvisFine);
+      dataset->set("anaScaling", scale);
+    } 
 
     std::vector<std::string> components(GooStats::Utility::splitter(configset->query("components"),":"));;
     dataset->set("components", components);
@@ -138,6 +147,12 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
       }
       dataset->set("NL",NL);
       std::vector<Variable*> res;
+      Variable *sdn = configset->createVar("sdn",
+	  ::atof(configset->query("sdn_init").c_str()),
+	  ::atof(configset->query("sdn_err").c_str()),
+	  ::atof(configset->query("sdn_min").c_str()),
+	  ::atof(configset->query("sdn_max").c_str()));
+      res.push_back(sdn);
       Variable *v1 = configset->createVar("v1",
 	  ::atof(configset->query("v1_init").c_str()),
 	  ::atof(configset->query("v1_err").c_str()),

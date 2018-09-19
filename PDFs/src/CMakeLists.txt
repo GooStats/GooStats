@@ -6,6 +6,7 @@ cuda_add_more_library(GooStatsPDFs
   ResponseFunctionPdf_impl.cu
   ResponseFunctionPdf_NLRES.cu
   HistogramPdf.cu
+  IntegralInsideBinPdf.cu
   MultiVariatePdf.cu
   PdfCache.cu
   PullPdf.cu
