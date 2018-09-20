@@ -28,7 +28,7 @@ EXEC_TARGET fptype device_IntegralInsideBin (fptype* evt, fptype* p, unsigned in
 	  THREADIDX, npe_val, npe_bin,npe_bin*Nsub+i, i,Nsub,dev_componentWorkSpace[workSpaceIndex][npe_bin*Nsub+i], sum);
 #endif
   }
-  return sum;
+  return sum/Nsub;
 }
 
 MEM_DEVICE device_function_ptr ptr_to_IntegralInsideBin = device_IntegralInsideBin;

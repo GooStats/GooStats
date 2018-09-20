@@ -11,6 +11,7 @@
 
 EXEC_TARGET fptype device_NeutrinoOscillation (fptype* evt, fptype* p, unsigned int* indices) {
   const fptype eNeu = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
+  if(eNeu==0) return 0.5;
   const fptype sinTheta12_2 = RO_CACHE(p[RO_CACHE(indices[1])]);
   const fptype sinTheta13_2 = RO_CACHE(p[RO_CACHE(indices[2])]);
   //const fptype sinTheta23_2 = RO_CACHE(p[RO_CACHE(indices[3])]);

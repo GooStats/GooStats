@@ -44,7 +44,7 @@ GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
       dataset->get<std::vector<double>>("coefficients"),
       dataset->get<double>("reactorPower"),
       dataset->get<double>("distance"));
- GooPdf *ibd = new IBDPdf(pdfName+"_IBD",E);
+  GooPdf *ibd = new IBDPdf(pdfName+"_IBD",E);
   GooPdf *osc = new NeutrinoOscillationPdf(pdfName+"_osc",E,
       dataset->get<std::vector<Variable*>>("sinThetas"),
       dataset->get<std::vector<Variable*>>("deltaM2s"),

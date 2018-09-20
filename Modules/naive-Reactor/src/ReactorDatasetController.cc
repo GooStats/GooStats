@@ -33,7 +33,7 @@ bool ReactorDatasetController::collectInputs(DatasetManager *dataset) {
 	::atof(configset->query("Pu239_min").c_str()),
 	::atof(configset->query("Pu239_max").c_str()));
     fractions.push_back(Pu239);
-    Variable *Pu241 = configset->createVar("U241",
+    Variable *Pu241 = configset->createVar("Pu241",
 	::atof(configset->query("Pu241_init").c_str()),
 	::atof(configset->query("Pu241_err").c_str()),
 	::atof(configset->query("Pu241_min").c_str()),
@@ -47,9 +47,9 @@ bool ReactorDatasetController::collectInputs(DatasetManager *dataset) {
     coefficients.push_back(::atof(configset->query("Huber_U238_0").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_U238_1").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_U238_2").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U235_0").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U235_1").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U235_2").c_str()));
+    coefficients.push_back(::atof(configset->query("Huber_Pu239_0").c_str()));
+    coefficients.push_back(::atof(configset->query("Huber_Pu239_1").c_str()));
+    coefficients.push_back(::atof(configset->query("Huber_Pu239_2").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_Pu241_0").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_Pu241_1").c_str()));
     coefficients.push_back(::atof(configset->query("Huber_Pu241_2").c_str()));

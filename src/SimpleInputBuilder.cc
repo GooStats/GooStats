@@ -136,7 +136,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
       de = th1->GetBinWidth(1);
       x = new double [n]; // provider should delete it
       for(int i = 0;i<n;++i) 
-	x[i] = th1->GetBinContent(i);
+	x[i] = th1->GetBinContent(i+1);
       provider->registerSpecies(component,n,x,e0,de);
     }
     for(auto file : sourceTFiles)
