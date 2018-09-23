@@ -9,10 +9,8 @@
 /*****************************************************************************/
 #include "ResponseFunctionPdf.h"
 
-// Nonlinearity model reference: (Mach4 Quenching)
-//   [1] R. N. Saldanha, “Precision Measurement of the 7 Be Solar Neutrino Interaction Rate in Borexino,” Princeton University, 2012.
-// Resolution model Reference: (Generalized Gamma function)
-//   [2] O. J. Smirnov, “An approximation of the ideal scintillation detector line shape with a generalized gamma distribution,” Nucl. Instruments Methods Phys. Res. Sect. A Accel. Spectrometers, Detect. Assoc. Equip., vol. 595, no. 2, pp. 410–418, 2008.
+// Nonlinearity model and resolution model are in ResponseFunctionPdf_NLRES.cu
+//   O. J. Smirnov, “An approximation of the ideal scintillation detector line shape with a generalized gamma distribution,” Nucl. Instruments Methods Phys. Res. Sect. A Accel. Spectrometers, Detect. Assoc. Equip., vol. 595, no. 2, pp. 410–418, 2008.
 template<ResponseFunctionPdf::NL nl,ResponseFunctionPdf::Mean type,ResponseFunctionPdf::RES res> // type: normal, peak(gamma) or shifted(position)
 EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned int* indices) {  
   /* Observables */
@@ -39,11 +37,11 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
 			  + LOG(Evis)*(2.*alpha -1.) 
 			  + -beta*Evis*Evis 
 			  - ::lgamma(alpha)));  
-//#ifdef RPF_CHECK
-//  if(fabs(mu-Evis)<sqrt(variance)*0.2) 
-//    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
-//	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
-//#endif
+#ifdef RPF_CHECK
+  if(fabs(mu-Evis)<sqrt(variance)*0.2) 
+    printf("%d %.1lf <- %.2lf : (%.1lf %.3lf %.3lf) (%.3lf %.1lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
+	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, v1, vT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
+#endif
   return ret; 
 } 
 MEM_DEVICE device_function_ptr ptr_to_npe_GeneralizedGamma_Mach4_normal = device_npe_GeneralizedGamma <ResponseFunctionPdf::NL::Mach4, ResponseFunctionPdf::Mean::normal, ResponseFunctionPdf::RES::charge>;
