@@ -16,19 +16,19 @@ nll:
 	mkdir -p ${BUILD_NLL}
 	bash -c "cd ${BUILD_NLL}; cmake ../GooStats -DNLL_CHECK=1"
 	bash -c "cd ${BUILD_NLL}; make -j;"
-	ln -sf ${BUILD_NLL}/Modules/naive-Reactor/reactor_NLL
+	ln -sf ${BUILD_NLL}/Modules/naive-Reactor/reactor reactor_NLL
 
 rpf: 
 	mkdir -p ${BUILD_RPF}
 	bash -c "cd ${BUILD_RPF}; cmake ../GooStats -DRPF_CHECK=1"
 	bash -c "cd ${BUILD_RPF}; make -j;"
-	ln -sf ${BUILD_RPF}/Modules/naive-Reactor/reactor_RPF
+	ln -sf ${BUILD_RPF}/Modules/naive-Reactor/reactor reactor_RPF
 
 convolution: 
 	mkdir -p ${BUILD_convolution}
 	bash -c "cd ${BUILD_convolution}; cmake ../GooStats -Dconvolution_CHECK=1"
 	bash -c "cd ${BUILD_convolution}; make -j;"
-	ln -sf ${BUILD_convolution}/Modules/naive-Reactor/reactor_convolution
+	ln -sf ${BUILD_convolution}/Modules/naive-Reactor/reactor reactor_convolution
 
 clean: config
 	bash -c "cd ${BUILD}/Modules/naive-Reactor; make clean"
