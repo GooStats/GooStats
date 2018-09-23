@@ -19,8 +19,8 @@ class BasicManager : public IDataManager {
     BasicManager(const std::string name_) : IDataManager(), m_name(name_), m_impl(name_) {};
     const std::string &name() const { return m_name; }
     virtual bool isResponsibleFor(strategy) const { return true; }
-    void adoptFather(IDataManager* father_);
-    IDataManager* father() const { return m_father; }
+    void adoptFather(IDataManager* parent_);
+    IDataManager* parent() const { return m_parent; }
   public:
     static void setStrategyManager(ParSyncManager *_s) { strategyManager = _s; }
     Variable *createVar(const std::string &key,double val,double err,double min,double max);
@@ -35,7 +35,7 @@ class BasicManager : public IDataManager {
   private:
     static ParSyncManager* strategyManager;
     const std::string m_name;
-    IDataManager *m_father;
+    IDataManager *m_parent;
     BasicManagerImpl m_impl;
 };
 #endif

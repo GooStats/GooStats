@@ -14,11 +14,13 @@
 class OptionManager {
   public:
     virtual bool parse(const std::string &fileName) = 0;
+    virtual bool parse(int argc,char **argv) = 0;
     virtual std::string query(const std::string &key) const = 0;
     virtual bool has(const std::string &key) const = 0;
     //! yes(key): if user forgot to put key, program will throw
     virtual bool yes(const std::string &key) const = 0;
     //! hasAndYes(key): if user forgot to put key, program return false
     virtual bool hasAndYes(const std::string &key) const = 0;
+    virtual void printAllOptions() const = 0;
 };
 #endif

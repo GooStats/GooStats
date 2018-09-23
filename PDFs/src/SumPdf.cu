@@ -259,8 +259,8 @@ int SumPdf::registerFunc(PdfBase *pdf) {
   static int pdf_Id = -1;
   if(funMap.find( pdf ) == funMap.end()) {
     funMap.insert(std::make_pair(pdf,++pdf_Id));
-    printf("SumPdf::registerFunc register [%s](%p) as [%d]\n",
-	pdf->getName().c_str(),pdf,funMap.at(pdf));
+    printf("SumPdf::registerFunc register [%s] as [%d]\n",
+	pdf->getName().c_str(),funMap.at(pdf));
   }
   return funMap.at(pdf);
 }

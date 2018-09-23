@@ -40,9 +40,9 @@ class ResponseFunctionPdf : public GooPdf {
 	Variable *peakEvis);
     __host__ fptype integrate (fptype , fptype ) const { return 1; }
     __host__ virtual bool hasAnalyticIntegral () const {return true;} 
-    enum class NL { Mach4, expPar };
+    enum class NL { Mach4, Echidna, expPar };
     enum class Mean { normal, peak, shifted };
-    enum class RES { charge, pol3 };
+    enum class RES { charge };
   private:
     void insertResponseFunctionAndNLPar(const std::vector<Variable*> &quenching_par,
 	const std::vector<Variable*> &res,double feq);

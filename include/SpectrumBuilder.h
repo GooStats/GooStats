@@ -25,6 +25,7 @@ class SpectrumBuilder : public BasicSpectrumBuilder {
     SpectrumBuilder(RawSpectrumProvider *_p) : provider(_p) { };
     SpectrumBuilder() = delete;
     GooPdf *buildSpectrum(const std::string &,DatasetManager*) final;
+    BinnedDataSet *loadRawSpectrum(Variable *x,const std::string &);
   private:
     SpectrumBuilderFun buildMC;
     SpectrumBuilderFun buildAna;
@@ -32,7 +33,6 @@ class SpectrumBuilder : public BasicSpectrumBuilder {
     SpectrumBuilderFun buildAnaPeak;
     SpectrumBuilderFun buildTODO;
     SpectrumBuilderFun buildAnaBasic;
-    BinnedDataSet *loadRawSpectrum(Variable *x,const std::string &);
     RawSpectrumProvider *provider;
 };
 #endif

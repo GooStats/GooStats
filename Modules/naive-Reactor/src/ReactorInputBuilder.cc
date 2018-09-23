@@ -15,8 +15,9 @@
 std::vector<std::shared_ptr<DatasetController>> ReactorInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new ReactorDatasetController(configset)));
-  for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
-    controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
-  }
+  if(configset->has("pullPars"))
+    for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
+      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
+    }
   return controllers;
 }

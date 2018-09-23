@@ -1,22 +1,34 @@
 BUILD :=  ../../../build_GooStats
 BUILD_NLL :=  ../../../build_GooStats_NLL
 BUILD_RPF :=  ../../../build_GooStats_RPF
+BUILD_convolution :=  ../../../build_GooStats_convolution
 config := ${BUILD}/CMakeCache.txt
 CMKFLS := $(shell find ../.. -name CMakeLists.txt)
 all: config
 	bash -c "cd ${BUILD}; make -j reactor;"
 	ln -sf ${BUILD}/Modules/naive-Reactor/reactor
+
+test: 
+	bash -c "cd ${BUILD}; make -j autoTest;"
+	ln -sf ${BUILD}/Modules/naive-Reactor/Test/autoTest
+
 nll: 
 	mkdir -p ${BUILD_NLL}
 	bash -c "cd ${BUILD_NLL}; cmake ../GooStats -DNLL_CHECK=1"
 	bash -c "cd ${BUILD_NLL}; make -j;"
-	ln -sf ${BUILD_NLL}/Modules/naive-Reactor/reactor
+	ln -sf ${BUILD_NLL}/Modules/naive-Reactor/reactor_NLL
 
 rpf: 
 	mkdir -p ${BUILD_RPF}
 	bash -c "cd ${BUILD_RPF}; cmake ../GooStats -DRPF_CHECK=1"
 	bash -c "cd ${BUILD_RPF}; make -j;"
-	ln -sf ${BUILD_RPF}/Modules/naive-Reactor/reactor
+	ln -sf ${BUILD_RPF}/Modules/naive-Reactor/reactor_RPF
+
+convolution: 
+	mkdir -p ${BUILD_convolution}
+	bash -c "cd ${BUILD_convolution}; cmake ../GooStats -Dconvolution_CHECK=1"
+	bash -c "cd ${BUILD_convolution}; make -j;"
+	ln -sf ${BUILD_convolution}/Modules/naive-Reactor/reactor_convolution
 
 clean: config
 	bash -c "cd ${BUILD}/Modules/naive-Reactor; make clean"

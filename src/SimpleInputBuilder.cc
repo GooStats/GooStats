@@ -33,7 +33,7 @@ SimpleInputBuilder::SimpleInputBuilder() :
 
 std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **argv) {
   if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [...]"<<std::endl;
+    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
@@ -42,7 +42,7 @@ std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **ar
 
 std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,char **argv) {
   if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [...]"<<std::endl;
+    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
@@ -54,7 +54,9 @@ std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,ch
 }
 
 ConfigsetManager *SimpleInputBuilder::buildConfigset(ParSyncManager *parManager,const InputConfig &config) {
-  return new ConfigsetManager(*parManager->createParSyncSet(config));
+  ConfigsetManager *configset = new ConfigsetManager(*parManager->createParSyncSet(config));
+  configset->setOptionManager(createOptionManager());
+  return configset;
 }
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,ConfigsetManager* configset) {
   if(!configset->has("inputSpectra")) return;
@@ -120,11 +122,14 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
 	if(th1) break;
       }
       if(!th1) {
-	std::cout<<"Cannot file <> from TFiles"<<std::endl;
+	std::cout<<"Cannot find <"<<histName<<"> from TFiles"<<std::endl;
 	std::cout<<"List of TFiles ("<<sourceTFilesName.size()<<"): "<<std::endl;
 	for(size_t i = 0;i<sourceTFilesName.size();++i) {
 	  std::cout<<"["<<i<<"] <"<<sourceTFilesName.at(i)<<">"<<std::endl;
 	}
+	std::cout<<"List of histograms to be loaded: "<<std::endl;
+	for(auto component : componentsTH1) 
+	  std::cout<<"["<<component<<"] <"<<(configset->has(component+"_histName")?configset->query(component+"_histName"):"")<<">"<<std::endl;
 	throw GooStatsException("Cannot load pdf from TFiles");
       }
       int n;
@@ -134,7 +139,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
       de = th1->GetBinWidth(1);
       x = new double [n]; // provider should delete it
       for(int i = 0;i<n;++i) 
-	x[i] = th1->GetBinContent(i);
+	x[i] = th1->GetBinContent(i+1);
       provider->registerSpecies(component,n,x,e0,de);
     }
     for(auto file : sourceTFiles)
@@ -175,8 +180,11 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumPro
   return true;
 }
 
-bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,const std::string &configFile,OptionManager *optionManager) {
-  configset->setOptionManager(optionManager);
+bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,int argc,char **argv) {
+  configset->parse(argc,argv);
+  return true;
+}
+bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,const std::string &configFile) {
   configset->parse(configFile);
   return true;
 }
@@ -189,8 +197,9 @@ bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
 std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
+  if(configset->has("pullPars"))
   for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
-    controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
+      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
   }
   return controllers;
 }
