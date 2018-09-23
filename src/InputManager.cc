@@ -56,7 +56,9 @@ void InputManager::initialize_configsets() {
     auto configset = builder->buildConfigset(parManager.get(),*config);
     registerConfigset(configset);
     // step 3: populate options
-    builder->fillOptions(configset,config->configFile,builder->createOptionManager());
+    builder->fillOptions(configset,config->configFile);
+    builder->fillOptions(configset,argc,argv);
+    configset->printAllOptions();
     // step 4: configure parameters of the configset
     builder->configParameters(configset);
   }

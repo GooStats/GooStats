@@ -15,15 +15,18 @@
 class SimpleOptionParser : public OptionManager {
   public:
     bool parse(const std::string &fileName) final;
+    bool parse(int argc,char **argv) final;
     std::string query(const std::string &key) const final;
     bool has(const std::string &key) const final;
     //! yes(key): if user forgot to put key, program will throw
     bool yes(const std::string &key) const final;
     //! hasAndYes(key): if user forgot to put key, program return false
     bool hasAndYes(const std::string &key) const final;
-    void PrintAllOptions() const;
+    void printAllOptions() const final;
   private:
     void do_parse(const std::string &fileName);
+    void do_parse(int argc,char **argv);
+    void insertKeyValue(const std::string &key,const std::string &value,bool allowOverwrite=false);
     std::map<std::string,std::string> options;
 };
 #endif

@@ -50,6 +50,7 @@ class InputManager {
     GooPdf *getTotalPdf() { return totalPdf.get(); };
     void cachePars();
     void resetPars();
+    RawSpectrumProvider *getProvider() const { return provider.get(); }
   protected:
     std::shared_ptr<InputBuilder> builder;
     std::shared_ptr<ParSyncManager> parManager;

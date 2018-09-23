@@ -17,8 +17,8 @@ class IDataManager {
     enum strategy { Global, Period, HalfSphere, Current};
     virtual const std::string &name() const = 0;
     virtual bool isResponsibleFor(strategy theStrategy) const = 0;
-    virtual void adoptFather(IDataManager* father_) = 0;
-    virtual IDataManager* father() const = 0;
+    virtual void adoptFather(IDataManager* parent_) = 0;
+    virtual IDataManager* parent() const = 0;
     virtual Variable *createVar(const std::string &key,double val,double err,double min,double max) = 0;
     virtual Variable *linkVar(const std::string &key,const std::string &source) = 0;
     virtual bool hasVar(const std::string &key) const = 0;
