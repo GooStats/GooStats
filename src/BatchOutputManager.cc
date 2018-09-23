@@ -19,8 +19,8 @@ bool BatchOutputManager::init() {
     std::cout<<"Cannot create output root file: <"<<outName<<">"<<std::endl;
     throw GooStatsException("Cannot create output root file");
   }
-  //tree = std::make_shared<TTree>("fit_result","Fit result of GooStats");
-  tree = new TTree("fit_result","Fit result of GooStats");
+  tree = std::make_shared<TTree>("fit_results","Fit result of GooStats"); 
+  //tree = new TTree("fit_results","Fit result of GooStats");
   return true;
 }
 bool BatchOutputManager::run() {
@@ -34,6 +34,7 @@ bool BatchOutputManager::finish() {
 void BatchOutputManager::flush_tree() {
   out->cd();
   tree->Write();
+  out->Close();
 }
 void BatchOutputManager::flush_txt(std::ostream &out,std::map<std::string,double> &goodness) const {
   char buff[255];

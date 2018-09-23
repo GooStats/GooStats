@@ -122,11 +122,14 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
 	if(th1) break;
       }
       if(!th1) {
-	std::cout<<"Cannot find file <> from TFiles"<<std::endl;
+	std::cout<<"Cannot find <"<<histName<<"> from TFiles"<<std::endl;
 	std::cout<<"List of TFiles ("<<sourceTFilesName.size()<<"): "<<std::endl;
 	for(size_t i = 0;i<sourceTFilesName.size();++i) {
 	  std::cout<<"["<<i<<"] <"<<sourceTFilesName.at(i)<<">"<<std::endl;
 	}
+	std::cout<<"List of histograms to be loaded: "<<std::endl;
+	for(auto component : componentsTH1) 
+	  std::cout<<"["<<component<<"] <"<<(configset->has(component+"_histName")?configset->query(component+"_histName"):"")<<">"<<std::endl;
 	throw GooStatsException("Cannot load pdf from TFiles");
       }
       int n;

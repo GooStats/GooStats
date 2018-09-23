@@ -12,9 +12,9 @@
 #include "ParSyncManager.h"
 #include "GooStatsException.h"
 ParSyncManager *BasicManager::strategyManager = nullptr;
-void BasicManager::adoptFather(IDataManager* father_) { 
-  std::cout<<"["<<name()<<"] adopt ["<<father_->name()<<"] as its father."<<std::endl;
-  m_father = father_; 
+void BasicManager::adoptFather(IDataManager* parent_) { 
+  std::cout<<"["<<name()<<"] adopt ["<<parent_->name()<<"] as its parent."<<std::endl;
+  m_parent = parent_; 
 }
 BasicManager *BasicManager::chooseManager(const std::string &key) {
   if(strategyManager)

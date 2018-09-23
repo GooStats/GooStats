@@ -38,7 +38,7 @@ template<> EXEC_TARGET fptype GetNL<ResponseFunctionPdf::NL::Echidna>(fptype *ev
   const fptype A4 = RO_CACHE(p[RO_CACHE(indices[_NL_index+12])]); 
   const fptype xCher = LOG(1+Eraw/CherTh);
   const fptype funCher = ((CherTh==0)||(Eraw<CherTh))?0:((A0+A1*xCher+A2*xCher*xCher+A4*xCher*xCher*xCher)*(1+A3*Eraw));
-  return Eraw*LY(funQch+fCher*funCher);
+  return Eraw*ly*(funQch+fCher*funCher);
 }
 template<> EXEC_TARGET fptype GetNL<ResponseFunctionPdf::NL::expPar>(fptype *evt,fptype *p,unsigned int *indices) {
   const fptype Eraw = (evt[RO_CACHE(indices[RO_CACHE(indices[0])+3])]); // in MeV

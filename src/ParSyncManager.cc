@@ -24,15 +24,15 @@ IDataManager *ParSyncManager::chooseManager(const std::string &name,IDataManager
   if(getStrategy(name)==IDataManager::Current) return daughter;
   try {
     while(!daughter->isResponsibleFor(getStrategy(name))) {
-      if(!daughter->father()) {
-        std::cerr<<"["<<daughter->name()<<"] has no father. fail to find the responsible manager."<<std::endl;
-        throw GooStatsException("Has no father");
+      if(!daughter->parent()) {
+        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible manager."<<std::endl;
+        throw GooStatsException("Has no parent");
       }
-      daughter = daughter->father();
+      daughter = daughter->parent();
     }
     return daughter;
   } catch ( std::out_of_range &ex ) {
-    std::cerr<<"Looping through the hierarchy and cannot find the suitable father.."<<std::endl;
+    std::cerr<<"Looping through the hierarchy and cannot find the suitable parent.."<<std::endl;
     throw GooStatsException("Cannot find suitable manager");
   } catch (...) {
     std::cerr<<"strange exception .. "<<std::endl;
@@ -43,15 +43,15 @@ const IDataManager *ParSyncManager::chooseManager(const std::string &name,const 
   if(getStrategy(name)==IDataManager::Current) return daughter;
   try {
     while(!daughter->isResponsibleFor(getStrategy(name))) {
-      if(!daughter->father()) {
-        std::cerr<<"["<<daughter->name()<<"] has no father. fail to find the responsible manager."<<std::endl;
-        throw GooStatsException("Has no father");
+      if(!daughter->parent()) {
+        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible manager."<<std::endl;
+        throw GooStatsException("Has no parent");
       }
-      daughter = daughter->father();
+      daughter = daughter->parent();
     }
     return daughter;
   } catch ( std::out_of_range &ex ) {
-    std::cerr<<"Looping through the hierarchy and cannot find the suitable father.."<<std::endl;
+    std::cerr<<"Looping through the hierarchy and cannot find the suitable parent.."<<std::endl;
     throw GooStatsException("Cannot find suitable manager");
   } catch (...) {
     std::cerr<<"strange exception .. "<<std::endl;

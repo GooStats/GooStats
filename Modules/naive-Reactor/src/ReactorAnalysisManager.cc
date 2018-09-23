@@ -11,11 +11,7 @@
 #include <memory>
 
 #include "goofit/PDFs/ExpPdf.hh"
-#include "NewExpPdf.hh"
-#include "ProductPdf.h"
 #include "SumPdf.h"
-#include "TH1D.h"
-#include "TF1.h"
 #include "InputManager.h"
 #include "TRandom.h"
 #include "SpectrumBuilder.h"

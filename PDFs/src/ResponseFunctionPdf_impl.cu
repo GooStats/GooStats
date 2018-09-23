@@ -23,12 +23,12 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
   /* calculate var */ 
   if(mu<=0.5) return -1e10; 
   const fptype variance = GetVariance<res>(mu,p,indices);
-    
+
   /* Rewrite moments of ideal detector response in terms of mu and variance */ 
   const fptype moment_2 = mu*mu + variance; 
   const fptype moment_4 = (variance*variance*(2.+3./mu) + 4.*mu*mu*(variance - 2.) 
-			   + 2.*mu*(6.*variance - 1) 
-			   + (variance + mu*mu)*(variance + mu*mu)); 
+      + 2.*mu*(6.*variance - 1) 
+      + (variance + mu*mu)*(variance + mu*mu)); 
 
   /* get alpha and beta from momentums */ 
   const fptype alpha = moment_2*moment_2/(moment_4 - moment_2*moment_2); 
@@ -36,17 +36,17 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
 
   /* Finalize */
   const fptype ret = (EXP(LOG(2.) 
-			  + alpha*LOG(beta) 
-			  + LOG(Evis)*(2.*alpha -1.) 
-			  + -beta*Evis*Evis 
-			  - ::lgamma(alpha)));  
+	+ alpha*LOG(beta) 
+	+ LOG(Evis)*(2.*alpha -1.) 
+	+ -beta*Evis*Evis 
+	- ::lgamma(alpha)));  
 #ifdef RPF_CHECK
   const fptype Eraw = (evt[RO_CACHE(indices[RO_CACHE(indices[0])+3])]);
   const fptype ly = RO_CACHE(p[RO_CACHE(indices[_NL_index+0])]);  /* light yield, npe/keV */ 
   const fptype qc1_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+1])]); 
   const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
-  const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
-  const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
+  const int _NL_size = RO_CACHE(indices[1]);  /* number of non-linearity parameters */ 
+  const int _Res_index = _NL_index+_NL_size+1;  /* internal index of first resolution parameter */ 
   const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
   const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
   const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
@@ -54,9 +54,9 @@ EXEC_TARGET fptype device_npe_GeneralizedGamma (fptype* evt, fptype* p, unsigned
   const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
   const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
   const fptype feq = RO_CACHE(functorConstants[cIndex]);
-  if(fabs(mu-Evis)<sqrt(variance)*0.2) 
+  if((THREADIDX==0)||(fabs(mu-Evis)<sqrt(variance)*0.2))
     printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf) (%.3lf) | (%lf %lf) (%lf %lf) (%lf %lf) -> %lf\n", 
-	   THREADIDX, Evis, Eraw, ly, qc1_, qc2_, sdn, v1, sigmaT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
+	THREADIDX, Evis, Eraw, ly, qc1_, qc2_, sdn, v1, sigmaT, feq, mu, variance, moment_2, moment_4, alpha, beta, ret ); 
 #endif
   return ret; 
 } 
@@ -75,8 +75,8 @@ EXEC_TARGET fptype device_npe_ModifiedGaussian (fptype* evt, fptype* p, unsigned
   const fptype variance = GetVariance<res>(mu,p,indices);
 
   /* calculate kappa */ 
-  const int _NL_size = RO_CACHE(indices[1]);  /* light yield, npe/keV */ 
-  const int _Res_index = _NL_index+_NL_size+1;  /* light yield, npe/keV */ 
+  const int _NL_size = RO_CACHE(indices[1]);  /* number of non-linearity parameters */ 
+  const int _Res_index = _NL_index+_NL_size+1;  /* internal index of first resolution parameter */ 
   const fptype g2 = RO_CACHE(p[RO_CACHE(indices[_Res_index+3])]); 
   const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
   const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
@@ -85,7 +85,7 @@ EXEC_TARGET fptype device_npe_ModifiedGaussian (fptype* evt, fptype* p, unsigned
   const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
   const fptype feq = RO_CACHE(functorConstants[cIndex]);
   const fptype kappa = g2*mu + 3*(1+v1)*feq*sigmaT*sigmaT* mu*mu;
-    
+
   /* Rewrite a and b in terms of mu and variance */ 
   const fptype b = kappa / (3*variance);
   const fptype a = variance - b*mu - b*b;
@@ -97,16 +97,14 @@ EXEC_TARGET fptype device_npe_ModifiedGaussian (fptype* evt, fptype* p, unsigned
   arg *= -0.5*arg;
   fptype ret = 0.3989422804 * sigma_inv*EXP(arg);
 #ifdef RPF_CHECK
-  {
-    const fptype Eraw = (evt[RO_CACHE(indices[RO_CACHE(indices[0])+3])]);
-    const fptype ly = RO_CACHE(p[RO_CACHE(indices[_NL_index+0])]);  /* light yield, npe/keV */ 
-    const fptype qc1_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+1])]); 
-    const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
+  const fptype Eraw = (evt[RO_CACHE(indices[RO_CACHE(indices[0])+3])]);
+  const fptype ly = RO_CACHE(p[RO_CACHE(indices[_NL_index+0])]);  /* light yield, npe/keV */ 
+  const fptype qc1_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+1])]); 
+  const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
   const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-    if(fabs(mu-Evis)<sqrt(variance)*0.2) 
-      printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf %.3lf) (%.3lf) | (%lf %lf %lf) (%lf %lf) -> %lf\n", 
-	  THREADIDX, Evis, Eraw,/**/ ly, qc1_, qc2_, /**/ sdn, v1, sigmaT, g2, /**/ feq, /**/ mu, variance, kappa, /**/ b,a, /**/ ret);
-  }
+  if((THREADIDX==0)||(fabs(mu-Evis)<sqrt(variance)*0.2))
+    printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf %.3lf) (%.3lf) | (%lf %lf %lf) (%lf %lf) -> %lf\n", 
+	   THREADIDX, Evis, Eraw,/**/ ly, qc1_, qc2_, /**/ sdn, v1, sigmaT, g2, /**/ feq, /**/ mu, variance, kappa, /**/ b,a, /**/ ret);
 #endif
   return ret; 
 } 
@@ -125,12 +123,12 @@ EXEC_TARGET fptype device_npe_ScaledPoisson (fptype* evt, fptype* p, unsigned in
   const fptype variance = GetVariance<res>(mu,p,indices);
 
   /* Rewrite s in terms of mu and variance */ 
-  const fptype scale = var/mu;
+  const fptype scale = variance/mu;
 
   /* Rewrite x1S, x2S, x3S and muS in terms of mu and variance */ 
-  const fptype x1S = x/scale;
-  const fptype x2S = (x+0.5)/scale;
-  const fptype x3S = (x+1)/scale;
+  const fptype x1S = Evis/scale;
+  const fptype x2S = (Evis+0.5)/scale;
+  const fptype x3S = (Evis+1)/scale;
   const fptype muS = mu/scale;
   const fptype logmuS = log(muS);
 
@@ -140,7 +138,7 @@ EXEC_TARGET fptype device_npe_ScaledPoisson (fptype* evt, fptype* p, unsigned in
   const fptype logP3 = x3S*logmuS-muS-lgamma(x3S+1);
 
   /* Finalize */
-  const fptype ret = (EXP(logP1)+4.*EXP(logP2)+Exp(logP2))/(6*scale);
+  const fptype ret = (EXP(logP1)+4.*EXP(logP2)+EXP(logP2))/(6*scale);
 
 #ifdef RPF_CHECK
   {
@@ -148,8 +146,16 @@ EXEC_TARGET fptype device_npe_ScaledPoisson (fptype* evt, fptype* p, unsigned in
     const fptype ly = RO_CACHE(p[RO_CACHE(indices[_NL_index+0])]);  /* light yield, npe/keV */ 
     const fptype qc1_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+1])]); 
     const fptype qc2_ = RO_CACHE(p[RO_CACHE(indices[_NL_index+2])]); 
-  const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
-    if(fabs(mu-Evis)<sqrt(variance)*0.2) 
+  const int _NL_size = RO_CACHE(indices[1]);  /* number of non-linearity parameters */ 
+    const int _Res_index = _NL_index+_NL_size+1;  /* internal index of first resolution parameter */ 
+    const fptype sdn = RO_CACHE(p[RO_CACHE(indices[_Res_index+0])]);  
+  const fptype v1 = RO_CACHE(p[RO_CACHE(indices[_Res_index+1])]);  
+  const fptype sigmaT = RO_CACHE(p[RO_CACHE(indices[_Res_index+2])]); 
+  const int _Res_size = RO_CACHE(indices[_NL_index+_NL_size]);  /* light yield, npe/keV */ 
+  const int _feq_index = _Res_index+_Res_size;  /* light yield, npe/keV */ 
+  const unsigned int cIndex = RO_CACHE(indices[_feq_index]); 
+  const fptype feq = RO_CACHE(functorConstants[cIndex]);
+    if((THREADIDX==0)||(fabs(mu-Evis)<sqrt(variance)*0.2))
       printf("%d %.1lf <- %.1lf : (%.1lf %.3lf %.3lf) (%.3lf %.3lf %.3lf ) (%.3lf) | (%lf %lf) (%lf %lf %lf) -> %lf\n", 
 	  THREADIDX, Evis, Eraw,/**/ ly, qc1_, qc2_, /**/ sdn, v1, sigmaT, /**/ feq, /**/ mu, variance, /**/ logP1,logP2,logP3, /**/ ret);
   }

@@ -2,16 +2,19 @@ cuda_add_more_library(GooStatsPDFs
   DarkNoiseConvolutionPdf.cu
   DumperPdf.cu
   GeneralConvolutionPdf.cu
-  ResponseFunctionPdf.cu
-  ResponseFunctionPdf_impl.cu
-  ResponseFunctionPdf_NLRES.cu
   HistogramPdf.cu
+  IBDPdf.cu
   IntegralInsideBinPdf.cu
   MultiVariatePdf.cu
+  NeutrinoOscillationPdf.cu
   PdfCache.cu
+  ProductPdf.cu
   PullPdf.cu
   RangedExpPdf.cu
-  ProductPdf.cu
+  ReactorSpectrumPdf.cu
+  ResponseFunctionPdf.cu
+  ResponseFunctionPdf_NLRES.cu
+  ResponseFunctionPdf_impl.cu
   SumLikelihoodPdf.cu
   SumPdf.cu)
 target_link_libraries(GooStatsPDFs GOOFIT::goofit_lib)

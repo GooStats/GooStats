@@ -29,6 +29,9 @@ ROOT_GENERATE_DICTIONARY(G__GooStatsNLLCheck ../include/GooStatsNLLCheck.h
   LINKDEF ../include/GooStatsNLLCheckLinkDef.h)
 add_library(GooStatsNLLCheck SHARED GooStatsNLLCheck.cc G__GooStatsNLLCheck.cxx)
 target_link_libraries(GooStatsNLLCheck ${ROOT_LIBRARIES})
+
+add_library(TestFixture BestFitFixture.cc NLLCheckFixture.cc)
+target_link_libraries(TestFixture ${ROOT_LIBRARIES})
 #INSTALL(FILES ${ROOT_DICT_OUTPUT_DIR}/libGooStatsNLLCheck_rdict.pcm DESTINATION
 #  ${LIBRARY_OUTPUT_PATH})
 

@@ -92,12 +92,12 @@ extern MEM_DEVICE device_function_ptr ptr_to_npe_ScaledPoisson_expPar_normal;
 extern MEM_DEVICE device_function_ptr ptr_to_npe_ScaledPoisson_expPar_peak;
 extern MEM_DEVICE device_function_ptr ptr_to_npe_ScaledPoisson_expPar_shifted;
 void ResponseFunctionPdf::chooseFunctionPtr(Variable *,const std::string &response_function,const std::string &quenching_model,const Mean rpf_type) const {
-std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type<"<<static_cast<int>(rpf_type)<<"> for ["<<getName()<<"]"<<std::endl;
+  std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type<"<<static_cast<int>(rpf_type)<<"> for ["<<getName()<<"]"<<std::endl;
   if(!(quenching_model == "Mach4" || quenching_model == "Echidna" || quenching_model == "expPar"))
     abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only Mach4/Echidna/expPar NL model are implemented in this class. If not enough, please post an github issue.");
   if(!(response_function == "GeneralizedGamma" || response_function == "ModifiedGaussian" || response_function == "ScaledPoisson"))
     abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only GeneralizedGamma/ModifiedGaussian/ScaledPoisson RPF model are implemented in this class. If not enough, please post an github issue.");
-#define CHOOSE_RPF(RPF,TYPE,NL) if((response_function == #RPF)&&(quenching_model == #NL)&&(rpf_type==Mean::TYPE)) GET_FUNCTION_ADDR(ptr_to_npe_#RPF#_#NL#_#TYPE);
+#define CHOOSE_RPF(RPF,NL,TYPE) if((response_function == #RPF)&&(quenching_model == #NL)&&(rpf_type==Mean::TYPE)) GET_FUNCTION_ADDR(ptr_to_npe_##RPF##_##NL##_##TYPE);
   CHOOSE_RPF(GeneralizedGamma,Mach4,normal);
   CHOOSE_RPF(GeneralizedGamma,Mach4,shifted);
   CHOOSE_RPF(GeneralizedGamma,Mach4,peak);
@@ -105,8 +105,8 @@ std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type
   CHOOSE_RPF(GeneralizedGamma,Echidna,shifted);
   CHOOSE_RPF(GeneralizedGamma,Echidna,peak);
   CHOOSE_RPF(GeneralizedGamma,expPar,normal);
-  CHOOSE_RPF(GeneralizedGamma,expPar,normal);
-  CHOOSE_RPF(GeneralizedGamma,expPar,normal);
+  CHOOSE_RPF(GeneralizedGamma,expPar,shifted);
+  CHOOSE_RPF(GeneralizedGamma,expPar,peak);
   CHOOSE_RPF(ModifiedGaussian,Mach4,normal);
   CHOOSE_RPF(ModifiedGaussian,Mach4,shifted);
   CHOOSE_RPF(ModifiedGaussian,Mach4,peak);
@@ -114,8 +114,8 @@ std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type
   CHOOSE_RPF(ModifiedGaussian,Echidna,shifted);
   CHOOSE_RPF(ModifiedGaussian,Echidna,peak);
   CHOOSE_RPF(ModifiedGaussian,expPar,normal);
-  CHOOSE_RPF(ModifiedGaussian,expPar,normal);
-  CHOOSE_RPF(ModifiedGaussian,expPar,normal);
+  CHOOSE_RPF(ModifiedGaussian,expPar,shifted);
+  CHOOSE_RPF(ModifiedGaussian,expPar,peak);
   CHOOSE_RPF(ScaledPoisson,Mach4,normal);
   CHOOSE_RPF(ScaledPoisson,Mach4,shifted);
   CHOOSE_RPF(ScaledPoisson,Mach4,peak);
@@ -123,6 +123,7 @@ std::cout<<"Choosing RPF<"<<response_function<<"> NL<"<<quenching_model<<"> type
   CHOOSE_RPF(ScaledPoisson,Echidna,shifted);
   CHOOSE_RPF(ScaledPoisson,Echidna,peak);
   CHOOSE_RPF(ScaledPoisson,expPar,normal);
-  CHOOSE_RPF(ScaledPoisson,expPar,normal);
-  CHOOSE_RPF(ScaledPoisson,expPar,normal);
+  CHOOSE_RPF(ScaledPoisson,expPar,shifted);
+  CHOOSE_RPF(ScaledPoisson,expPar,peak);
+  assert(host_fcn_ptr);
 }
