@@ -25,8 +25,9 @@ EXEC_TARGET fptype device_ProductPdfsExtSimple (fptype* evt, fptype* p, unsigned
     const fptype curr = dev_componentWorkSpace[workSpaceIndex][npe_bin];
     ret *= curr; // normalization is always 1
 #ifdef RPF_CHECK
-if(THREADIDX==0)
-    printf("x npe %.1lf npebin %d ret %.10lf wk %d cur %.10lf norm %le\n",npe_val,npe_bin,ret,workSpaceIndex,curr,norm);
+    if(THREADIDX==0)
+      printf("[%d] npe %lf npebin %d (%d/%d) ret*norm %.10le wk %d cur %.10le norm %le\n",
+	  THREADIDX,npe_val,npe_bin,par,Ncomps,ret*norm,workSpaceIndex,curr,norm);
 #endif
   } 
   return ret*norm; 

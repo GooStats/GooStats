@@ -4,9 +4,3 @@ add_library(reactor_module
   ReactorDatasetController.cc
   ReactorInputBuilder.cc
   ReactorSpectrumBuilder.cc)
-cuda_add_more_library(reactor_gpu_module
-  ReactorSpectrumPdf.cu
-  NewExpPdf.cu
-  NeutrinoOscillationPdf.cu
-  IBDPdf.cu)
-target_link_libraries(reactor_gpu_module AllGPU)

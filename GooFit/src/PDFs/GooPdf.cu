@@ -271,7 +271,7 @@ __host__ double GooPdf::calculateNLL () const {
   }
 
   fptype ret = sumOfNll(numVars); 
-  if (0 == ret) abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " zero NLL", this); 
+  //if (0 == ret) abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " zero NLL", this); 
   return ret; 
 }
 

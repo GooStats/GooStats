@@ -20,8 +20,17 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     Variable *Evis = configset->createVar(configset->query("EvisVariable"),0,0,
 	::atof(configset->query("Evis_min").c_str()),
 	::atof(configset->query("Evis_max").c_str()));
-    Evis->numbins = ::atof(configset->query("Evis_nbins").c_str());
+    Evis->numbins = ::atoi(configset->query("Evis_nbins").c_str());
     dataset->set("Evis", Evis);
+
+    if(configset->has("anaScaling")) {
+      Variable *EvisFine = configset->createVar(configset->query("EvisVariable")+"_fine",0,0,
+	  Evis->lowerlimit,Evis->upperlimit);
+      int scale = ::atoi(configset->query("anaScaling").c_str());
+      EvisFine->numbins = Evis->numbins*scale;
+      dataset->set("EvisFine", EvisFine);
+      dataset->set("anaScaling", scale);
+    } 
 
     std::vector<std::string> components(GooStats::Utility::splitter(configset->query("components"),":"));;
     dataset->set("components", components);
@@ -83,6 +92,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
       } 
     }
     if(useAna) {
+      dataset->set("RPFtype",configset->query("RPFtype"));
       if(configset->has("feq"))
 	dataset->set("feq",::atof(configset->query("feq").c_str()));
       else
@@ -119,6 +129,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	    ::atof(configset->query("NL_f_min").c_str()),
 	    ::atof(configset->query("NL_f_max").c_str()));
 	NL.push_back(NL_f);
+	dataset->set("NLtype",std::string("expPar"));
       } else {
 	Variable *qc1 = configset->createVar("qc1",
 	    ::atof(configset->query("qc1_init").c_str()),
@@ -132,9 +143,16 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	    ::atof(configset->query("qc2_min").c_str()),
 	    ::atof(configset->query("qc2_max").c_str()));
 	NL.push_back(qc2);
+	dataset->set("NLtype",std::string("Mach4"));
       }
       dataset->set("NL",NL);
       std::vector<Variable*> res;
+      Variable *sdn = configset->createVar("sdn",
+	  ::atof(configset->query("sdn_init").c_str()),
+	  ::atof(configset->query("sdn_err").c_str()),
+	  ::atof(configset->query("sdn_min").c_str()),
+	  ::atof(configset->query("sdn_max").c_str()));
+      res.push_back(sdn);
       Variable *v1 = configset->createVar("v1",
 	  ::atof(configset->query("v1_init").c_str()),
 	  ::atof(configset->query("v1_err").c_str()),
@@ -147,6 +165,14 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 	  ::atof(configset->query("sigmaT_min").c_str()),
 	  ::atof(configset->query("sigmaT_max").c_str()));
       res.push_back(sigmaT);
+      if(configset->query("RPFtype")=="MG") {
+	Variable *g2 = configset->createVar("g2",
+	    ::atof(configset->query("g2_init").c_str()),
+	    ::atof(configset->query("g2_err").c_str()),
+	    ::atof(configset->query("g2_min").c_str()),
+	    ::atof(configset->query("g2_max").c_str()));
+	res.push_back(g2);
+      }
       dataset->set("res",res);
     }
   } catch (GooStatsException &ex) {

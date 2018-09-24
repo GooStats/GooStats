@@ -26,8 +26,8 @@ EXEC_TARGET fptype device_IBD (fptype* evt, fptype* p, unsigned int* indices) {
   const fptype pPos = (ePos>eMass)?SQRT(ePos*ePos-eMass*eMass):0;
   const fptype ret = (ePos>0)?(1e-43*pPos*ePos*POW(eNeu,-0.07056+0.02018*LOG(eNeu)-0.001953*POW(LOG(eNeu),3.0))):0; // in cm^2
 #ifdef RPF_CHECK
-if(ePos>eMass)
-  printf("%d eNeu %lf ePos %lf ret %le\n",THREADIDX,eNeu,ePos,ret);
+  if((ePos>eMass)&&(THREADIDX==0))
+    printf("%d eNeu %lf ePos %lf ret %le\n",THREADIDX,eNeu,ePos,ret);
 #endif
 
   return ret; 

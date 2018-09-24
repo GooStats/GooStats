@@ -32,8 +32,8 @@ class BatchOutputManager {
   protected:
     void fill();
     void bindTree();
-    //std::shared_ptr<TTree> tree;
-    TTree* tree;
+    std::shared_ptr<TTree> tree;
+    //TTree* tree = nullptr;
     std::vector<Variable*> vars;
     TFile *out = nullptr;
     std::string outName;

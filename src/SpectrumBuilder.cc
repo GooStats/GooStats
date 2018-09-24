@@ -15,6 +15,7 @@
 #include "ResponseFunctionPdf.h"
 #include "RawSpectrumProvider.h"
 #include "GeneralConvolutionPdf.h"
+#include "IntegralInsideBinPdf.h"
 GooPdf *SpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *dataset) {
   GooPdf *pdf = this->BasicSpectrumBuilder::buildSpectrum(name,dataset);
   if(pdf) return pdf;
@@ -51,8 +52,8 @@ GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *datase
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("RPFtype"), // response function type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq")); // peak position
@@ -64,8 +65,8 @@ GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager 
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("RPFtype"), // response function type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),
@@ -78,8 +79,8 @@ GooPdf *SpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *da
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
       dataset->get<Variable*>("Evis"), // Evis
       dataset->get<Variable*>(name+"_Eraw"), // Eraw
-      "GG", // response function type
-      "Mach4", // non-linearity type
+      dataset->get<std::string>("RPFtype"), // response function type
+      dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),
       dataset->get<Variable*>(name+"_Evis")); // peak position
@@ -101,9 +102,13 @@ BinnedDataSet *SpectrumBuilder::loadRawSpectrum(Variable *x,const std::string &n
 }
 GooPdf *SpectrumBuilder::buildAnaBasic(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  return new GeneralConvolutionPdf(pdfName,
-      dataset->get<Variable*>("Evis"),
+  GooPdf *anaFinePdf = new GeneralConvolutionPdf(pdfName+"_fine",
+      dataset->get<Variable*>("EvisFine"),
       dataset->get<Variable*>(name+"_Eraw"),
       static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_ErawPdf")),
       static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_RPF")));
+  return new IntegralInsideBinPdf(pdfName,
+      dataset->get<Variable*>("Evis"),
+      static_cast<unsigned int>(dataset->get<int>("anaScaling")),
+      anaFinePdf);
 }

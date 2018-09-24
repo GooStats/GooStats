@@ -17,7 +17,10 @@
 
 bool SimpleOptionParser::parse(const std::string &fileName) {
   do_parse(fileName);
-  PrintAllOptions();
+  return true;
+}
+bool SimpleOptionParser::parse(int argc,char **argv) {
+  do_parse(argc,argv);
   return true;
 }
 std::string SimpleOptionParser::query(const std::string &key) const {
@@ -50,18 +53,24 @@ void SimpleOptionParser::do_parse(const std::string& filename) {
     if(lstream.fail()) continue;
     if(equals != "=") continue;
     //std::cout<<"Parsing ["<<line<<"] -> ("<<key<<") ("<<equals<<") ("<<value<<")"<<std::endl;
-    if(!has(key)) 
-      options.insert(std::make_pair(key,value));
-    else {
-      std::cout<<"Warning: duplicate term <"<<key<<"> found"
-	<<" old: <"<<options.at(key)<<"> -> new: <"<<value<<">"<<std::endl;
-      options.insert(std::make_pair(key,value));
-    }
+    insertKeyValue(key,value);
   }
   fin.close();
 }
+void SimpleOptionParser::do_parse(int argc,char **argv) {
+  for(int i = 1;i<argc;++i) {
+    std::string item(argv[i]);
+    auto eqPos = item.find("=");
+    if(eqPos>0 && eqPos!=std::string::npos) {
+      const std::string key = item.substr(0,eqPos);
+      const std::string value = item.substr(eqPos+1);
+      std::cout<<"ARG["<<i<<"] <"<<key<<"> = ["<<value<<"]"<<std::endl;
+      insertKeyValue(key,value,true /*force over-wrie*/);
+    }
+  }
+}
 
-void SimpleOptionParser::PrintAllOptions() const {
+void SimpleOptionParser::printAllOptions() const {
   std::cout<<"*********Dump options parsed*********************************"<<std::endl;
   for(auto pair: options)  {
     std::cout<<""<<(pair.first)<<" => ";
@@ -71,4 +80,10 @@ void SimpleOptionParser::PrintAllOptions() const {
       std::cout<<"<"<<(pair.second)<<">"<<std::endl;
   }
   std::cout<<"*************************************************************"<<std::endl;
+}
+void SimpleOptionParser::insertKeyValue(const std::string &key,const std::string &value,bool allowOverwrite) {
+  if(!allowOverwrite && has(key)) 
+    std::cout<<"Warning: duplicate term <"<<key<<"> found"
+      <<" old: <"<<options.at(key)<<"> -> new: <"<<value<<">"<<std::endl;
+  options[key] = value;
 }

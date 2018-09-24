@@ -9,3 +9,4 @@
 -Werror=return-type
 -Wall
 -Wextra
+-I/home/xding/GooStats-release/googletest-install/include

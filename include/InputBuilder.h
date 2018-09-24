@@ -53,7 +53,8 @@ class InputBuilder {
     //! provide the option manager
     virtual OptionManager *createOptionManager() = 0;
     //! initialize the OptionManager part of ConfigsetManager, and parse the config file
-    virtual bool fillOptions(ConfigsetManager *configset,const std::string &configFileName,OptionManager* _m) = 0;
+    virtual bool fillOptions(ConfigsetManager *,const std::string &) = 0;
+    virtual bool fillOptions(ConfigsetManager *,int ,char **) = 0;
     //! build the total pdf from the datasets
     virtual GooPdf *buildTotalPdf(const std::vector<DatasetManager*> &) = 0;
 };

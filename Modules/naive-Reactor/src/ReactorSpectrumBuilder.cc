@@ -44,7 +44,7 @@ GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
       dataset->get<std::vector<double>>("coefficients"),
       dataset->get<double>("reactorPower"),
       dataset->get<double>("distance"));
- GooPdf *ibd = new IBDPdf(pdfName+"_IBD",E);
+  GooPdf *ibd = new IBDPdf(pdfName+"_IBD",E);
   GooPdf *osc = new NeutrinoOscillationPdf(pdfName+"_osc",E,
       dataset->get<std::vector<Variable*>>("sinThetas"),
       dataset->get<std::vector<Variable*>>("deltaM2s"),
@@ -53,5 +53,12 @@ GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
   components.push_back(reactor);
   if(oscOn) components.push_back(osc);
   components.push_back(ibd);
-  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"),1.806);
+  // final formula:
+  // f[x] = phi(E) [ #nu per day x MeV x cm^2 ]
+  // 		* sigma(E) [ cm^2 ]
+  // 		* Pee [ 1 ]
+  // 		* NHatmPerkm [ per kt ]
+  // 	unit: #IBD per (day x kt)
+  // here E is energy of the neutrino, rather than Evis
+  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"));
 }

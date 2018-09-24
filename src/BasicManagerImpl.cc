@@ -14,7 +14,7 @@
 Variable *BasicManagerImpl::createVar(const std::string &key,double val,double err,double min,double max) { 
   if(!hasVar(key)) {
     std::shared_ptr<Variable> var_(new Variable(m_name+"."+key,val,err,min,max));
-    std::cout<<"Inserting ["<<key<<"]("<<var_.get()<<") to ["<<m_name<<"]"<<std::endl; 
+    std::cout<<"Inserting ["<<key<<"] to ["<<m_name<<"]"<<std::endl; 
     m_var.insert(std::make_pair(key,var_));
   }
   return m_var.at(key).get();
