@@ -13,58 +13,48 @@
 #include "goofit/PDFs/GooPdf.h"
 #include "InputManager.h"
 #include "BatchOutputManager.h"
-#include "SumLikelihoodPdf.h"
-#include "SumPdf.h"
 #include "TMath.h"
 #include "PlotManager.h"
-void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *inputManager) {
+#include "goofit/FitManager.h"
+#include "GSFitManager.h"
+void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *inputManager,GSFitManager *gsFitManager) {
   for(auto dataset : inputManager->Datasets()) {
     double exposure = dataset->get<double>("exposure");
-    outHelper->registerTerm(dataset->name()+".exposure", [=](InputManager *) -> double {
+    outHelper->registerTerm(dataset->name()+".exposure", [=]() -> double {
       return exposure;
     });
   }
-  outHelper->registerTerm("chi2", [](InputManager *inputManager) -> double {
-    GooPdf *pdf = inputManager->getTotalPdf();
-    pdf->setFitControl(new BinnedChisqFit);
-    pdf->copyParams();
-    return pdf->calculateNLL();
-  });
-  outHelper->registerTerm("NDF", [](InputManager *inputManager) -> double {
-    SumLikelihoodPdf *pdf = static_cast<SumLikelihoodPdf*>(inputManager->getTotalPdf());
-    int NDF = 0;
-    for(auto component : pdf->Components()) {
-      SumPdf *pdf = dynamic_cast<SumPdf*>(component);
-      if(pdf) NDF += pdf->NDF();
-    }
-    return NDF;
-  });
-  outHelper->registerTerm("likelihood", [](InputManager *inputManager) -> double {
-    GooPdf *pdf = inputManager->getTotalPdf();
-    pdf->setFitControl(new BinnedNllFit);
-    pdf->copyParams();
-    return pdf->calculateNLL();
-  });
-  //outHelper->registerTerm("LLp", [](InputManager *inputManager) -> double { return 0; });
-  //outHelper->registerTerm("LLpErr", [](InputManager *inputManager) -> double { return 0; });
+  outHelper->registerTerm("chi2", [gsFitManager]() -> double { return gsFitManager->chi2(); });
+  outHelper->registerTerm("NDF", [gsFitManager]() -> double { return gsFitManager->NDF(); });
+  outHelper->registerTerm("likelihood", [gsFitManager]() -> double { return gsFitManager->minus2lnlikelihood()/2; });
+  outHelper->registerTerm("minim_conv", [gsFitManager]() -> double { return gsFitManager->minim_conv(); });
+  outHelper->registerTerm("hesse_conv", [gsFitManager]() -> double { return gsFitManager->hesse_conv(); });
+  outHelper->registerTerm("LLp", [gsFitManager]() -> double { return gsFitManager->LLp(); });
+  outHelper->registerTerm("LLpErr", [gsFitManager]() -> double { return gsFitManager->LLpErr(); });
 }
 
-void SimpleOutputBuilder::bindAllParameters(BatchOutputManager *writer,OutputHelper* outHelper) {
+void SimpleOutputBuilder::bindAllParameters(BatchOutputManager *batch,OutputHelper* outHelper) {
   auto addrs = outHelper->addresses();
   for(size_t i = 0;i<outHelper->names().size();++i) {
-    writer->bind(outHelper->names().at(i), addrs.at(i));
+    if(outHelper->names().at(i).substr(0,9)!="_forEval_")
+      batch->bind(outHelper->names().at(i));
   }
 }
+void SimpleOutputBuilder::fillAllParameters(BatchOutputManager *batch,OutputHelper* outHelper) {
+  for(auto name : outHelper->names()) 
+    if(name.substr(0,9)!="_forEval_") 
+      batch->fill(name,outHelper->value(name));
+}
 void SimpleOutputBuilder::flushOstream(BatchOutputManager *batchOut,OutputHelper *outHelper,std::ostream &out) {
-  std::map<std::string,double> goodness;
   goodness["chi2"] = outHelper->value("chi2");
   goodness["chi2/NDF"] = goodness["chi2"]/outHelper->value("NDF");
   goodness["p-value"] = TMath::Prob(goodness["chi2"],int(outHelper->value("NDF")+0.5));
   goodness["likelihood"] = outHelper->value("likelihood");
-  //goodness["LLp"] = outHelper->value("LLp");
-  //goodness["LLpErr"] = outHelper->value("LLpErr");
+  goodness["LLp"] = outHelper->value("LLp");
+  goodness["LLpErr"] = outHelper->value("LLpErr");
   batchOut->flush_txt(out,goodness);
 }
-void SimpleOutputBuilder::draw(PlotManager *plot,InputManager *in) {
-  plot->draw(in->Datasets());
+void SimpleOutputBuilder::draw(int event,GSFitManager *gsFitManager,PlotManager *plot,InputManager *in) {
+  plot->draw(event,in->Datasets());
+  plot->drawLikelihoodpValue(event,goodness["likelihood"],gsFitManager->LLs());
 }

@@ -9,10 +9,12 @@
 /*****************************************************************************/
 #include "GPUManager.h"
 #include <cstdio>
-GPUManager *GPUManager::fGPUManager = nullptr;
-GPUManager *GPUManager::get() {
-  if(!fGPUManager) fGPUManager = new GPUManager;
-  return fGPUManager;
+#include "GooStatsException.h"
+bool GPUManager::preinit() {
+  if(!report()) {
+    throw GooStatsException("Cannot find a free GPU!");
+  }
+  return true;
 }
 bool GPUManager::report(bool siliently) const {
   int devicesCount(1);

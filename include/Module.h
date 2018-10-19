@@ -10,26 +10,30 @@
 #ifndef Module_H
 #define Module_H
 // interface for the basic unit of GooStats Analysis program
-#include <vector>
+#include <map>
 #include <string>
-#include "Bit.h"
+#include "GooStatsException.h"
 class Module {
   public:
-    Module(const std::string &_name,Bit _bit,Bit _dep) :
-      m_name(_name),bit(_bit),dep(_dep) { }
+    Module(const std::string &_name) : m_name(_name) { }
+    virtual ~Module() { }
+    const std::string &name() const { return m_name; }
   public:
-    virtual bool init() = 0;
-    virtual bool run() = 0;
-    virtual bool finalize() = 0;
+    virtual bool preinit() { validate(); return true; }
+    virtual bool init() { return true; }
+    virtual bool run(int = 0/*event*/) { return true; }
+    virtual bool finish() { return true; }
+    virtual bool postfinish() { return true; }
+    virtual bool check() const { return true; } // check dependences
   public:
-    std::string name() const { return m_name; }
-    Bit& category() { return bit; }
-    Bit& dependence() { return dep; }
-    const Bit& category() const { return bit; }
-    const Bit& dependence() const { return dep; }
+    void validate() { if(!check()) throw GooStatsException(name()+": depdences check failed"); }
+    void registerDependence(Module *dep,const std::string label="") { dependences[label==""?dep->name():label] = dep; }
+    bool has(const std::string &mod) const { return dependences.find(mod)!=dependences.end(); }
+    const Module *find(const std::string &mod) const { return dependences.at(mod); }
+    Module *find(const std::string &mod) { return dependences.at(mod); }
+    const std::string list() const;
   protected:
     std::string m_name;
-    Bit bit;
-    Bit dep;
+    std::map<std::string,Module*> dependences;
 };
 #endif

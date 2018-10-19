@@ -10,19 +10,24 @@
 #ifndef PULLPDF_HH
 #define PULLPDF_HH
 
-#include "goofit/PDFs/GooPdf.h"
+#include "DataPdf.h"
 
-class PullPdf : public GooPdf {
+class PullPdf : public DataPdf {
   public:
     PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype mt);
 
     __host__ virtual fptype normalise () const{return 1;}
 
     __host__ fptype calculateNLL() const;
+    std::unique_ptr<fptype []> fill_random() final;
+    std::unique_ptr<fptype []> fill_Asimov() final;
+  void cache();
+  void restore();
 
   private:
     const int index;
-    const fptype mean;
+    fptype mean;
+    fptype mean_backup = -99;
     const fptype sigma;
     const fptype masstime;
 };

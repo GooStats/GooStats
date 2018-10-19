@@ -14,7 +14,7 @@
  */
 #ifndef InputBuilder_H
 #define InputBuilder_H
-class GooPdf;
+class SumLikelihoodPdf;
 #include <string>
 #include <vector>
 #include <memory>
@@ -56,6 +56,6 @@ class InputBuilder {
     virtual bool fillOptions(ConfigsetManager *,const std::string &) = 0;
     virtual bool fillOptions(ConfigsetManager *,int ,char **) = 0;
     //! build the total pdf from the datasets
-    virtual GooPdf *buildTotalPdf(const std::vector<DatasetManager*> &) = 0;
+    virtual SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager*> &) = 0;
 };
 #endif

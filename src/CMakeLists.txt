@@ -4,18 +4,24 @@ add_library(GooStatsLib
   BasicManagerImpl.cc
   BasicSpectrumBuilder.cc
   ConfigsetManager.cc
+  ContourManager.cc
+  CorrelationManager.cc
   DatasetManager.cc
+  GSFitManager.cc
   SimpleDatasetController.cc
   PullDatasetController.cc
   SimpleInputBuilder.cc
   SimpleOptionParser.cc
   SimplePlotManager.cc
   SpectrumBuilder.cc
+  Utility.cc
   InputManager.cc
+  Module.cc
   OutputManager.cc
   SimpleOutputBuilder.cc
   OutputHelper.cc
   BatchOutputManager.cc
+  ToyMCLikelihoodEvaluator.cc
   PlotManager.cc
   ParSyncManager.cc
   RawSpectrumProvider.cc

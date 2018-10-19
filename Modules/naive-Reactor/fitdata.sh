@@ -7,4 +7,5 @@
 #./reactor data_recE.cfg plotEvS inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_smear 2>&1 | tee log
 #./reactor data_recE.cfg plotEvP inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_poisson 2>&1 | tee log
 #./reactor data_recE.cfg plotEvPP inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_poissonApp 2>&1 | tee log
-./reactor data_recE.cfg plotEvPPS inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_poissonAppSum 2>&1 | tee log
+#./reactor data_recE.cfg plotEvPPS inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_poissonAppSum repeat=10 fitAsimov=false fitFakeData=true disablePlots=true fitInverseMH=true seed=1 2>&1 | tee log
+./reactor data_recE.cfg plotEvPPS inputSpectraFiles=data/data_hist.root Data_histName=Evis_hist_poissonAppSum fitAsimov=true fitFakeData=true fitInverseMH=true 2>&1 | tee log

@@ -22,13 +22,12 @@ class RawSpectrumProvider;
 #include "DatasetManager.h"
 #include <vector>
 #include <memory>
-class GooPdf;
-class InputManager {
+class SumLikelihoodPdf;
+#include "Module.h"
+class InputManager : public Module {
   public:
-    InputManager(int _c,char **_v) : argc(_c), argv(_v) {};
-    virtual bool init();
-    virtual bool run();
-    virtual bool finish();
+    InputManager(int _c,char **_v) : Module("InputManager"), argc(_c), argv(_v) {};
+    virtual bool init() override;
   protected:
     int argc;    ///< command line arguments
     char **argv; ///< command line arguments
@@ -43,32 +42,38 @@ class InputManager {
     virtual void initialize_datasets();
     virtual void buildTotalPdf();
     std::map<DatasetManager*,std::unique_ptr<fptype []>> fillRandomData();
-    const OptionManager* GlobalOption() const;
+    std::map<DatasetManager*,std::unique_ptr<fptype []>> fillAsimovData();
     std::vector<ConfigsetManager*> Configsets();
     std::vector<DatasetManager*> Datasets();
-    const std::string &getOutputFileName() { return outName; }
-    GooPdf *getTotalPdf() { return totalPdf.get(); };
+    const std::vector<ConfigsetManager*> Configsets() const;
+    const std::vector<DatasetManager*> Datasets() const;
+    const OptionManager *GlobalOption() const;
+    void setOutputFileName(const std::string &out) { outName = out; }
+    const std::string &getOutputFileName() const { return outName; }
+    SumLikelihoodPdf *getTotalPdf() { return totalPdf.get(); };
+    const SumLikelihoodPdf *getTotalPdf() const { return totalPdf.get(); };
     void cachePars();
     void resetPars();
     RawSpectrumProvider *getProvider() const { return provider.get(); }
   protected:
     std::shared_ptr<InputBuilder> builder;
     std::shared_ptr<ParSyncManager> parManager;
-    std::shared_ptr<GooPdf> totalPdf;
+    std::shared_ptr<SumLikelihoodPdf> totalPdf;
     std::shared_ptr<RawSpectrumProvider> provider;
     std::string outName;
   private:
     std::vector<double> cachedParsInit;
     std::vector<double> cachedParsErr;
+    std::vector<double> cachedParsUL;
+    std::vector<double> cachedParsLL;
+    std::vector<bool> cachedParsFix;
 
     /**
      *  \defgroup Dataset part responsible for dataset
      *  @{
      */
   public:
-    void registerConfigset(ConfigsetManager *configset) { 
-      configsets.push_back(std::shared_ptr<ConfigsetManager>(configset)); 
-    }
+    void registerConfigset(ConfigsetManager *);
   protected:
     //! Config-set is the minimul data-set unit in GooStats.       
     //! One config-set can contain multiple spectrum, but they    
@@ -82,9 +87,7 @@ class InputManager {
      */
   public:
     //! create list of datasets, controllers and associate them
-    void registerDataset(DatasetManager *configset) { 
-      datasets.push_back(std::shared_ptr<DatasetManager>(configset)); 
-    }
+    void registerDataset(DatasetManager *);
   protected:
     std::vector<std::shared_ptr<DatasetManager>> datasets;
     /**@}*/

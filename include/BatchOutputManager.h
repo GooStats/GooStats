@@ -12,30 +12,40 @@
 #include "TTree.h"
 #include <memory>
 #include <vector>
-class GooPdf;
+#include "Module.h"
+class SumLikelihoodPdf;
 class Variable;
 class TFile;
-class BatchOutputManager {
+class BatchOutputManager : public Module {
   public:
-    virtual bool init();
-    virtual bool run();
-    virtual bool finish();
-    void flush_tree();
-    virtual void flush_txt(std::ostream &,std::map<std::string,double> &) const;
+    BatchOutputManager() : Module("BatchOutputManager") { }
+    virtual bool init() override;
+    virtual bool run(int event) override;
+    virtual bool finish() override;
+    bool check() const final { return has("OutputManager")&&has("InputManager"); }
 
-    void setOutputFileName(const std::string &n) { outName = n; }
-    template<typename T>
-      void bind(const std::string &brName,T *addr) {
-	tree->Branch(brName.c_str(), addr);
-      }
-    void bindAllParameters(GooPdf *pdf);
+  public:
+    void fill_rates();
+    virtual void flush_txt(std::ostream &,std::map<std::string,double> &) const;
+    void bindAllParameters(const SumLikelihoodPdf *pdf_);
   protected:
-    void fill();
-    void bindTree();
+    void cd();
     std::shared_ptr<TTree> tree;
-    //TTree* tree = nullptr;
     std::vector<Variable*> vars;
-    TFile *out = nullptr;
-    std::string outName;
+  private:
+    void flush_tree();
+  private:
+    const SumLikelihoodPdf *pdf = nullptr;
+    /**
+     *  \defgroup TTree binding for saving fit output
+     *  @{
+     */
+  public:
+    void bind(const std::string &brName);
+    void fill(const std::string &brName,double value) { results[brName][nfit] = value; }
+  private:
+    int nfit = 0;
+    std::map<std::string,double[200]> results;
+    /**@}*/
 };
 #endif

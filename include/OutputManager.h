@@ -16,21 +16,32 @@ class OutputBuilder;
 class PlotManager;
 #include <memory>
 #include <vector>
+#include "Module.h"
+class TFile;
 class InputManager;
-class OutputManager {
+class OutputManager : public Module {
   public:
-    virtual bool init();
-    virtual bool run();
-    virtual bool finish();
-    void adoptInputManager(InputManager *in) { inputManager = in; }
+    OutputManager() : Module("OutputManager") { }
+    virtual bool preinit() override;
+    virtual bool init() override;
+    virtual bool run(int event) override;
+    virtual bool finish() override;
+    virtual bool postfinish() override;
+  private:
+    InputManager *getInputManager();
+  public:
+    void setOutputFile(const std::string &fname);
+    TFile *getOutputFile() { return file; }
     void setBatchOutputManager(BatchOutputManager *);
     void setOutputBuilder(OutputBuilder *);
     void setPlotManager(PlotManager *);
+    BatchOutputManager *getBatchOutputManager() const { return batchOut.get(); }
+    void subFit(int event);
   protected:
-    InputManager *inputManager = nullptr;
-    std::shared_ptr<BatchOutputManager> batchOut;
-    std::shared_ptr<PlotManager> plot;
     std::shared_ptr<OutputHelper> outputHelper;
     std::shared_ptr<OutputBuilder> outputBuilder;
+    std::shared_ptr<BatchOutputManager> batchOut;
+    std::shared_ptr<PlotManager> plot;
+    TFile *file;
 };
 #endif

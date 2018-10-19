@@ -10,12 +10,9 @@
 #include "SumLikelihoodPdf.h"
 #include "goofit/Variable.h"
 
-int total_sumllpdf = 0;
 SumLikelihoodPdf::SumLikelihoodPdf (std::string n, const std::vector<PdfBase*> &comps)
   : GooPdf(0,n) 
 {
-  assert(total_sumllpdf++ == 0);
-
   components = comps;
 
   std::vector<unsigned int> pindices;
@@ -56,10 +53,28 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
 #endif
   return ret; 
 }
-#include "SumPdf.h"
+#include "DataPdf.h"
 void SumLikelihoodPdf::fill_random() {
   for(unsigned int i = 0;i<components.size();++i) {
-    SumPdf *sum_term = dynamic_cast<SumPdf*>(components.at(i));
-    if(sum_term) sum_term->fill_random();
+    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
+    if(pdf) pdf->fill_random();
+  }
+}
+void SumLikelihoodPdf::fill_Asimov() {
+  for(unsigned int i = 0;i<components.size();++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
+    if(pdf) pdf->fill_Asimov();
+  }
+}
+void SumLikelihoodPdf::cache() {
+  for(unsigned int i = 0;i<components.size();++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
+    if(pdf) pdf->cache();
+  }
+}
+void SumLikelihoodPdf::restore() {
+  for(unsigned int i = 0;i<components.size();++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
+    if(pdf) pdf->restore();
   }
 }

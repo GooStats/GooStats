@@ -10,7 +10,6 @@
 #ifndef ANALYSIS_MANAGER_H
 #define ANALYSIS_MANAGER_H
 class Module;
-#include "Bit.h"
 #include <memory>
 #include <list>
 class InputManager;
@@ -24,18 +23,16 @@ class FitManager;
 class AnalysisManager {
   public:
     bool registerModule(Module *module);
+    bool hasModule(const std::string &name) const;
+    Module *findModule(const std::string &name);
     void setInputManager(InputManager *);
     void setOutputManager(OutputManager *);
-    static Bit getBit();
     virtual bool init();
-    virtual bool run();
+    virtual bool run(int event = 0);
     virtual bool finish();
-    GooPdf *get_sumpdf() { return sumpdf; }
     bool checkGPU() const;
   protected:
-    GooPdf *sumpdf = nullptr;
-    std::list<std::shared_ptr<Module> > m_modules;
-    std::shared_ptr<FitManager> fitManager;
+    std::list<std::shared_ptr<Module> > modules;
     std::shared_ptr<InputManager> inputManager;
     std::shared_ptr<OutputManager> outputManager;
 };

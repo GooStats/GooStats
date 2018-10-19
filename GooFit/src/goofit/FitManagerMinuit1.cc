@@ -26,7 +26,6 @@ void FitManager::setupMinuit () {
   numPars = vars.size();
   if (minuit) delete minuit;
   minuit = new TMinuit(numPars); 
-  minuit->SetPrintLevel(2);
   int maxIndex = 0; 
   int counter = 0; 
   for (std::vector<Variable*>::iterator i = vars.begin(); i != vars.end(); ++i) {

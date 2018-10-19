@@ -12,25 +12,30 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <set>
 #include "Rtypes.h"
+#include "Module.h"
 class TObject;
 class DatasetManager;
 class GooPdf;
 class TH1;
 class TF1;
 class SumPdf;
-class TFile;
 class TCanvas;
-class PlotManager {
+class TFile;
+class GSFitManager;
+class PlotManager : public Module {
   public:
-    virtual bool init();
-    virtual bool run();
-    virtual bool finish();
+    PlotManager() : Module("PlotManager") { }
+    virtual bool init() override;
+    virtual bool finish() override;
+    bool check() const final { return has("GSFitManager")&&has("OutputManager")&&has("InputManager"); }
 
   protected:
     struct Config {
       int color; ///< color
       int style; ///< line style , 1 is solid line
+      int width; ///< line width
     };
     class TF1Helper {
       public:
@@ -38,31 +43,29 @@ class PlotManager {
 	TF1 *getTF1() { return f; }
       private:
 	double eval(double *xx,double *par);
-	TH1 *data; // root will delete it
-	double norm;
+	TH1 *data = nullptr; // root will delete it
+	double norm = -99;
       private:
-	TF1 *f; // root will delete it
+	TF1 *f = nullptr; // root will delete it
     };
   public:
-    virtual void draw(const std::vector<DatasetManager*> &datasets);
+    virtual void draw(int event,const std::vector<DatasetManager*> &datasets);
+    void drawLikelihoodpValue(int event,double LL,const std::vector<double> &LLs);
+  public:
     virtual TCanvas *drawSingleGroup(const std::string &name,const std::vector<DatasetManager*> &datasets) ;
     //! user can set the color and line style of each components by specifying the names
     //! plot() will look up the name of components of SumPdf
     //! by default different colors will be used for each species and all solid lines
-    virtual void draw(SumPdf *pdf,std::map<std::string,Config> config= std::map<std::string,Config>());
-    void setOutputFileName(const std::string &o) { _outName = o; }
+    virtual void draw(GSFitManager *gsFitManager,SumPdf *pdf,std::map<std::string,Config> config= std::map<std::string,Config>());
   protected:
     EColor getColor(const std::string &n) const {
       return colorlibrary.find(n)!=colorlibrary.end()?colorlibrary.at(n):kBlack;
     }
-    virtual void set_gStyle();
-    void cd();
     bool createPdf() const { return _createPdf; };
-    const std::string &outName() const { return _outName; };
-    std::vector<TObject*> toBeSaved;
+    const std::string &outName() const;
+    std::set<TObject*> toBeSaved;
+    virtual void set_gStyle();
   private:
-    TFile *out = nullptr;
-    std::string _outName;
     bool _createPdf = true;
     //! configuration for plooting all species
     std::map<std::string, EColor> colorlibrary {

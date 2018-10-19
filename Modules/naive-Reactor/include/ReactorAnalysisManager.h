@@ -14,7 +14,7 @@ class ReactorAnalysisManager : public AnalysisManager {
   public:
     ReactorAnalysisManager() {}
 
-    bool run() final;
+    bool run(int event = 0) final;
     bool finish() final;
 };
 #endif

@@ -7,15 +7,16 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef Utility_H
-#define Utility_H
-#include <string>
+#ifndef ToyMCLikelihoodEvaluator_h
+#define ToyMCLikelihoodEvaluator_h
 #include <vector>
-namespace GooStats {
-  namespace Utility {
-    // naive splitter
-    extern std::vector<std::string> splitter(std::string source, std::string flag);
-    extern std::string escape(const std::string &str,std::string purge=")",std::string underscore="(",std::vector<std::string> full = {"default.","global."});
-  }
-}
+class GSFitManager;
+class InputManager;
+class ToyMCLikelihoodEvaluator {
+  public:
+    void get_p_value(GSFitManager *gsFitManager,InputManager *,double LL,double &p,double &perr);
+    const std::vector<double> &getLLs() const { return LLs; }
+  private:
+    std::vector<double> LLs;
+};
 #endif
