@@ -21,6 +21,9 @@ public:
   __host__ virtual fptype normalise () const;
   const std::vector<PdfBase*> &Components() const { return components; }
   void fill_random();
+  void fill_Asimov();
+  void cache();
+  void restore();
 
 private:
   __host__ void setData(BinnedDataSet *data);

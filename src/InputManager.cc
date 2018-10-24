@@ -12,10 +12,10 @@
 #include "ParSyncManager.h"
 #include "RawSpectrumProvider.h"
 #include "goofit/BinnedDataSet.h"
-#include "SumPdf.h"
 #include "GooStatsException.h"
+#include "DataPdf.h"
+#include "SumLikelihoodPdf.h"
 bool InputManager::init() {
-  outName = builder->loadOutputFileNameFromCmdArgs(argc,argv);
   if(!parManager) {
     std::cout<<"Warning: ParSyncManager not set, default strategy are used."<<std::endl;
     setParSyncManager(new ParSyncManager());
@@ -28,12 +28,13 @@ bool InputManager::init() {
     std::cout<<"Error: InputBuilder not set, please set it before calling InputManager::init"<<std::endl;
     throw GooStatsException("InputBuilder not set in InputManager");
   }
-  return true;
-}
-bool InputManager::run() {
-  return true;
-}
-bool InputManager::finish() {
+  outName = builder->loadOutputFileNameFromCmdArgs(argc,argv);
+  initialize_configsets();
+  fill_rawSpectrumProvider();
+  initialize_controllers();
+  initialize_datasets();
+  buildTotalPdf();
+  cachePars();
   return true;
 }
 void InputManager::setInputBuilder(InputBuilder *input) {
@@ -51,6 +52,7 @@ void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
 void InputManager::initialize_configsets() {
   // step 1: load number of configs / location of configuration files from command-line args.
   auto configs = builder->loadConfigsFromCmdArgs(argc,argv);
+  if(!configs.size()) throw GooStatsException("No configset found");
   for(auto config : configs) {
     // step 2: for each config set, construct (empty) config objects
     auto configset = builder->buildConfigset(parManager.get(),*config);
@@ -90,18 +92,17 @@ void InputManager::initialize_datasets() {
   }
 }
 void InputManager::buildTotalPdf() {
-  totalPdf = std::shared_ptr<GooPdf>(builder->buildTotalPdf(Datasets()));
-  if(configsets.front()->hasAndYes("chisquareFit")) totalPdf->setFitControl(new BinnedChisqFit); // ugly
+  totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
 }
 std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomData() {
   std::map<DatasetManager*,std::unique_ptr<fptype []>> datas;
   for(auto dataset: datasets) {
-    SumPdf *sumpdf = dynamic_cast<SumPdf*>(dataset->getLikelihood());
-    if(!sumpdf) continue;
+    DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
+    if(!pdf) continue;
     Variable *Evis = dataset->get<Variable*>("Evis");
     BinnedDataSet* data= new BinnedDataSet(Evis);
-    sumpdf->setData(data);
-    std::unique_ptr<fptype []> res = sumpdf->fill_random();
+    pdf->setData(data);
+    std::unique_ptr<fptype []> res = pdf->fill_random();
     for(int i = 0;i<Evis->numbins;++i) {
       data->setBinContent(i,res[i*3+1]);
     }
@@ -109,8 +110,21 @@ std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomDat
   }
   return datas;
 }
-const OptionManager* InputManager::GlobalOption() const {
-  return static_cast<OptionManager*>(configsets.front().get());
+std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillAsimovData() {
+  std::map<DatasetManager*,std::unique_ptr<fptype []>> datas;
+  for(auto dataset: datasets) {
+    DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
+    if(!pdf) continue;
+    Variable *Evis = dataset->get<Variable*>("Evis");
+    BinnedDataSet* data= new BinnedDataSet(Evis);
+    pdf->setData(data);
+    std::unique_ptr<fptype []> res = pdf->fill_Asimov();
+    for(int i = 0;i<Evis->numbins;++i) {
+      data->setBinContent(i,res[i*3+1]);
+    }
+    datas.insert(std::make_pair(dataset.get(),std::move(res)));
+  }
+  return datas;
 }
 std::vector<ConfigsetManager*> InputManager::Configsets() {
   std::vector<ConfigsetManager*> configsets_;
@@ -126,14 +140,37 @@ std::vector<DatasetManager*> InputManager::Datasets() {
   }
   return datasets_;
 }
+const std::vector<ConfigsetManager*> InputManager::Configsets() const {
+  std::vector<ConfigsetManager*> configsets_;
+  for(auto configset: configsets) {
+    configsets_.push_back(configset.get());
+  }
+  return configsets_;
+}
+const std::vector<DatasetManager*> InputManager::Datasets() const {
+  std::vector<DatasetManager*> datasets_;
+  for(auto dataset: datasets) {
+    datasets_.push_back(dataset.get());
+  }
+  return datasets_;
+}
+const OptionManager *InputManager::GlobalOption() const { 
+  return static_cast<OptionManager*>(configsets.front().get()); 
+}
 void InputManager::cachePars() {
   std::vector<Variable*> pars;
   getTotalPdf()->getParameters(pars);
   cachedParsInit.clear();
   cachedParsErr.clear();
+  cachedParsUL.clear();
+  cachedParsLL.clear();
+  cachedParsFix.clear();
   for(auto par : pars) {
     cachedParsInit.push_back(par->value);
     cachedParsErr.push_back(par->error);
+    cachedParsUL.push_back(par->upperlimit);
+    cachedParsLL.push_back(par->lowerlimit);
+    cachedParsFix.push_back(par->fixed);
   }
 }
 void InputManager::resetPars() {
@@ -142,5 +179,16 @@ void InputManager::resetPars() {
   for(size_t i = 0;i<pars.size();++i) {
     pars.at(i)->value = cachedParsInit.at(i);
     pars.at(i)->error = cachedParsErr.at(i);
+    pars.at(i)->upperlimit = cachedParsUL.at(i);
+    pars.at(i)->lowerlimit = cachedParsLL.at(i);
+    pars.at(i)->fixed = cachedParsFix.at(i);
   }
+}
+void InputManager::registerConfigset(ConfigsetManager *configset) { 
+  std::cout<<"InputManager::registerConfigset("<<configset->name()<<")"<<std::endl;
+  configsets.push_back(std::shared_ptr<ConfigsetManager>(configset)); 
+}
+void InputManager::registerDataset(DatasetManager *dataset) { 
+  std::cout<<"InputManager::registerDataset("<<dataset->name()<<")"<<std::endl;
+  datasets.push_back(std::shared_ptr<DatasetManager>(dataset)); 
 }

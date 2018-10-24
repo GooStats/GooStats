@@ -126,7 +126,7 @@ MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtMask = device_SumPdfsExtMask;
 MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtSimple = device_SumPdfsExtSimple; 
 
   SumPdf::SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<Variable*> &sysi,Variable *sys,const std::vector<PdfBase*> &comps,Variable *npe)
-  : GooPdf(npe, n) 
+  : DataPdf(npe, n) 
   , norm(norm_)
     , extended(true), _weights(weights),dataset(nullptr)
 {
@@ -159,7 +159,7 @@ MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtSimple = device_SumPdfsExtSimple
 } 
 
   SumPdf::SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<PdfBase*> &comps,Variable *npe)
-  : GooPdf(npe, n) 
+  : DataPdf(npe, n) 
   , norm(norm_)
     , extended(true), _weights(weights),dataset(nullptr)
 {
@@ -178,7 +178,7 @@ MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtSimple = device_SumPdfsExtSimple
   initialise(pindices); 
 } 
   SumPdf::SumPdf (std::string n, const std::vector<PdfBase*> &comps,const std::vector<const BinnedDataSet*> &mask,Variable *npe)
-  : GooPdf(npe, n) 
+  : DataPdf(npe, n) 
     , extended(true),_weights(),dataset(nullptr)
 {
   set_startstep(0);
@@ -188,7 +188,7 @@ MEM_DEVICE device_function_ptr ptr_to_SumPdfsExtSimple = device_SumPdfsExtSimple
   initialise(pindices); 
 } 
   SumPdf::SumPdf (std::string n, const std::vector<PdfBase*> &comps,Variable *npe)
-  : GooPdf(npe, n) 
+  : DataPdf(npe, n) 
     , extended(true),dataset(nullptr)
 {
   set_startstep(0);
@@ -380,7 +380,45 @@ std::unique_ptr<fptype []> SumPdf::fill_random() {
   numEvents = 0;
   for(unsigned int i = 0; i < numEntries; ++i) {
     fptype new_value = gRandom->Poisson(cached_sumV[i]*host_array[i*dimensions+observables.size()+1]);
-    //    std::cout<<"("<<i<<") before ["<<host_array[i*dimensions + observables.size()+0]<<"] after ["<<new_value<<"] ("<<cached_sumV[i]<<","<<host_array[i*dimensions+observables.size()+1]<<")"<<std::endl;
+    //if(i<5) std::cout<<"SumPdf::fill_random ("<<i<<") before ["<<host_array[i*dimensions + observables.size()+0]<<"] after ["<<new_value<<"] ("<<cached_sumV[i]<<","<<host_array[i*dimensions+observables.size()+1]<<")"<<std::endl;
+    host_array[i*dimensions + observables.size()+0] = new_value;
+    numEvents += host_array[i*dimensions + observables.size()+0];
+  }
+
+  if(dev_event_array[pdfId]) {
+    gooFree(dev_event_array[pdfId]);
+    dev_event_array[pdfId] = 0;
+  }
+  gooMalloc((void**) &(dev_event_array[pdfId]), dimensions*numEntries*sizeof(fptype));
+  MEMCPY(dev_event_array[pdfId], host_array, dimensions*numEntries*sizeof(fptype), cudaMemcpyHostToDevice);
+  MEMCPY_TO_SYMBOL(functorConstants, &numEvents, sizeof(fptype), 0, cudaMemcpyHostToDevice);
+  return h_ptr;
+}
+std::unique_ptr<fptype []> SumPdf::fill_Asimov() {
+  copyParams(); 
+  normalise();
+  int dimensions = 2 + observables.size(); // Bin center (x,y, ...), bin value, and bin volume.
+
+  if(parametersChanged()) {
+    DEVICE_VECTOR<fptype> dev_sumV(numEntries);
+    MetricTaker modalor((PdfBase*)(this), getMetricPointer("ptr_to_Eval")); 
+    thrust::constant_iterator<int> eventSize(-(observables.size()+2));
+    thrust::constant_iterator<fptype*> arrayAddress(dev_event_array[pdfId]); 
+    thrust::counting_iterator<int> eventIndex(0); 
+    thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(eventIndex, arrayAddress, eventSize)),
+	thrust::make_zip_iterator(thrust::make_tuple(eventIndex + numEntries, arrayAddress, eventSize)),
+	dev_sumV.begin(),
+	modalor);
+    cached_sumV = dev_sumV;
+  }
+
+  std::unique_ptr<fptype[]> h_ptr(new fptype[numEntries*dimensions]);
+  fptype* host_array = h_ptr.get();
+  MEMCPY(host_array,dev_event_array[pdfId], dimensions*numEntries*sizeof(fptype), cudaMemcpyDeviceToHost);
+  numEvents = 0;
+  for(unsigned int i = 0; i < numEntries; ++i) {
+    fptype new_value = (cached_sumV[i]*host_array[i*dimensions+observables.size()+1]);
+    //if(i<5) std::cout<<"SumPdf::fill_Asimov ("<<i<<") before ["<<host_array[i*dimensions + observables.size()+0]<<"] after ["<<new_value<<"] ("<<cached_sumV[i]<<","<<host_array[i*dimensions+observables.size()+1]<<")"<<std::endl;
     host_array[i*dimensions + observables.size()+0] = new_value;
     numEvents += host_array[i*dimensions + observables.size()+0];
   }
@@ -395,29 +433,29 @@ std::unique_ptr<fptype []> SumPdf::fill_random() {
   return h_ptr;
 }
 BinnedDataSet *SumPdf::getData() {
-  if(dataset) return dataset; else {
-    copyParams(); 
-    normalise();
-    int dimensions = 2 + observables.size(); // Bin center (x,y, ...), bin value, and bin volume.
+  copyParams(); 
+  normalise();
+  int dimensions = 2 + observables.size(); // Bin center (x,y, ...), bin value, and bin volume.
 
-    std::unique_ptr<fptype[]> h_ptr(new fptype[numEntries*dimensions]);
-    fptype* host_array = h_ptr.get();
-    MEMCPY(host_array,dev_event_array[pdfId], dimensions*numEntries*sizeof(fptype), cudaMemcpyDeviceToHost);
-    // [0] Bin center
-    // [1] Nevent(experiment)
-    // [2] Bin volume
-    Variable *obs = observables.front();
-    dataset = new BinnedDataSet(obs);
-    for(unsigned int i = 0; i < numEntries; ++i) {
-      dataset->setBinContent(i,host_array[i*dimensions+1]);
-    }
-    return getData();
+  std::unique_ptr<fptype[]> h_ptr(new fptype[numEntries*dimensions]);
+  fptype* host_array = h_ptr.get();
+  MEMCPY(host_array,dev_event_array[pdfId], dimensions*numEntries*sizeof(fptype), cudaMemcpyDeviceToHost);
+  // [0] Bin center
+  // [1] Nevent(experiment)
+  // [2] Bin volume
+  Variable *obs = observables.front();
+  dataset = new BinnedDataSet(obs);
+  for(unsigned int i = 0; i < numEntries; ++i) {
+    dataset->setBinContent(i,host_array[i*dimensions+1]);
   }
+  return dataset;
 }
-double SumPdf::Chi2() {
-  setFitControl(new BinnedChisqFit());
-  copyParams();
-  return calculateNLL();
+void SumPdf::cache() {
+  dataset_backup = getData();
+}
+void SumPdf::restore() {
+  dataset = dataset_backup;
+  setData(dataset);
 }
 int SumPdf::NDF() {
   int NnonZeroBins = 0; {

@@ -11,7 +11,7 @@
 #define SUM_PDF_HH
 
 #include <map>
-#include "goofit/PDFs/GooPdf.h"
+#include "DataPdf.h"
 template<class T>
 class DumperPdf;
 class SumLikelihoodPdf;
@@ -21,7 +21,7 @@ class BinnedDataSet;
 extern MEM_DEVICE fptype *dev_componentWorkSpace[NPDFSIZE_SumPdf];
 extern DEVICE_VECTOR<fptype>* componentWorkSpace[NPDFSIZE_SumPdf];
 
-class SumPdf : public GooPdf {
+class SumPdf : public DataPdf {
 public:
 
   SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &weights, const std::vector<Variable*> &sysi,Variable *,const std::vector<PdfBase*> &comps,Variable *npe);
@@ -33,10 +33,12 @@ public:
   const std::vector<Variable*> &Weights() const { return _weights; }
   BinnedDataSet *getData();
   double Norm() const { return norm; }
-  double Chi2() ;
   int NDF() ;
   static int registerFunc(PdfBase *pdf);
-  std::unique_ptr<fptype []> fill_random();
+  std::unique_ptr<fptype []> fill_random() override;
+  std::unique_ptr<fptype []> fill_Asimov() override;
+  void cache();
+  void restore();
 
 protected:
   void register_components(const std::vector<PdfBase*> &comps,int N);
@@ -60,7 +62,8 @@ protected:
   mutable bool m_updated;
   thrust::host_vector<fptype> cached_sumV;
   std::vector<Variable*> _weights;
-  BinnedDataSet *dataset;
+  BinnedDataSet *dataset = nullptr;
+  BinnedDataSet *dataset_backup = nullptr;
   friend class DumperPdf<SumLikelihoodPdf>;
 };
 

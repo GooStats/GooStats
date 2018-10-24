@@ -51,7 +51,7 @@ class SimpleInputBuilder : public InputBuilder {
     bool fillOptions(ConfigsetManager *configset,int argc,char **argv) override;
     bool fillOptions(ConfigsetManager *configset,const std::string &configFileName) override;
     //! build the total pdf from the datasets
-    GooPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
+    SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
   private:
     std::string folder;
     std::shared_ptr<BasicSpectrumBuilder> spcBuilder;

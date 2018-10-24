@@ -12,9 +12,18 @@
 #include "InputManager.h"
 #include "OutputBuilder.h"
 #include "OutputHelper.h"
+#include "GSFitManager.h"
 #include <iostream>
 #include "GooStatsException.h"
 #include "PlotManager.h"
+#include "TFile.h"
+void OutputManager::setOutputFile(const std::string &fname) {
+  file = TFile::Open((fname+".root").c_str(),"RECREATE");
+  if(!file->IsOpen()) {
+    std::cout<<"Cannot create output root file: <"<<fname<<">"<<std::endl;
+    throw GooStatsException("Cannot create output root file");
+  }
+}
 void OutputManager::setBatchOutputManager(BatchOutputManager *b) {
   batchOut = std::shared_ptr<BatchOutputManager>(b);
 }
@@ -24,42 +33,82 @@ void OutputManager::setOutputBuilder(OutputBuilder *o) {
 void OutputManager::setPlotManager(PlotManager *p) {
   plot = std::shared_ptr<PlotManager>(p);
 }
-bool OutputManager::init() {
+bool OutputManager::preinit() {
+  bool ok = true;
   if(!batchOut) {
     std::cout<<"Warning: BatchOutputManager not set, default are used."<<std::endl;
-    setBatchOutputManager(new BatchOutputManager());
+    BatchOutputManager *batch = new BatchOutputManager();
+    batch->registerDependence(getInputManager());
+    batch->registerDependence(this);
+    setBatchOutputManager(batch);
   }
+  ok &= batchOut->preinit();
   if(!outputBuilder) {
     std::cout<<"Error: OutputBuilder not set, please set it before calling OutputManager::init"<<std::endl;
     throw GooStatsException("OutputManager not set in OutputManager");
   }
-  if(!plot) {
-    std::cout<<"Error: PlotManager not set, please set it before calling OutputManager::init"<<std::endl;
-    throw GooStatsException("PlotManager not set in OutputManager");
-  }
+  if(plot)
+    ok &= plot->preinit();
+  else
+    std::cout<<"Warning: PlotManager not set, no figure output will be created"<<std::endl;
   outputHelper = std::make_shared<OutputHelper>();
+  return ok && this->Module::preinit();
+}
+bool OutputManager::init() {
+  this->setOutputFile(getInputManager()->getOutputFileName());
 
-  batchOut->setOutputFileName(inputManager->getOutputFileName());
   batchOut->init();
-  batchOut->bindAllParameters(inputManager->getTotalPdf());
-  outputBuilder->registerOutputTerms(outputHelper.get(),inputManager);
+  outputBuilder->registerOutputTerms(outputHelper.get(),getInputManager(),static_cast<GSFitManager*>(find("GSFitManager")));
   outputBuilder->bindAllParameters(batchOut.get(),outputHelper.get());
 
-  plot = std::make_shared<PlotManager>();
-  plot->setOutputFileName(inputManager->getOutputFileName());
-  plot->init();
+  if(plot) {
+    plot->init();
+  }
   return true;
 }
-bool OutputManager::run() {
-  outputHelper->flush(inputManager);
+void OutputManager::subFit(int event) {
+  // calculate likelihood etc.
+  outputHelper->flush();
+  // fill calculated value to BatchOutputManager::results
+  outputBuilder->fillAllParameters(batchOut.get(),outputHelper.get());
+  batchOut->fill_rates(); // fill_rates will increase nfit, must be the last one
+  // print on screen
   outputBuilder->flushOstream(batchOut.get(),outputHelper.get(),std::cout);
-  outputBuilder->draw(plot.get(),inputManager);
-  batchOut->run();
-  plot->run();
+  // make a plot
+  if(plot && !((!getInputManager()->GlobalOption()->has("disablePlots") && getInputManager()->GlobalOption()->has("repeat") && std::atoi(getInputManager()->GlobalOption()->query("repeat").c_str())>0)
+      ||getInputManager()->GlobalOption()->hasAndYes("disablePlots"))) {
+    outputBuilder->draw(event,static_cast<GSFitManager*>(find("GSFitManager")),plot.get(),getInputManager());
+  }
+}
+bool OutputManager::run(int event) {
+  subFit(event);
+  // save to disk
+  batchOut->run(event);
+  if(plot && !((!getInputManager()->GlobalOption()->has("disablePlots") && getInputManager()->GlobalOption()->has("repeat") && std::atoi(getInputManager()->GlobalOption()->query("repeat").c_str())>0)
+      ||getInputManager()->GlobalOption()->hasAndYes("disablePlots"))) {
+    plot->run(event);
+  }
+  static int count = 0;
+  if(count/100*100==count) {
+    file->Delete("fit_results;1");
+    file->cd();
+    file->Get("fit_results")->Write();
+  }
+  ++count;
   return true;
 }
 bool OutputManager::finish() {
+  file->Delete("fit_results;1");
   batchOut->finish();
-  plot->finish();
+  if(plot) plot->finish();
   return true;
+}
+bool OutputManager::postfinish() {
+  file->Close();
+  delete file;
+  file = nullptr;
+  return true;
+}
+InputManager *OutputManager::getInputManager() {
+  return static_cast<InputManager*>(find("InputManager"));
 }

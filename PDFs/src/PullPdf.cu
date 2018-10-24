@@ -11,7 +11,7 @@
 
 #define M_PI_L 3.141592653589793238462643383279502884L
 __host__ PullPdf::PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype mt) :
-  GooPdf(nullptr, n),
+  DataPdf(nullptr, n),
   index (registerParameter(var)),
   mean(m*mt),
   sigma(s*mt),
@@ -29,3 +29,22 @@ __host__ double PullPdf::calculateNLL () const {
   return ret;
 }
 
+#include "TRandom.h"
+std::unique_ptr<fptype []> PullPdf::fill_random() {
+  std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
+  mean = gRandom->Gaus(masstime*host_params[index],sigma);
+  h_ptr[0] = mean;
+  return h_ptr;
+}
+std::unique_ptr<fptype []> PullPdf::fill_Asimov() {
+  std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
+  mean = masstime*host_params[index];
+  h_ptr[0] = mean;
+  return h_ptr;
+}
+void PullPdf::cache() {
+  mean_backup = mean;
+}
+void PullPdf::restore() {
+  mean = mean_backup;
+}

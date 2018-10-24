@@ -15,13 +15,13 @@ class InputManager;
 #include <vector>
 class OutputHelper {
   public:
-    void registerTerm(const std::string &name, const std::function<double(InputManager*)>&);
-    void flush(InputManager *inputManager);
+    void registerTerm(const std::string &name, const std::function<double()>&);
+    void flush();
     const std::vector<std::string> names() const { return m_names; }
     const std::vector<double*> addresses();
     double value(const std::string &n);
   private:
-    std::vector<std::function<double(InputManager*)>> functions;
+    std::vector<std::function<double()>> functions;
     std::vector<std::string> m_names;
     std::vector<double> values;
 };

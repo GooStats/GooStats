@@ -19,15 +19,15 @@ void BestFitFixture::load_result(const std::string &path,std::vector<double> &ou
     throw GooStatsException("cannot find trees.");
   }
   out.clear();
-  for(size_t i = 0;i<species.size();++i) {
-    TTreeFormula *x = new TTreeFormula(species.at(i).c_str(),species.at(i).c_str(),tree);
-    tree->GetEntry(0);
+  for(auto spc : species) {
+    TTreeFormula *x = new TTreeFormula((spc+"["+std::to_string(subEntry)+"]").c_str(),spc.c_str(),tree);
+    tree->GetEntry(entry);
     out.push_back(x->EvalInstance());
     delete x;
   }
-  for(size_t i = 0;i<rough_species.size();++i) {
-    TTreeFormula *x = new TTreeFormula(rough_species.at(i).c_str(),rough_species.at(i).c_str(),tree);
-    tree->GetEntry(0);
+  for(auto rough_spc : rough_species) {
+    TTreeFormula *x = new TTreeFormula((rough_spc+"["+std::to_string(subEntry)+"]").c_str(),rough_spc.c_str(),tree);
+    tree->GetEntry(entry);
     rough_out.push_back(x->EvalInstance());
     delete x;
   }

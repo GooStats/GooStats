@@ -10,14 +10,18 @@
 #ifndef TEXT_OUTPUT_MANAGER_H
 #define TEXT_OUTPUT_MANAGER_H
 #include <string>
-using std::string;
 class TextOutputManager {
   public:
-    static string data(string name,double v,string unit);
-    static const string rate(string name,double v,double e,double max,double min,string unit,bool penalty = false,double penalty_mean = 0,double penalty_sigma = 0) ;
-    static const string qch(string name,double v,double e,double max,double min,bool penalty = false,double penalty_mean = 0,double penalty_sigma = 0) ;
+    static std::string data(std::string name,double v,std::string unit);
+    static const std::string rate(std::string name,double v,double e,double max,double min,bool penalty = false,double penalty_mean = 0,double penalty_sigma = 0) ;
+    static const std::string qch(std::string name,double v,double e,double max,double min,bool penalty = false,double penalty_mean = 0,double penalty_sigma = 0) ;
     static unsigned int get_effective_digits(double x);
-    static string show_numbers(double x,unsigned int d);
-    static string prettify_speciesName(string name);
+    static std::string show_numbers(double x,unsigned int d);
+    static std::string prettify_speciesName(std::string name);
+    static void set_unit(const std::string &unit) { m_Unit = unit; }
+    static const std::string &get_unit() { return m_Unit; }
+  private:
+    static const std::string rate(std::string name,double v,double e,double max,double min,std::string unit,bool penalty = false,double penalty_mean = 0,double penalty_sigma = 0) ;
+    static std::string m_Unit;
 };
 #endif

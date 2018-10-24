@@ -28,8 +28,10 @@ GooPdf *SpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *d
     return buildAnaShifted(name,dataset);
   } else if(type=="AnaPeak") {
     return buildAnaPeak(name,dataset);
-  } else {
+  } else if(type=="placeholder") {
     return nullptr;
+  } else {
+    throw GooStatsException("Cannot build spectrum ["+name+"] unknown/empty type ["+type+"]");
   }
 }
 GooPdf *SpectrumBuilder::buildMC(const std::string &name,

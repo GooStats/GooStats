@@ -7,15 +7,19 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef Utility_H
-#define Utility_H
-#include <string>
-#include <vector>
-namespace GooStats {
-  namespace Utility {
-    // naive splitter
-    extern std::vector<std::string> splitter(std::string source, std::string flag);
-    extern std::string escape(const std::string &str,std::string purge=")",std::string underscore="(",std::vector<std::string> full = {"default.","global."});
-  }
-}
+#ifndef DataPdf_H
+#define DataPdf_H
+
+#include "goofit/PDFs/GooPdf.h"
+
+class DataPdf : public GooPdf {
+public:
+
+  DataPdf (Variable *var,std::string n) : GooPdf(var, n) { };
+  virtual std::unique_ptr<fptype []> fill_random() = 0;
+  virtual std::unique_ptr<fptype []> fill_Asimov() = 0;
+  virtual void cache() = 0;
+  virtual void restore() = 0;
+};
+
 #endif

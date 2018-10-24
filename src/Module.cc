@@ -7,7 +7,12 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef Bit_H
-#define Bit_H
-typedef unsigned long long Bit;
-#endif
+#include "Module.h"
+const std::string Module::list() const { 
+  std::string names;
+  for(auto dep : dependences) {
+    names+=dep.first+",";
+  }
+  names=names.substr(0,names.size()-1);
+  return names;
+}

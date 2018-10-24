@@ -9,18 +9,23 @@
 /*****************************************************************************/
 #include "TextOutputManager.h"
 #include <cmath>
-#include <string>
 #include <sstream>
 #include "GooStatsException.h"
 #include "TString.h"
+std::string TextOutputManager::m_Unit = "day#timeskt";
 std::string TextOutputManager::data(std::string name,double v,std::string unit) {
   std::ostringstream output;
   output.str("");
   output<<name<<" from "<<v<<" "<<unit;
   return output.str();
 }
+const std::string TextOutputManager::rate(std::string name_,double v,double e,double max,double min,bool penalty ,double penalty_mean ,double penalty_sigma ) {
+  return rate(name_,v,e,max,min,m_Unit,penalty,penalty_mean,penalty_sigma);
+}
 const std::string TextOutputManager::rate(std::string name_,double v,double e,double max,double min,std::string unit,bool penalty ,double penalty_mean ,double penalty_sigma ) {
-  if(v>8640&&unit=="cpd/100 tons") return rate(name_,v/86400,e/86400,max/86400,min/86400,"Bq/ktons",penalty,penalty_mean/86400,penalty_sigma/86400);
+  if(v>8640&&unit=="day#times100t") return rate(name_,v/86400,e/86400,max/86400,min/86400,"sec#times100t",penalty,penalty_mean/86400,penalty_sigma/86400);
+  if(v>8640&&unit=="day#timeskt") return rate(name_,v/86400,e/86400,max/86400,min/86400,"sec#timeskt",penalty,penalty_mean/86400,penalty_sigma/86400);
+  unit = unit==""?unit:"("+unit+")^{-1}";
   std::string name = prettify_speciesName(name_);
   std::ostringstream output;
   output.str("");
@@ -33,7 +38,7 @@ const std::string TextOutputManager::rate(std::string name_,double v,double e,do
       output<<name<<" = "<<show_numbers(v,2)<<" "<<unit<<" [Railed]";
     if(penalty) {
       unsigned int  ed = get_effective_digits(penalty_sigma);
-      output<<" [penalty] "<<show_numbers(penalty_mean,ed)<<" #pm "<<show_numbers(penalty_sigma,ed);
+      output<<" [p] "<<show_numbers(penalty_mean,ed)<<" #pm "<<show_numbers(penalty_sigma,ed);
     }
   } else if(e==0)
     output<<name<<" = "<<v<<" "<<unit<<" [Fixed]";

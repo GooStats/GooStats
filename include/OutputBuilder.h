@@ -19,12 +19,14 @@ class OutputHelper;
 class InputManager;
 class BatchOutputManager;
 class PlotManager;
+class GSFitManager;
 class OutputBuilder {
   public:
     //! load number of configs / location of configuration files from command-line args.
-    virtual void registerOutputTerms(OutputHelper *, InputManager *) = 0;
+    virtual void registerOutputTerms(OutputHelper *, InputManager *,GSFitManager *) = 0;
     virtual void bindAllParameters(BatchOutputManager *,OutputHelper*) = 0;
+    virtual void fillAllParameters(BatchOutputManager *,OutputHelper*) = 0;
     virtual void flushOstream(BatchOutputManager *,OutputHelper *,std::ostream &) = 0;
-    virtual void draw(PlotManager *,InputManager *) = 0;
+    virtual void draw(int event,GSFitManager*,PlotManager *,InputManager *) = 0;
 };
 #endif

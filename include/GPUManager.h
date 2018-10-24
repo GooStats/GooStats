@@ -9,12 +9,13 @@
 /*****************************************************************************/
 #ifndef GPUManager_H
 #define GPUManager_H
-class GPUManager {
+#include "Module.h"
+class GPUManager : public Module {
   public:
-    static GPUManager *get();
-    bool report(bool siliently = false) const;
+    GPUManager() : Module("GPUManager") { }
+    bool preinit() final;
   private:
+    bool report(bool siliently = false) const;
     bool report(int gpu_id,bool siliently = false) const;
-    static GPUManager *fGPUManager;
 };
 #endif

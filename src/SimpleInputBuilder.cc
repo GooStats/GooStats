@@ -169,11 +169,7 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumPro
   for(auto component : dataset->get<std::vector<std::string>>("components")) {
     // get Raw spec
     GooPdf *pdf = spcBuilder->buildSpectrum(component,dataset);
-    if(!pdf) {
-      std::cout<<"No hanlder is found to build spectrum <"<<component<<"> "
-	<<"type <"<<dataset->get<std::string>(component+"_type")<<">"<<std::endl;
-      throw GooStatsException("Cannot build spectrum");
-    }
+    if(!pdf) continue; // place holder
     pdfs.push_back(pdf);
   }
   dataset->set<std::vector<PdfBase*>>("pdfs",pdfs);
@@ -206,7 +202,7 @@ std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDataset
 OptionManager *SimpleInputBuilder::createOptionManager() {
   return new SimpleOptionParser();
 }
-GooPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetManager*> &datasets) {
+SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetManager*> &datasets) {
   std::vector<PdfBase*> likelihoodTerms;
   for(auto dataset : datasets) {
     std::cout<<"Inserting <"<<dataset->name()<<">"<<std::endl;

@@ -11,11 +11,12 @@
 #include "DatasetManager.h"
 #include "TCanvas.h"
 #include "SumPdf.h"
-void SimplePlotManager::draw(const std::vector<DatasetManager*> &datasets) {
+void SimplePlotManager::draw(int ,const std::vector<DatasetManager*> &datasets) {
   auto datasetsgroups = groupByName(datasets);
   size_t i = 0;
   for(auto group : datasetsgroups) {
     auto cc = drawSingleGroup(group.first,group.second);
+    if(!cc) continue;
     if(createPdf()) {
       string tail = "";
       if(datasetsgroups.size()>1) {

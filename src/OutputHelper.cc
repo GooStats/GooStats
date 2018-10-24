@@ -9,14 +9,14 @@
 /*****************************************************************************/
 #include "OutputHelper.h"
 #include "GooStatsException.h"
-void OutputHelper::registerTerm(const std::string &name, const std::function<double(InputManager*)>& function) {
+void OutputHelper::registerTerm(const std::string &name, const std::function<double()>& function) {
   m_names.push_back(name);
   functions.push_back(function);
   values.push_back(0);
 }
-void OutputHelper::flush(InputManager *inputManager) {
+void OutputHelper::flush() {
   for(size_t i = 0;i<functions.size();++i) {
-    values.at(i) = functions.at(i)(inputManager);
+    values.at(i) = functions.at(i)();
   }
 }
 const std::vector<double*> OutputHelper::addresses() {
@@ -26,6 +26,7 @@ const std::vector<double*> OutputHelper::addresses() {
   }
   return addr;
 }
+#include <iostream>
 double OutputHelper::value(const std::string &n) {
   // remember to flush
   for(size_t i = 0;i<m_names.size();++i) {
