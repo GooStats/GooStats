@@ -7,17 +7,20 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef RatioPullPdf_H
-#define RatioPullPdf_H
+#ifndef ExpPullPdf_H
+#define ExpPullPdf_H
 
 #include "DataPdf.h"
 
-/*! \class RatioPullPdf
- *  \brief The gaussian pull on the ratio of two variables
+/*! \class ExpPullPdf
+ *  \brief The exponential pull
+ *  interpretate it as a measurement.
  */
-class RatioPullPdf : public DataPdf {
+class ExpPullPdf : public DataPdf {
   public:
-    RatioPullPdf(std::string n, Variable* var1, Variable* var2, fptype m,fptype s);
+    ExpPullPdf(std::string n, Variable* var, 
+	   fptype ul/* upper limit */,
+	   fptype cl/* corrsponding confidence level, (0,1) */);
 
     __host__ virtual fptype normalise () const{return 1;}
 
@@ -28,10 +31,9 @@ class RatioPullPdf : public DataPdf {
     void restore() final;
 
   private:
-    const int index_v1, index_v2;
+    const int index;
     fptype data;
     fptype data_backup = -99;
-    const fptype sigma;
 };
 
 #endif

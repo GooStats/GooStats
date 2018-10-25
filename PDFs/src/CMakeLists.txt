@@ -10,7 +10,10 @@ cuda_add_more_library(GooStatsPDFs
   PdfCache.cu
   ProductPdf.cu
   PullPdf.cu
+  ExpPullPdf.cu
+  RatioPullPdf.cu
   RangedExpPdf.cu
+  PoissonPullPdf.cu
   ReactorSpectrumPdf.cu
   ResponseFunctionPdf.cu
   ResponseFunctionPdf_NLRES.cu

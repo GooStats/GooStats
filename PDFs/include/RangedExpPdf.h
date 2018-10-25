@@ -12,6 +12,7 @@
 
 #include "goofit/PDFs/GooPdf.h"
 
+// bx-> needed for MLP fit
 class RangedExpPdf : public GooPdf {
 public:
 

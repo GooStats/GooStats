@@ -7,17 +7,19 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef RatioPullPdf_H
-#define RatioPullPdf_H
+#ifndef PoissonPullPdf_H
+#define PoissonPullPdf_H
 
 #include "DataPdf.h"
 
-/*! \class RatioPullPdf
- *  \brief The gaussian pull on the ratio of two variables
+/*! \class PoissonPullPdf
+ *  \brief The simplest Gaussian pull
  */
-class RatioPullPdf : public DataPdf {
+class PoissonPullPdf : public DataPdf {
   public:
-    RatioPullPdf(std::string n, Variable* var1, Variable* var2, fptype m,fptype s);
+    PoissonPullPdf(std::string n, Variable* var,Variable *eff,
+	fptype mt/* mt is the exposure of the subsidiary exp. */,
+	fptype k,fptype b=0);
 
     __host__ virtual fptype normalise () const{return 1;}
 
@@ -28,10 +30,12 @@ class RatioPullPdf : public DataPdf {
     void restore() final;
 
   private:
-    const int index_v1, index_v2;
+    const int index;
+    const int index_e;
     fptype data;
     fptype data_backup = -99;
-    const fptype sigma;
+    const fptype bkg;
+    const fptype masstime;
 };
 
 #endif

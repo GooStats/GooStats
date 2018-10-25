@@ -7,22 +7,22 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "PullPdf.h"
+#include "ExpPullPdf.h"
 
 #define M_PI_L 3.141592653589793238462643383279502884L
-__host__ PullPdf::PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype mt) :
+__host__ ExpPullPdf::ExpPullPdf(std::string n, Variable* var, fptype ul,fptype cl) :
   DataPdf(nullptr, n),
   index (registerParameter(var)),
-  data(m),
-  sigma(s),
-  masstime(mt)
-{}
+  data(-ul/log(cl))
+{
+  assert(cl>0 && cl<1 && ul>0);
+}
 
 
-__host__ double PullPdf::calculateNLL () const {
-  double ret = pow((host_params[index]-data)/sigma,2);
-  // Stirling's approximation: lgamma(n+1) = 0.5*log(2*pi)+(n+0.5)*log(n)-n+O(1/n);
-  if(!IsChisquareFit()) ret = ret/2+0.5*log(2*M_PI_L*sigma*sigma*masstime*masstime);
+__host__ double ExpPullPdf::calculateNLL () const {
+  const double mu = host_params[index];
+  double ret = data/mu+log(mu);
+  if(IsChisquareFit()) ret = ret*2;
 #ifdef NLL_CHECK
   printf("log(L) %.12le pull chisquare? %s\n",ret, IsChisquareFit()?"yes":"no");
 #endif
@@ -30,21 +30,21 @@ __host__ double PullPdf::calculateNLL () const {
 }
 
 #include "TRandom.h"
-std::unique_ptr<fptype []> PullPdf::fill_random() {
+std::unique_ptr<fptype []> ExpPullPdf::fill_random() {
   std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
-  data = gRandom->Gaus(host_params[index],sigma);
+  data = gRandom->Exp(host_params[index]);
   h_ptr[0] = data;
   return h_ptr;
 }
-std::unique_ptr<fptype []> PullPdf::fill_Asimov() {
+std::unique_ptr<fptype []> ExpPullPdf::fill_Asimov() {
   std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
   data = host_params[index];
   h_ptr[0] = data;
   return h_ptr;
 }
-void PullPdf::cache() {
+void ExpPullPdf::cache() {
   data_backup = data;
 }
-void PullPdf::restore() {
+void ExpPullPdf::restore() {
   data = data_backup;
 }

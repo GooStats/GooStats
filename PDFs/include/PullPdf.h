@@ -7,27 +7,32 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#ifndef PULLPDF_HH
-#define PULLPDF_HH
+#ifndef PullPdf_H
+#define PullPdf_H
 
 #include "DataPdf.h"
 
+/*! \class PullPdf
+ *  \brief The simplest Gaussian pull
+ */
 class PullPdf : public DataPdf {
   public:
-    PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype mt);
+    PullPdf(std::string n, Variable* var,
+	fptype m,fptype s,
+	fptype mt/* mt is the exposure of the subsidiary exp. */);
 
     __host__ virtual fptype normalise () const{return 1;}
 
     __host__ fptype calculateNLL() const;
     std::unique_ptr<fptype []> fill_random() final;
     std::unique_ptr<fptype []> fill_Asimov() final;
-  void cache();
-  void restore();
+    void cache() final;
+    void restore() final;
 
   private:
     const int index;
-    fptype mean;
-    fptype mean_backup = -99;
+    fptype data;
+    fptype data_backup = -99;
     const fptype sigma;
     const fptype masstime;
 };

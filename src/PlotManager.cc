@@ -154,7 +154,7 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
     double ymin = log(y.at(int(y.size()*0.1)));
     double ymax= log(y.back());
     if(logY)
-      h->GetYaxis()->SetRangeUser(exp(ymin),exp(ymax+(ymax-ymin)*0.3)); 
+      h->GetYaxis()->SetRangeUser(exp(ymin-(ymax-ymin)*0.1),exp(ymax+(ymax-ymin)*0.3)); 
     else
       h->GetYaxis()->SetRangeUser(y.at(0)-1>0?y.at(0)-1:0,exp(ymax)+(exp(ymax)-exp(ymin))*0.3);
   };
