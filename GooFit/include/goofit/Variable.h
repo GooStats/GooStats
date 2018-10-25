@@ -29,15 +29,15 @@ struct Variable : Indexable {
   Variable(std::string n, fptype v, fptype e, fptype dn, fptype up);
   ~Variable();
 
-  fptype error;
+  fptype error = -100;
   bool apply_penalty = false;
-  fptype penalty_mean = 0;
-  fptype penalty_sigma = 1;
-  fptype lowerlimit;
-  fptype upperlimit;
-  int numbins;
-  bool fixed;
-  fptype blind;
+  fptype penalty_mean = -99;
+  fptype penalty_sigma = -98;
+  fptype lowerlimit = -97;
+  fptype upperlimit = -96;
+  int numbins = -95;
+  bool fixed = false;
+  fptype blind = -94;
 };
 
 struct Constant : Indexable {
