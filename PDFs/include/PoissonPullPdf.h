@@ -32,8 +32,8 @@ class PoissonPullPdf : public DataPdf {
   private:
     const int index;
     const int index_e;
-    fptype data;
-    fptype data_backup = -99;
+    int data;
+    int data_backup = -99;
     const fptype bkg;
     const fptype masstime;
 };

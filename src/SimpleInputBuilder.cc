@@ -146,6 +146,17 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
       file->Close(); // don't delete, ROOT will delete them 
   }
 }
+void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
+  std::vector<std::string> components(GooStats::Utility::splitter(configset->query("components"),":"));;
+  for(auto component: components) {
+    // warning: no error checking
+    configset->createVar(component,
+	::atof(configset->query("N"+component+"_init").c_str()),
+	::atof(configset->query("N"+component+"_err").c_str()),
+	::atof(configset->query("N"+component+"_min").c_str()),
+	::atof(configset->query("N"+component+"_max").c_str()));
+  } 
+}
 DatasetManager *SimpleInputBuilder::buildDataset(DatasetController *controller) {
   return controller->createDataset();
 }
@@ -153,13 +164,13 @@ bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset,RawSpectrumProv
   spcBuilder->AddSiblings(new SpectrumBuilder(provider));
   for(auto component : dataset->get<std::vector<std::string>>("components")) {
     if(dataset->get<std::string>(component+"_type").substr(0,3)=="Ana") {
-      GooPdf *ErawPdf = spcBuilder->buildSpectrum(component+"_Eraw",dataset);
-      if(!ErawPdf) {
-	std::cout<<"No hanlder is found to build spectrum <"<<component<<"_Eraw> "
-	  <<"type <"<<dataset->get<std::string>(component+"_Eraw_type")<<">"<<std::endl;
+      GooPdf *innerPdf = spcBuilder->buildSpectrum(component+"_inner",dataset);
+      if(!innerPdf) {
+	std::cout<<"No hanlder is found to build spectrum <"<<component<<"_inner> "
+	  <<"type <"<<dataset->get<std::string>(component+"_inner_type")<<">"<<std::endl;
 	throw GooStatsException("Cannot build spectrum");
       }
-      dataset->set<PdfBase*>(component+"_ErawPdf",ErawPdf);
+      dataset->set<PdfBase*>(component+"_innerPdf",innerPdf);
     }
   }
   return true;
@@ -195,7 +206,7 @@ std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDataset
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
   if(configset->has("pullPars"))
   for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
-      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(par,configset)));
+      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(configset,par+"_pull")));
   }
   return controllers;
 }

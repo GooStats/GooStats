@@ -20,7 +20,7 @@ bool SimpleOptionParser::parse(const std::string &fileName) {
   return true;
 }
 bool SimpleOptionParser::parse(int argc,char **argv) {
-  do_parse(argc,argv);
+  do_parse(argc,const_cast<const char**>(argv));
   return true;
 }
 std::string SimpleOptionParser::query(const std::string &key) const {
@@ -40,6 +40,7 @@ bool SimpleOptionParser::hasAndYes(const std::string &key) const {
 
 #include <sstream>
 void SimpleOptionParser::do_parse(const std::string& filename) {
+  if(filename.find("=")!=std::string::npos) { const char *c[] = {"",filename.c_str()}; do_parse(2,c); return; }
   std::cout<<"Loading from <"<<filename<<">"<<std::endl;
   std::ifstream fin(filename.c_str());
   if(!fin.is_open())
@@ -57,7 +58,7 @@ void SimpleOptionParser::do_parse(const std::string& filename) {
   }
   fin.close();
 }
-void SimpleOptionParser::do_parse(int argc,char **argv) {
+void SimpleOptionParser::do_parse(int argc,const char **argv) {
   for(int i = 1;i<argc;++i) {
     std::string item(argv[i]);
     auto eqPos = item.find("=");

@@ -1,5 +1,5 @@
-species.push_back("NReactor");
-species.push_back("NReactor_err");
+species.push_back("Reactor");
+species.push_back("Reactor_err");
 species.push_back("U235");
 species.push_back("U235_err");
 species.push_back("U238");

@@ -22,9 +22,7 @@
 #include "DatasetController.h"
 class PullDatasetController : public DatasetController {
   public:
-    PullDatasetController(std::string n,ConfigsetManager *_c) : 
-      DatasetController(_c),name(n) { };
-    DatasetManager *createDataset() override;
+    PullDatasetController(ConfigsetManager *_c,const std::string &n="pull") : DatasetController(_c,n) { }
     bool collectInputs(DatasetManager *) override;
     bool configureParameters(DatasetManager *) override;
     bool buildLikelihoods(DatasetManager *) override;

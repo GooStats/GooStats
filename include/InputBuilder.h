@@ -36,6 +36,8 @@ class InputBuilder {
     virtual ConfigsetManager *buildConfigset(ParSyncManager *parManager,const InputConfig &config) = 0;
     //! fill raw spectrum providers
     virtual void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) = 0;
+    //! create list of vars, so DatasetManager can call ConfigManager::var(name)
+    virtual void createVariables(ConfigsetManager*) = 0;
     //! set-up config-set level parameters
     virtual bool configParameters(ConfigsetManager *configset) = 0;
     //! install spectrum type hanlder

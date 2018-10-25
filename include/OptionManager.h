@@ -13,6 +13,7 @@
 // protocol for option manager class
 class OptionManager {
   public:
+    // can be fileName or key=value sentence
     virtual bool parse(const std::string &fileName) = 0;
     virtual bool parse(int argc,char **argv) = 0;
     virtual std::string query(const std::string &key) const = 0;

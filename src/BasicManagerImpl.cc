@@ -36,3 +36,8 @@ Variable *BasicManagerImpl::var(const std::string &key) const {
     throw GooStatsException("Variable not available");
   }
 }
+void BasicManagerImpl::dump(const std::string &indent) const {
+  for(auto var : m_var) {
+    std::cout<<indent<<" ["<<m_name<<"] : ("<<var.first<<", "<<var.second->name<<") "<<std::endl;
+  }
+}

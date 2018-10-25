@@ -24,13 +24,12 @@ __host__ PoissonPullPdf::PoissonPullPdf(std::string n, Variable* var, Variable *
 __host__ double PoissonPullPdf::calculateNLL () const {
   const double var = host_params[index];
   const double eff = host_params[index_e];
-  int k = data;
   double lambda = var*masstime*eff+bkg;
-  double ret = -(k*log(lambda)-lgamma(k+1.)-lambda);
+  double ret = -(data*log(lambda)-lgamma(data+1.)-lambda);
   // Stirling's approximation: lgamma(n+1) = 0.5*log(2*pi)+(n+0.5)*log(n)-n+O(1/n);
   if(IsChisquareFit()) ret = ret*2;
 #ifdef NLL_CHECK
-  printf("log(L) %.12le pull chisquare? %s\n",ret, IsChisquareFit()?"yes":"no");
+  printf("log(L) %.12le pull d %3d MT %.12le mu %.12le eff %.12le b %.12le\n",ret, data,masstime,host_params[index],eff,bkg);
 #endif
   return ret;
 }

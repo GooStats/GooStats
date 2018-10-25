@@ -38,7 +38,7 @@ GooPdf *ReactorSpectrumBuilder::buildOscillatedReactor(const std::string &name,
 GooPdf *ReactorSpectrumBuilder::_buildOscillatedReactor(const std::string &name,
     DatasetManager *dataset,bool oscOn) {
   std::string pdfName = dataset->name()+"."+name;
-  Variable *E = dataset->get<Variable*>(name); 
+  Variable *E = dataset->get<Variable*>(name+"_E"); 
   GooPdf *reactor = new ReactorSpectrumPdf(pdfName+"_reactor",E,
       dataset->get<std::vector<Variable*>>("fractions"),
       dataset->get<std::vector<double>>("coefficients"),

@@ -22,7 +22,7 @@ bool DatasetManager::buildLikelihood() {
   return delegate->buildLikelihoods(this);
 }
 #define DEFINE_DatasetManager(T,var,ZERO) \
-template <> void DatasetManager::set<T>(const std::string _name,T x) { \
+template <> void DatasetManager::set<T>(const std::string &_name,T x) { \
   if(var.find(_name)==var.end()) { \
     var.insert(std::make_pair(_name,x)); \
   } else  { \
@@ -30,7 +30,7 @@ template <> void DatasetManager::set<T>(const std::string _name,T x) { \
 	<<_name<<">"<<std::endl; \
   } \
 } \
-template <> T DatasetManager::get<T>(const std::string _name) { \
+template <> T DatasetManager::get<T>(const std::string &_name) { \
   if(var.find(_name)!=var.end()) { \
     return var.at(_name); \
   } else  { \
@@ -40,7 +40,17 @@ template <> T DatasetManager::get<T>(const std::string _name) { \
     return ZERO; \
   } \
 }  \
-template <> bool DatasetManager::has<T>(const std::string _name) { \
+template <> T DatasetManager::get<T>(const std::string &_name) const { \
+  if(var.find(_name)!=var.end()) { \
+    return var.at(_name); \
+  } else  { \
+    std::cout<<name()<<" Warning: request non-existed terms <"\
+	<<_name<<">"<<std::endl; \
+    gSystem->StackTrace(); \
+    return ZERO; \
+  } \
+}  \
+template <> bool DatasetManager::has<T>(const std::string &_name) const { \
   return var.find(_name)!=var.end(); \
 } 
 DEFINE_DatasetManager(std::string,m_str,"");

@@ -16,15 +16,17 @@ __host__ PullPdf::PullPdf(std::string n, Variable* var, fptype m,fptype s,fptype
   data(m),
   sigma(s),
   masstime(mt)
-{}
+{
+  assert(var);
+}
 
 
 __host__ double PullPdf::calculateNLL () const {
   double ret = pow((host_params[index]-data)/sigma,2);
   // Stirling's approximation: lgamma(n+1) = 0.5*log(2*pi)+(n+0.5)*log(n)-n+O(1/n);
-  if(!IsChisquareFit()) ret = ret/2+0.5*log(2*M_PI_L*sigma*sigma*masstime*masstime);
+  if(!IsChisquareFit()) ret = ret/2+0.5*log(2*M_PI_L*sigma*masstime*sigma*masstime);
 #ifdef NLL_CHECK
-  printf("log(L) %.12le pull chisquare? %s\n",ret, IsChisquareFit()?"yes":"no");
+  printf("log(L) %.12le pull d %.12le mu %.12le sigma %.12le MT %.12le\n",ret, data,host_params[index],sigma,masstime);
 #endif
   return ret;
 }

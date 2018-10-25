@@ -37,8 +37,8 @@ GooPdf *SpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *d
 GooPdf *SpectrumBuilder::buildMC(const std::string &name,
     DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  Variable *Evis = dataset->get<Variable*>(name); // Eraw
-  BinnedDataSet *binned_data = loadRawSpectrum(Evis,name);
+  Variable *E = dataset->get<Variable*>(name+"_E"); // inner
+  BinnedDataSet *binned_data = loadRawSpectrum(E,name);
   bool freeScale = dataset->get<bool>(name+"_freeMCscale");
   bool freeShift = dataset->get<bool>(name+"_freeMCshift");
   if(freeScale||freeShift) {
@@ -52,8 +52,8 @@ GooPdf *SpectrumBuilder::buildMC(const std::string &name,
 GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
-      dataset->get<Variable*>("Evis"), // Evis
-      dataset->get<Variable*>(name+"_Eraw"), // Eraw
+      dataset->get<Variable*>(name+"_E"), // Evis
+      dataset->get<Variable*>(name+"_inner_E"), // inner
       dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
@@ -65,8 +65,8 @@ GooPdf *SpectrumBuilder::buildAna(const std::string &name,DatasetManager *datase
 GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
-      dataset->get<Variable*>("Evis"), // Evis
-      dataset->get<Variable*>(name+"_Eraw"), // Eraw
+      dataset->get<Variable*>(name+"_E"), // Evis
+      dataset->get<Variable*>(name+"_inner_E"), // inner
       dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("NL"), // non-linearity
@@ -79,13 +79,13 @@ GooPdf *SpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager 
 GooPdf *SpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
-      dataset->get<Variable*>("Evis"), // Evis
-      dataset->get<Variable*>(name+"_Eraw"), // Eraw
+      dataset->get<Variable*>(name+"_E"), // Evis
+      dataset->get<Variable*>(name+"_inner_E"), // inner
       dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("res"), // resolution
       dataset->get<double>("feq"),
-      dataset->get<Variable*>(name+"_Evis")); // peak position
+      dataset->get<Variable*>(name+"_Epeak")); // peak position
   return resolutionPdf;
 }
 GooPdf *SpectrumBuilder::buildTODO(const std::string &name,DatasetManager *dataset) {
@@ -104,13 +104,21 @@ BinnedDataSet *SpectrumBuilder::loadRawSpectrum(Variable *x,const std::string &n
 }
 GooPdf *SpectrumBuilder::buildAnaBasic(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  GooPdf *anaFinePdf = new GeneralConvolutionPdf(pdfName+"_fine",
-      dataset->get<Variable*>("EvisFine"),
-      dataset->get<Variable*>(name+"_Eraw"),
-      static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_ErawPdf")),
-      static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_RPF")));
-  return new IntegralInsideBinPdf(pdfName,
-      dataset->get<Variable*>("Evis"),
-      static_cast<unsigned int>(dataset->get<int>("anaScaling")),
-      anaFinePdf);
+  if(dataset->has<int>("anaScaling")) {
+    GooPdf *anaFinePdf = new GeneralConvolutionPdf(pdfName+"_fine",
+	dataset->get<Variable*>("EvisFine"),
+	dataset->get<Variable*>(name+"_inner_E"),
+	static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_innerPdf")),
+	static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_RPF")));
+    return new IntegralInsideBinPdf(pdfName,
+	dataset->get<Variable*>(name+"_E"),
+	static_cast<unsigned int>(dataset->get<int>("anaScaling")),
+	anaFinePdf);
+  } else {
+    return new GeneralConvolutionPdf(pdfName,
+	dataset->get<Variable*>(name+"_E"),
+	dataset->get<Variable*>(name+"_inner_E"),
+	static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_innerPdf")),
+	static_cast<GooPdf*>(dataset->get<PdfBase*>(name+"_RPF")));
+  }
 }

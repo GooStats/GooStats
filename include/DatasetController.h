@@ -23,10 +23,12 @@
 class ConfigsetManager;
 class DatasetController : public DatasetDelegate {
   public:
-    DatasetController(ConfigsetManager *_c) : configset(_c) { };
-    virtual DatasetManager *createDataset() = 0;
+    DatasetController(ConfigsetManager *_c,const std::string &n="LL") : configset(_c),name(n) { };
+    virtual DatasetManager *createDataset() const { return new DatasetManager(name); };
     DatasetController() = delete;
+    bool configureParameters(DatasetManager *) override { return true; }
   protected:
     ConfigsetManager *configset;
+    const std::string name;
 };
 #endif
