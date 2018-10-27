@@ -23,6 +23,7 @@ bool GSFitManager::run(int) {
   tms startProc, stopProc; 
   gettimeofday(&startTime, NULL);
   startCPU = times(&startProc);
+  m_likelihood = m_chi2 = m_LLp = m_LLpErr = -1e300;
   /*********** actual fit --> *************/
   fitManager->fit(); 
   fitManager->getMinuitValues();
@@ -63,12 +64,12 @@ bool GSFitManager::LLfit() const {
 }
 #include "SumPdf.h"
 void GSFitManager::eval() {
-  // p-value
-  toyMC.get_p_value(this,getInputManager(),minus2lnlikelihood()/2,m_LLp,m_LLpErr);
   // likelihood
   sumpdf()->setFitControl(new BinnedNllFit);
   sumpdf()->copyParams();
   m_likelihood = sumpdf()->calculateNLL();
+  // p-value
+  toyMC.get_p_value(this,getInputManager(),minus2lnlikelihood()/2,m_LLp,m_LLpErr);
   // chi2
   sumpdf()->setFitControl(new BinnedChisqFit);
   sumpdf()->copyParams();
