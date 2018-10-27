@@ -6,7 +6,7 @@
 	  cd GooStats-release
 	  git clone git@github.com:GooStats/GooStats.git
 	  cd GooStats
-	  GooStatsVersion=4.0.0
+	  GooStatsVersion=4.0.1
 	  git checkout ${GooStatsVersion}
 	  cd ../..
 
