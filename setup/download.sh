@@ -23,6 +23,5 @@ cat >setup.sh<<EOF
 #!/bin/bash
 export GTEST_ROOT="$(readlink -f ../GooStats-release/googletest-install)"
 export GOOFIT_DIR="$(readlink -f ../GooStats-release/GooFit-install)"
-export GTEST_ROOT="$(readlink -f ../GooStats-release/googletest-install)"
 export CMAKE_PREFIX_PATH=\$GOOFIT_DIR:\$CMAKE_PREFIX_PATH
 EOF
