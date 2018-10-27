@@ -57,7 +57,7 @@ void FitManager::runMigrad () {
 //  minuit->mnexcm("SIMPLEX", 0,0,ierflg_simplex);
   if (0 < overrideCallLimit) {
     //std::cout << "Calling MIGRAD with call limit " << overrideCallLimit << std::endl; 
-    std::cout << "Calling MINIMIZE with call limit " << overrideCallLimit << std::endl; 
+//    std::cout << "Calling MINIMIZE with call limit " << overrideCallLimit << std::endl; 
     double plist[1];
     plist[0] = overrideCallLimit;
     minuit->mnexcm("MINIMIZE", plist, 1, ierflg_minimize);
@@ -71,11 +71,11 @@ void FitManager::runMigrad () {
 //  int ierflg;
 //  minuit->mnexcm("MINOS", 0,0,ierflg);
   if(minim_conv) 
-    cout<<"MINIMIZE exit sucessfully"<<endl;
+    ; //cout<<"MINIMIZE exit sucessfully"<<endl;
   else
     cout<<"MINIMIZE did not exit normally"<<endl;
   if(hesse_conv) 
-    cout<<"HESSE exit sucessfully"<<endl;
+    ; //cout<<"HESSE exit sucessfully"<<endl;
   else
     cout<<"HESSE did not exit normally"<<endl;
 }

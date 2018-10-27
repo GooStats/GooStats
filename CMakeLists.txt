@@ -37,7 +37,6 @@ include_directories("${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
 endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/PDFs/include")
 
 ### Options ###
 if(GOOSTATS_SEPARATE_COMP)
@@ -63,9 +62,22 @@ if(Mask_CHECK)
 endif()
 
 
-# fix: should not depend on Borexino
-add_subdirectory(PDFs)
-add_subdirectory(src)
+include_directories("PDFs/include")
+add_subdirectory(PDFs) # gpu: GooStatsPDFs
+include_directories("Kernel/include")
+add_subdirectory(Kernel) # GooStatsKernel, GooStatsNLLCheck, TestFixture
+# also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
+include_directories("StatModules/include")
+add_subdirectory(StatModules) # GooStatsStatModules
+include_directories("SimplePackage/include")
+add_subdirectory(SimplePackage) # GooStatsSimple
+include_directories("include")
+add_subdirectory(src) # GooStatsExperimental
+
+add_library(GooStatsLib INTERFACE)
+target_link_libraries(GooStatsLib INTERFACE GooStatsKernel GooStatsSimple
+  GooStatsStatModules GooStatsExperimental)
+
 
 add_subdirectory(Modules)
 

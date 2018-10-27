@@ -7,7 +7,7 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "ReactorAnalysisManager.h"
+#include "AnalysisManager.h"
 #include "InputManager.h"
 #include "ReactorInputBuilder.h"
 #include "ReactorSpectrumBuilder.h"
@@ -15,46 +15,47 @@
 #include "SimpleOutputBuilder.h"
 #include "SimplePlotManager.h"
 #include "GSFitManager.h"
+#include "PrepareData.h"
 #include "ContourManager.h"
 #include "CorrelationManager.h"
+#include "SimpleFit.h"
+#include "ScanPar.h"
+#include "NMOTest.h"
 
 int main (int argc, char** argv) {
-  AnalysisManager *ana = new ReactorAnalysisManager();
+  AnalysisManager *ana = new AnalysisManager();
   InputManager *inputManager = new InputManager(argc,argv);
   InputBuilder *builder = new ReactorInputBuilder();
   builder->installSpectrumBuilder(new ReactorSpectrumBuilder());
   inputManager->setInputBuilder(builder);
-  ana->setInputManager(inputManager);
-  ana->registerModule(inputManager);
 
   GSFitManager *gsFitManager = new GSFitManager();
-  gsFitManager->registerDependence(inputManager);
-  ana->registerModule(gsFitManager);
 
   OutputManager *outManager = new OutputManager();
-  outManager->registerDependence(inputManager);
-  outManager->registerDependence(gsFitManager);
   outManager->setOutputBuilder(new SimpleOutputBuilder());
-  ana->setOutputManager(outManager);
-  ana->registerModule(outManager);
+
+  StatModule::setup(inputManager);
+  StatModule::setup(gsFitManager);
+  StatModule::setup(outManager);
 
   PlotManager *plotManager = new SimplePlotManager();
-  plotManager->registerDependence(gsFitManager);
-  plotManager->registerDependence(outManager);
-  plotManager->registerDependence(inputManager);
   outManager->setPlotManager(plotManager);
 
+  PrepareData *data = new PrepareData();
+  SimpleFit *fit = new SimpleFit();
+  NMOTest *nmo = new NMOTest();
+  ScanPar *scan = new ScanPar();
   CorrelationManager *correlationManager = new CorrelationManager();
-  correlationManager->registerDependence(inputManager);
-  correlationManager->registerDependence(gsFitManager);
-  correlationManager->registerDependence(outManager);
-  ana->registerModule(correlationManager);
-
   ContourManager *contourManager = new ContourManager();
-  contourManager->registerDependence(inputManager);
-  contourManager->registerDependence(gsFitManager);
-  contourManager->registerDependence(outManager);
+
+  ana->registerModule(inputManager);
+  ana->registerModule(data);
+  ana->registerModule(fit);
+  ana->registerModule(nmo);
+  ana->registerModule(scan);
+  ana->registerModule(correlationManager);
   ana->registerModule(contourManager);
+  ana->registerModule(outManager);
 
   ana->init();
   ana->run();
