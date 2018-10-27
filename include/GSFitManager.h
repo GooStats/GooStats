@@ -47,7 +47,7 @@ class GSFitManager : public Module {
     bool m_hesse_conv = false;
     double m_likelihood;
     double m_chi2;
-    double m_NDF;
+    int m_NDF;
     double m_LLp = -1;
     double m_LLpErr = 1e300;
 };
