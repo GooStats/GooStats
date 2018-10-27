@@ -25,7 +25,7 @@ class SimpleOptionParser : public OptionManager {
     void printAllOptions() const final;
   private:
     void do_parse(const std::string &fileName);
-    void do_parse(int argc,char **argv);
+    void do_parse(int argc,const char **argv);
     void insertKeyValue(const std::string &key,const std::string &value,bool allowOverwrite=false);
     std::map<std::string,std::string> options;
 };

@@ -8,9 +8,6 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "SimpleDatasetController.h"
-DatasetManager *SimpleDatasetController::createDataset() {
-  return new DatasetManager(std::string("main")); 
-}
 #include "ConfigsetManager.h"
 #include "GooStatsException.h"
 #include "Utility.h"
@@ -38,11 +35,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     std::vector<Variable*> Ns;
     for(auto component: components) {
       // warning: no error checking
-      Variable *N = configset->createVar("N"+component,
-	  ::atof(configset->query("N"+component+"_init").c_str()),
-	  ::atof(configset->query("N"+component+"_err").c_str()),
-	  ::atof(configset->query("N"+component+"_min").c_str()),
-	  ::atof(configset->query("N"+component+"_max").c_str()));
+      Variable *N = configset->var(component);
       N->numbins = -1; // dirty hack: identify them as rates
       Ns.push_back(N);
     } 
@@ -52,7 +45,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     for(auto component: components) {
       std::string type = configset->query(component+"_type");
       dataset->set(component+"_type",type);
-      dataset->set(component,dataset->get<Variable*>("Evis"));
+      dataset->set(component+"_E",dataset->get<Variable*>("Evis"));
       if(type=="MC") {
 	dataset->set(component+"_freeMCscale",
 	    configset->hasAndYes(component+"_freeMCscale"));
@@ -61,19 +54,19 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
       } else if(type.substr(0,3)=="Ana") {
 	useAna = true; // NL, res, feq
 
-	std::string Eraw_type = configset->query(component+"_Eraw_type");
-	dataset->set(component+"_Eraw_type",Eraw_type);
-	if(Eraw_type=="MC") {
-	  dataset->set(component+"_Eraw_freeMCscale",
-	      configset->hasAndYes(component+"_Eraw_freeMCscale"));
-	  dataset->set(component+"_Eraw_freeMCshift",
-	      configset->hasAndYes(component+"_Eraw_freeMCshift"));
+	std::string inner_type = configset->query(component+"_inner_type");
+	dataset->set(component+"_inner_type",inner_type);
+	if(inner_type=="MC") {
+	  dataset->set(component+"_inner_freeMCscale",
+	      configset->hasAndYes(component+"_inner_freeMCscale"));
+	  dataset->set(component+"_inner_freeMCshift",
+	      configset->hasAndYes(component+"_inner_freeMCshift"));
 	}
-	Variable *Eraw = configset->createVar(component+"_Eraw",0,0,
-	    ::atof(configset->query(component+"_Eraw_min").c_str()),
-	    ::atof(configset->query(component+"_Eraw_max").c_str()));
-	Eraw->numbins = ::atof(configset->query(component+"_Eraw_nbins").c_str());
-	dataset->set(component+"_Eraw", Eraw); // energy
+	Variable *inner_E = configset->createVar(component+"_inner_E",0,0,
+	    ::atof(configset->query(component+"_inner_min").c_str()),
+	    ::atof(configset->query(component+"_inner_max").c_str()));
+	inner_E->numbins = ::atof(configset->query(component+"_inner_nbins").c_str());
+	dataset->set(component+"_inner_E", inner_E); // energy
 	if(type=="AnaShifted") {
 	  dataset->set(component+"_dEvis", 
 	      configset->createVar(component+"_dEvis",
@@ -82,8 +75,8 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 		::atof(configset->query(component+"_dEvis_min").c_str()),
 		::atof(configset->query(component+"_dEvis_max").c_str())));
 	} else if(type=="AnaPeak") {
-	  dataset->set(component+"_Evis", 
-	      configset->createVar(component+"_Evis",
+	  dataset->set(component+"_Epeak", 
+	      configset->createVar(component+"_Epeak",
 		::atof(configset->query(component+"_Evis_init").c_str()),
 		::atof(configset->query(component+"_Evis_err").c_str()),
 		::atof(configset->query(component+"_Evis_min").c_str()),
@@ -182,9 +175,6 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   }
   return true; 
 }
-bool SimpleDatasetController::configureParameters(DatasetManager *) {
-  return true; 
-};
 #include "SumPdf.h"
 bool SimpleDatasetController::buildLikelihoods(DatasetManager *dataset) {
   GooPdf *pdf = new SumPdf(dataset->name(),

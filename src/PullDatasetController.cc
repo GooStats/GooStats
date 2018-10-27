@@ -8,9 +8,6 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "PullDatasetController.h"
-DatasetManager *PullDatasetController::createDataset() {
-  return new DatasetManager(name);
-}
 #include "ConfigsetManager.h"
 #include "GooStatsException.h"
 bool PullDatasetController::collectInputs(DatasetManager *dataset) {

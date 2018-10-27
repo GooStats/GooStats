@@ -57,9 +57,10 @@ class DatasetManager {
     bool initialize();
     bool buildLikelihood();
     GooPdf *getLikelihood() { return likelihood.get(); }
-    template<typename T> void set(const std::string ,T );
-    template<typename T> T get(const std::string );
-    template<typename T> bool has(const std::string );
+    template<typename T> void set(const std::string &,T);
+    template<typename T> T get(const std::string &) const;
+    template<typename T> T get(const std::string &);
+    template<typename T> bool has(const std::string &) const;
   public:
     void setLikelihood(Passkey<DatasetDelegate>, GooPdf*);
   private:
@@ -79,9 +80,10 @@ class DatasetManager {
     std::map<std::string,BinnedDataset*> m_bindata;
 };
 #define DECLARE_DatasetManager(T) \
-template<> void DatasetManager::set<T>(const std::string,T); \
-template<> T DatasetManager::get<T>(const std::string ); \
-template<> bool DatasetManager::has<T>(const std::string );
+template<> void DatasetManager::set<T>(const std::string&,T); \
+template<> T DatasetManager::get<T>(const std::string& ) const; \
+template<> T DatasetManager::get<T>(const std::string& ) ; \
+template<> bool DatasetManager::has<T>(const std::string& ) const;
 DECLARE_DatasetManager(std::string);
 DECLARE_DatasetManager(int);
 DECLARE_DatasetManager(bool);

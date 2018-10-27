@@ -151,9 +151,10 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
 	      "deltaM231_err=0.18","deltaM221_err=0.18",
-	      "print_contour=true","plot_profiles=default.NReactor","plot_contours=default.NReactor:default.deltaM231;default.NReactor:default.deltaM221",
-	      "corr_variables=default.NReactor:default.deltaM231:default.deltaM221",
-	      "label_default.NReactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}");
+	      "print_contour=true","plot_profiles=default.Reactor","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
+	      "contour_N=4",
+	      "corr_variables=default.Reactor:default.deltaM231:default.deltaM221",
+	      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}");
   trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
 	      "fitFakeData=true","fitAsimov=true","fitInverseMH=true");
   trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",

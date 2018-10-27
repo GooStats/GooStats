@@ -29,6 +29,10 @@ class SimpleInputBuilder : public InputBuilder {
     std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,char **argv) override;
     //! construct and fill the IDataManager part
     ConfigsetManager *buildConfigset(ParSyncManager *parManager,const InputConfig &config) override;
+    //! fill raw spectrum providers
+    void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) override;
+    //! create list of vars, so DatasetManager can call ConfigManager::var(name)
+    void createVariables(ConfigsetManager*) override;
     //! set-up config-set level parameters
     bool configParameters(ConfigsetManager *) override { return true; }
     //! install spectrum type hanlder
@@ -37,8 +41,6 @@ class SimpleInputBuilder : public InputBuilder {
     std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
     //! construct a dataset manager based on a datasetcontroller
     DatasetManager *buildDataset(DatasetController *) override;
-    //! fill raw spectrum providers
-    void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) override;
     //! build the raw spectra used for convolution
     bool buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) override;
     //! build the components of datasetmanager

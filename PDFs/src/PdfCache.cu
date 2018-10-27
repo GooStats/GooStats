@@ -24,8 +24,8 @@ int PdfCache::registerFunc(PdfBase *pdf) {
     static fptype* dev_address[1];
     dev_address[0] = thrust::raw_pointer_cast(PdfCache_dev_vec[pdf_Id]->data());
     MEMCPY_TO_SYMBOL(PdfCache_dev_array, dev_address, sizeof(fptype*), pdf_Id*sizeof(fptype*), cudaMemcpyHostToDevice); 
-    printf("PdfCache::registerFunc register [%s](%p) as [%d]\n",
-        pdf->getName().c_str(),pdf,funMap.at(pdf));
+    printf("PdfCache::registerFunc register [%s] as [%d]\n",
+        pdf->getName().c_str(),funMap.at(pdf));
     pdf_Id++;
   }
   return funMap.at(pdf);

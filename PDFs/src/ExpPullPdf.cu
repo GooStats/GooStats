@@ -24,7 +24,7 @@ __host__ double ExpPullPdf::calculateNLL () const {
   double ret = data/mu+log(mu);
   if(IsChisquareFit()) ret = ret*2;
 #ifdef NLL_CHECK
-  printf("log(L) %.12le pull chisquare? %s\n",ret, IsChisquareFit()?"yes":"no");
+  printf("log(L) %.12le pull d %.12le mu %.12le\n",ret, data,mu);
 #endif
   return ret;
 }

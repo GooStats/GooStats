@@ -60,7 +60,6 @@ TString CorrelationManager::label(TString parName) {
   return parName;
 }
 void CorrelationManager::print() {
-  if(!corr_vars.size()) return;
   TMinuit *gMinuit = getFitManager()->getMinuitObject();
   // global variables
   int fNpar = gMinuit->fNpar;
@@ -81,16 +80,19 @@ void CorrelationManager::print() {
  
  //                                                correlation coeffs
   if (fNpar <= 1) return;
+  getOutputManager()->getOutputFile()->cd();
   h = new TH1D("best_fit","best fit",fNpar,0,1);
   gMinuit->mnwerr();
   //    NCOEF is number of coeff. that fit on one line, not to exceed 20
   ncoef = (fNpagwd - 19) / 6;
   ncoef = TMath::Min(ncoef,20);
-  Printf(" ---------------------------------------------------------------------- ");
-  Printf(" PARAMETER  VALUE AND ERROR ");
   ctemp = Form("%30s ","Name");
-    ctemp += TString::Format(" %6s %6s","VALUE","ERROR");
-  Printf("%s",(const char*)ctemp);
+  ctemp += TString::Format(" %6s %6s","VALUE","ERROR");
+  if(corr_vars.size()) {
+    Printf(" ---------------------------------------------------------------------- ");
+    Printf(" PARAMETER  VALUE AND ERROR ");
+    Printf("%s",(const char*)ctemp);
+  }
   for(int i = 1; i<=fNu;++i) {
     int l = fNiofex[i-1];
     if(l==0) continue;
@@ -109,15 +111,17 @@ void CorrelationManager::print() {
   }
   for(auto i : interested_vars) 
     center.push_back(fU[i-1]);
-  Printf(" ---------------------------------------------------------------------- ");
-  Printf(" PARAMETER  CORRELATION COEFFICIENTS  ");
   h2r = new TH2D("best_fit_2D_r","best fit 2D (correlation coefficient)",fNpar,0,1,fNpar,0,1);
   h2r->GetZaxis()->SetRangeUser(-1,1);
   ctemp = Form("%30s  GLOBAL","Name");
   for( auto id : interested_vars ) {
     ctemp += TString::Format(" %6d",id);
   }
-  Printf("%s",(const char*)ctemp);
+  if(corr_vars.size()) {
+    Printf(" ---------------------------------------------------------------------- ");
+    Printf(" PARAMETER  CORRELATION COEFFICIENTS  ");
+    Printf("%s",(const char*)ctemp);
+  }
   for(int ii = 1; ii<=fNu;++ii) {
     int i = fNiofex[ii-1];
     if(i==0) continue;
@@ -142,15 +146,17 @@ void CorrelationManager::print() {
     }
     Printf("%s",(const char*)ctemp);
   }
-  Printf(" ---------------------------------------------------------------------- ");
-  Printf(" PARAMETER  COVARIANCE ");
   h2 = new TH2D("best_fit_2D","best fit 2D covariance",fNpar,0,1,fNpar,0,1);
   h2->GetZaxis()->SetRangeUser(-1,1);
   ctemp = Form("%30s ","Name");
   for( auto id : interested_vars ) {
     ctemp += TString::Format(" %6d",id);
   }
-  Printf("%s",(const char*)ctemp);
+  if(corr_vars.size()) {
+    Printf(" ---------------------------------------------------------------------- ");
+    Printf(" PARAMETER  COVARIANCE ");
+    Printf("%s",(const char*)ctemp);
+  }
   for(int ii = 1; ii<=fNu;++ii) {
     int i = fNiofex[ii-1];
     if(i==0) continue;
@@ -164,7 +170,7 @@ void CorrelationManager::print() {
       n    = TMath::Min(i,j);
       ndex = m*(m-1) / 2 + n;
       ndj  = j*(j + 1) / 2;
-//      std::cout<<fVhmat[ndex-1] / TMath::Sqrt(TMath::Abs(fVhmat[ndi-1]*fVhmat[ndj-1]))<<" / "<<i<<" "<<fNiofex[i-1]<<" "<<fWerr[fNiofex[i-1]-1]<<" / "<<j<<" "<<fNiofex[j-1]<<" "<<fWerr[fNiofex[j-1]-1]<<std::endl;
+      //      std::cout<<fVhmat[ndex-1] / TMath::Sqrt(TMath::Abs(fVhmat[ndi-1]*fVhmat[ndj-1]))<<" / "<<i<<" "<<fNiofex[i-1]<<" "<<fWerr[fNiofex[i-1]-1]<<" / "<<j<<" "<<fNiofex[j-1]<<" "<<fWerr[fNiofex[j-1]-1]<<std::endl;
       fMATUvline[j-1] = fVhmat[ndex-1] / TMath::Sqrt(TMath::Abs(fVhmat[ndi-1]*fVhmat[ndj-1])) * (fWerr[i-1]*fWerr[j-1]);
       h2->SetBinContent(i,j,fMATUvline[j-1]);
     }
@@ -177,7 +183,7 @@ void CorrelationManager::print() {
     }
     Printf("%s",(const char*)ctemp);
   }
-  Printf(" ---------------------------------------------------------------------- ");
+  if(corr_vars.size()) Printf(" ---------------------------------------------------------------------- ");
   h->LabelsOption("v","X");
   h2r->LabelsOption("v","X");
   h2->LabelsOption("v","X");

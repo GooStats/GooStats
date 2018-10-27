@@ -28,6 +28,7 @@ class BasicManager : public IDataManager {
     bool hasVar(const std::string &key) const;
     Variable *var(const std::string &key) const;
     const std::string &varOwner(const std::string &key) const;
+    const std::string dump(std::string indent="") const;
 
   private:
     BasicManager *chooseManager(const std::string &key);
@@ -35,7 +36,7 @@ class BasicManager : public IDataManager {
   private:
     static ParSyncManager* strategyManager;
     const std::string m_name;
-    IDataManager *m_parent;
+    IDataManager *m_parent = nullptr;
     BasicManagerImpl m_impl;
 };
 #endif

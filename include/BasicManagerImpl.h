@@ -20,6 +20,7 @@ class BasicManagerImpl {
     Variable *linkVar(const std::string &key,const std::string &source);
     bool hasVar(const std::string &key) const;
     Variable *var(const std::string &key) const;
+    void dump(const std::string &indent) const;
     std::string m_name;
     std::map<std::string, std::shared_ptr<Variable> > m_var;
     friend class BasicManager;

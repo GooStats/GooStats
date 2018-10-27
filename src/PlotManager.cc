@@ -64,7 +64,7 @@ void PlotManager::set_gStyle() {
 void PlotManager::draw(int ,const std::vector<DatasetManager*> &ds) {
   std::vector<DatasetManager*> drawable_datasets;
   for(auto d:ds) {
-    //if(d->has<std::vector<std::string>>("components")) drawable_datasets.push_back(d);
+    if(!dynamic_cast<SumPdf*>(d->getLikelihood())) continue;
     drawable_datasets.push_back(d);
   }
   auto cc = drawSingleGroup(outName(),drawable_datasets);

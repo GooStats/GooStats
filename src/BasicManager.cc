@@ -38,8 +38,21 @@ bool BasicManager::hasVar(const std::string &key) const {
   return chooseManager(key)->m_impl.hasVar(key);
 }
 Variable *BasicManager::var(const std::string &key) const {
-  return chooseManager(key)->m_impl.var(key);
+  try {
+    return chooseManager(key)->m_impl.var(key);
+  } catch (const GooStatsException &ex) {
+    dump();
+    throw ex;
+  }
 }
 const std::string &BasicManager::varOwner(const std::string &key) const {
   return chooseManager(key)->name();
+}
+const std::string BasicManager::dump(std::string indent) const {
+  if(parent()) {
+    indent+="--";
+    indent+=static_cast<BasicManager*>(parent())->BasicManager::dump();
+  }
+  m_impl.dump(indent);
+  return indent;
 }

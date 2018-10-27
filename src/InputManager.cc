@@ -31,6 +31,7 @@ bool InputManager::init() {
   outName = builder->loadOutputFileNameFromCmdArgs(argc,argv);
   initialize_configsets();
   fill_rawSpectrumProvider();
+  create_variables();
   initialize_controllers();
   initialize_datasets();
   buildTotalPdf();
@@ -76,6 +77,13 @@ void InputManager::initialize_controllers() {
     }
   }
 }
+void InputManager::create_variables() {
+  std::cout<<"Dumping pre-created rates:"<<std::endl;
+  for(auto configset: configsets) {
+    builder->createVariables(configset.get());
+    configset->dump(configset->name()+">");
+  }
+}
 void InputManager::fill_rawSpectrumProvider() {
   for(auto configset: configsets)
     builder->fillRawSpectrumProvider(provider.get(),configset.get());
@@ -99,13 +107,7 @@ std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomDat
   for(auto dataset: datasets) {
     DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
     if(!pdf) continue;
-    Variable *Evis = dataset->get<Variable*>("Evis");
-    BinnedDataSet* data= new BinnedDataSet(Evis);
-    pdf->setData(data);
     std::unique_ptr<fptype []> res = pdf->fill_random();
-    for(int i = 0;i<Evis->numbins;++i) {
-      data->setBinContent(i,res[i*3+1]);
-    }
     datas.insert(std::make_pair(dataset.get(),std::move(res)));
   }
   return datas;
@@ -115,13 +117,7 @@ std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillAsimovDat
   for(auto dataset: datasets) {
     DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
     if(!pdf) continue;
-    Variable *Evis = dataset->get<Variable*>("Evis");
-    BinnedDataSet* data= new BinnedDataSet(Evis);
-    pdf->setData(data);
     std::unique_ptr<fptype []> res = pdf->fill_Asimov();
-    for(int i = 0;i<Evis->numbins;++i) {
-      data->setBinContent(i,res[i*3+1]);
-    }
     datas.insert(std::make_pair(dataset.get(),std::move(res)));
   }
   return datas;

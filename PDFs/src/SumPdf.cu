@@ -357,6 +357,7 @@ __host__ double SumPdf::sumOfNll (int numVars) const {
 #endif
 #include "TRandom.h"
 std::unique_ptr<fptype []> SumPdf::fill_random() {
+  setData(new BinnedDataSet(*obsBegin()));
   copyParams(); 
   normalise();
   int dimensions = 2 + observables.size(); // Bin center (x,y, ...), bin value, and bin volume.
@@ -395,6 +396,7 @@ std::unique_ptr<fptype []> SumPdf::fill_random() {
   return h_ptr;
 }
 std::unique_ptr<fptype []> SumPdf::fill_Asimov() {
+  setData(new BinnedDataSet(*obsBegin()));
   copyParams(); 
   normalise();
   int dimensions = 2 + observables.size(); // Bin center (x,y, ...), bin value, and bin volume.
