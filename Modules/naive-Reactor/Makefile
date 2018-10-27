@@ -8,7 +8,7 @@ all: config
 	bash -c "cd ${BUILD}; make -j reactor;"
 	ln -sf ${BUILD}/Modules/naive-Reactor/reactor
 
-test: 
+test: config
 	bash -c "cd ${BUILD}; make -j autoTest;"
 	ln -sf ${BUILD}/Modules/naive-Reactor/Test/autoTest
 
