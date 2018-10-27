@@ -45,10 +45,10 @@ class GSFitManager : public Module {
     std::shared_ptr<FitManager> fitManager;
     bool m_minim_conv = false;
     bool m_hesse_conv = false;
-    double m_likelihood;
-    double m_chi2;
-    int m_NDF;
-    double m_LLp = -1;
-    double m_LLpErr = 1e300;
+    double m_likelihood = -1e300;
+    double m_chi2 = -1e300;
+    int m_NDF = -1;
+    double m_LLp = -1e300;
+    double m_LLpErr = -1e300;
 };
 #endif
