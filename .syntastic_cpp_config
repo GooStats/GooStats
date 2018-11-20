@@ -1,9 +1,13 @@
 -I.
 -Iinclude
 -IModules/naive-Reactor/include
+-IKernel/include
+-ISimplePackage/include
+-IStatModules/include
 -IGooFit/include
 -IPDFs/include
 -std=c++11
 -Werror=return-type
 -Wall
 -Wextra
+-I/home/xding/GooStats-release/googletest-install/include
