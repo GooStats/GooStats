@@ -44,8 +44,8 @@ class InputManager : public Module {
     virtual void initialize_controllers();
     virtual void initialize_datasets();
     virtual void buildTotalPdf();
-    std::map<DatasetManager*,std::unique_ptr<fptype []>> fillRandomData();
-    std::map<DatasetManager*,std::unique_ptr<fptype []>> fillAsimovData();
+    void fillRandomData();
+    void fillAsimovData();
     std::vector<ConfigsetManager*> Configsets();
     std::vector<DatasetManager*> Datasets();
     const std::vector<ConfigsetManager*> Configsets() const;

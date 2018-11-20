@@ -21,7 +21,7 @@
 #include "NMOTest.h"
 
 void trigger_fit(const std::string arg1 = "reactor", const std::string arg2 = "data_recE.cfg", const std::string arg3 = "NLLValid",
-		 const std::string arg4 = "inputSpectraFiles=data/data_hist.root",const std::string arg5 = "Data_histName=Evis_hist_poissonAppSum",
+		 const std::string arg4 = "inputSpectraFiles=data/data_hist.root",const std::string arg5 = "main_histName=Evis_hist_poissonAppSum",
 		 const std::string arg6 = "", const std::string arg7 = "", const std::string arg8 = "", const std::string arg9 = "",
 		 const std::string arg10 = "", const std::string arg11 = "", const std::string arg12 = "", const std::string arg13 = "",
 		 const std::string arg14 = "", const std::string arg15 = "", const std::string arg16 = "", const std::string arg17 = "",
@@ -154,16 +154,16 @@ TEST_F(BestFitFixture, toyMC_exact) {
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-  trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
+  trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
 	      "deltaM231_err=0.18","deltaM221_err=0.18",
 	      "print_contour=true","plot_profiles=default.deltaM231","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
 	      "contour_N=4",
 	      "corr_variables=default.Reactor:default.deltaM231:default.deltaM221",
 	      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}",
 	      "pullPars=Reactor:deltaM231","Reactor_pullType=square","Reactor_min=0.9","Reactor_max=1");
-  trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
+  trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
 	      "fitFakeData=true","fitAsimov=true","fitNMO=true","SimpleFit=false");
-  trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
+  trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
 	      "fitFakeData=true","repeat=10","seed=1","fitNMO=true","SimpleFit=false");
   return RUN_ALL_TESTS();
 }

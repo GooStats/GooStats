@@ -62,9 +62,9 @@ if(Mask_CHECK)
 endif()
 
 
+include_directories("Kernel/include")
 include_directories("PDFs/include")
 add_subdirectory(PDFs) # gpu: GooStatsPDFs
-include_directories("Kernel/include")
 add_subdirectory(Kernel) # GooStatsKernel, GooStatsNLLCheck, TestFixture
 # also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
 include_directories("StatModules/include")
@@ -74,9 +74,10 @@ add_subdirectory(SimplePackage) # GooStatsSimple
 include_directories("include")
 add_subdirectory(src) # GooStatsExperimental
 
-add_library(GooStatsLib INTERFACE)
-target_link_libraries(GooStatsLib INTERFACE GooStatsKernel GooStatsSimple
-  GooStatsStatModules GooStatsExperimental)
+add_library(GooStatsLib)
+target_link_libraries(GooStatsLib GooStatsKernel GooStatsSimple
+  GooStatsStatModules GooStatsExperimental GooStatsLib_gpu
+  GooStatsPDFs GOOFIT::goofit_lib AllGPU)
 
 
 add_subdirectory(Modules)
