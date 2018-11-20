@@ -157,13 +157,16 @@ void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
 	::atof(configset->query("N"+component+"_max").c_str()));
   } 
 }
+
 DatasetManager *SimpleInputBuilder::buildDataset(DatasetController *controller) {
   return controller->createDataset();
 }
+
 bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for(auto component : dataset->get<std::vector<std::string>>("components")) {
-    if(dataset->get<std::string>(component+"_type").substr(0,3)=="Ana") {
+    if((dataset->get<std::string>(component+"_type")=="Ana")||
+	(dataset->get<std::string>(component+"_type")=="AnaShifted")) {
       GooPdf *innerPdf = spcBuilder->buildSpectrum(component+"_inner",dataset);
       if(!innerPdf) {
 	std::cout<<"No hanlder is found to build spectrum <"<<component<<"_inner> "

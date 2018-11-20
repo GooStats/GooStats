@@ -80,7 +80,7 @@ GooPdf *SimpleSpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManag
   std::string pdfName = dataset->name()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
       dataset->get<Variable*>(name+"_E"), // Evis
-      dataset->get<Variable*>(name+"_inner_E"), // inner
+      nullptr, // inner
       dataset->get<std::string>("RPFtype"), // response function type
       dataset->get<std::string>("NLtype"), // non-linearity type
       dataset->get<std::vector<Variable*>>("res"), // resolution

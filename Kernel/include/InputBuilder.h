@@ -46,6 +46,8 @@ class InputBuilder {
     virtual std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) = 0;
     //! construct a dataset manager based on a datasetcontroller
     virtual DatasetManager *buildDataset(DatasetController *) = 0;
+    //! fill data spectra
+    virtual bool fillDataSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) = 0;
     //! build the raw spectra used for convolution
     virtual bool buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) = 0;
     //! build the components of datasetmanager

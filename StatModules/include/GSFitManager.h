@@ -35,6 +35,7 @@ class GSFitManager : public StatModule {
     bool LLfit() const;
   public:
     int get_id(const std::string &parName) const;
+    Variable *get_var(const std::string &parName);
     virtual void eval();
     TMinuit *getMinuitObject();
   protected:

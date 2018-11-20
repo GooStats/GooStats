@@ -14,6 +14,7 @@ class Module;
 #include <list>
 class AnalysisManager {
   public:
+    AnalysisManager();
     bool registerModule(Module *module);
     bool hasModule(const std::string &name) const;
     virtual bool init();

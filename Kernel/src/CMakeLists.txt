@@ -16,7 +16,6 @@ add_library(GooStatsKernel
   InputManager.cc
   SpectrumBuilder.cc
   Utility.cc)
-target_compile_features(GooStatsKernel PRIVATE cxx_range_for)
 cuda_add_library(GooStatsLib_gpu
   GPUManager.cu
   )
