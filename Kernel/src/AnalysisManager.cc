@@ -11,6 +11,10 @@
 #include <iostream>
 #include "GooStatsException.h"
 #include "Module.h"
+#include "GPUManager.h"
+AnalysisManager::AnalysisManager() {
+  registerModule(new GPUManager());
+}
 bool AnalysisManager::init() {
   bool ok = true;
   for(auto mod : modules) {

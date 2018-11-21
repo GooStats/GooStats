@@ -157,9 +157,11 @@ void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
 	::atof(configset->query("N"+component+"_max").c_str()));
   } 
 }
+
 DatasetManager *SimpleInputBuilder::buildDataset(DatasetController *controller) {
   return controller->createDataset();
 }
+
 bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for(auto component : dataset->get<std::vector<std::string>>("components")) {

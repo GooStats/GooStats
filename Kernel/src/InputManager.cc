@@ -92,6 +92,7 @@ void InputManager::initialize_datasets() {
   for(auto dataset : datasets) {
     dataset->initialize();
     if(dataset->has<std::vector<std::string>>("components")) {
+      builder->fillDataSpectra(dataset.get(),provider.get());
       builder->buildRawSpectra(dataset.get(),provider.get());
       builder->buildComponenets(dataset.get(),provider.get());
     }
@@ -102,25 +103,11 @@ void InputManager::initialize_datasets() {
 void InputManager::buildTotalPdf() {
   totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
 }
-std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillRandomData() {
-  std::map<DatasetManager*,std::unique_ptr<fptype []>> datas;
-  for(auto dataset: datasets) {
-    DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
-    if(!pdf) continue;
-    std::unique_ptr<fptype []> res = pdf->fill_random();
-    datas.insert(std::make_pair(dataset.get(),std::move(res)));
-  }
-  return datas;
+void InputManager::fillRandomData() {
+  getTotalPdf()->fill_random();
 }
-std::map<DatasetManager*,std::unique_ptr<fptype []>> InputManager::fillAsimovData() {
-  std::map<DatasetManager*,std::unique_ptr<fptype []>> datas;
-  for(auto dataset: datasets) {
-    DataPdf *pdf= dynamic_cast<DataPdf*>(dataset->getLikelihood());
-    if(!pdf) continue;
-    std::unique_ptr<fptype []> res = pdf->fill_Asimov();
-    datas.insert(std::make_pair(dataset.get(),std::move(res)));
-  }
-  return datas;
+void InputManager::fillAsimovData() {
+  getTotalPdf()->fill_Asimov();
 }
 std::vector<ConfigsetManager*> InputManager::Configsets() {
   std::vector<ConfigsetManager*> configsets_;

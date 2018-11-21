@@ -62,9 +62,9 @@ if(Mask_CHECK)
 endif()
 
 
+include_directories("Kernel/include")
 include_directories("PDFs/include")
 add_subdirectory(PDFs) # gpu: GooStatsPDFs
-include_directories("Kernel/include")
 add_subdirectory(Kernel) # GooStatsKernel, GooStatsNLLCheck, TestFixture
 # also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
 include_directories("StatModules/include")
