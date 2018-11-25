@@ -26,6 +26,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 find_package(GOOFIT CONFIG REQUIRED)
 INITIALIZE_GOOFIT()
 #find_package(ROOT REQUIRED COMPONENTS RIO Net)
+find_package(ROOT COMPONENTS TreePlayer)
 include(${ROOT_USE_FILE}/../modules/RootNewMacros.cmake)
 
 set(GOOSTATS_NO_WARNING ON)
@@ -75,11 +76,10 @@ include_directories("include")
 add_subdirectory(src) # GooStatsExperimental
 
 add_library(GooStatsLib INTERFACE)
-target_link_libraries(GooStatsLib INTERFACE GooStatsKernel GooStatsSimple
-  GooStatsStatModules GooStatsExperimental)
-
+target_link_libraries(GooStatsLib 
+		INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
+target_compile_features(GooStatsLib INTERFACE cxx_range_for)
 
 add_subdirectory(Modules)
 
 cuda_gen_gpu_library(AllGPU)
-target_link_libraries(AllGPU GOOFIT::goofit_lib GooStatsPDFs)

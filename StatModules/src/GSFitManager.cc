@@ -76,6 +76,19 @@ int GSFitManager::get_id(const std::string &parName) const {
   }
   return counter+1;
 }
+Variable *GSFitManager::get_var(const std::string &parName) {
+  std::vector<Variable *> vars;
+  sumpdf()->getParameters(vars);
+  for(auto var : vars) {
+    if(var->name == parName) return var;
+  }
+  for(auto var : vars) {
+    std::cout<<"["<<var->name<<"]"<<std::endl;
+  }
+  std::cout<<"["<<parName<<"] not found in ("<<vars.size()<<") pars."<<std::endl;
+  throw GooStatsException("par not found");
+  return nullptr;
+}
 #include "SumPdf.h"
 void GSFitManager::eval() {
   getFitManager()->getMinuitValues();
