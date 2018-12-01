@@ -22,3 +22,5 @@ For any consult write to [Xuefeng Ding](mailto:xuefeng.ding.physics@gmail.com).
 
 This framework has been utilized in Borexino and JUNO project. The physics result obtained with Borexino Module (closed source) has been presented in 
 [TAUP 2017 poster](https://indico.cern.ch/event/606690/contributions/2591519/attachments/1499504/2334752/PosterTAUP_GPUfitter_v3.3.pdf)
+
+## Currently I'm working on Jenkins server to test it.
