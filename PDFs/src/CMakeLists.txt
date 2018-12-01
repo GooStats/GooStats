@@ -20,4 +20,4 @@ cuda_add_more_library(GooStatsPDFs
   ResponseFunctionPdf_impl.cu
   SumLikelihoodPdf.cu
   SumPdf.cu)
-target_link_libraries(GooStatsPDFs GOOFIT::goofit_lib)
+target_link_libraries(GooStatsPDFs GOOFIT::goofit_lib AllGPU)

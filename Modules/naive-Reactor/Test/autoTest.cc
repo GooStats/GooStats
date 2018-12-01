@@ -5,7 +5,7 @@
 #include <iostream>
 #include "GooStatsException.h"
 
-#include "ReactorAnalysisManager.h"
+#include "AnalysisManager.h"
 #include "InputManager.h"
 #include "ReactorInputBuilder.h"
 #include "ReactorSpectrumBuilder.h"
@@ -13,18 +13,23 @@
 #include "SimpleOutputBuilder.h"
 #include "SimplePlotManager.h"
 #include "GSFitManager.h"
+#include "PrepareData.h"
 #include "ContourManager.h"
 #include "CorrelationManager.h"
+#include "SimpleFit.h"
+#include "ScanPar.h"
+#include "NMOTest.h"
 
 void trigger_fit(const std::string arg1 = "reactor", const std::string arg2 = "data_recE.cfg", const std::string arg3 = "NLLValid",
-		 const std::string arg4 = "inputSpectraFiles=data/data_hist.root",const std::string arg5 = "Data_histName=Evis_hist_poissonAppSum",
+		 const std::string arg4 = "inputSpectraFiles=data/data_hist.root",const std::string arg5 = "main_histName=Evis_hist_poissonAppSum",
 		 const std::string arg6 = "", const std::string arg7 = "", const std::string arg8 = "", const std::string arg9 = "",
 		 const std::string arg10 = "", const std::string arg11 = "", const std::string arg12 = "", const std::string arg13 = "",
-		 const std::string arg14 = "", const std::string arg15 = "", const std::string arg16 = "", const std::string arg17 = "") {
+		 const std::string arg14 = "", const std::string arg15 = "", const std::string arg16 = "", const std::string arg17 = "",
+		 const std::string arg18 = "", const std::string arg19 = "", const std::string arg20 = "", const std::string arg21 = "") {
   int argc(0);
   char **argv;
-  argv = new char *[17];
-  for(int i = 0;i<17;++i) argv[i] = new char[255];
+  argv = new char *[21];
+  for(int i = 0;i<21;++i) argv[i] = new char[255];
   if(arg1!="") { std::strcpy(argv[argc],arg1.c_str()); ++argc; }
   if(arg2!="") { std::strcpy(argv[argc],arg2.c_str()); ++argc; }
   if(arg3!="") { std::strcpy(argv[argc],arg3.c_str()); ++argc; }
@@ -42,47 +47,47 @@ void trigger_fit(const std::string arg1 = "reactor", const std::string arg2 = "d
   if(arg15!="") { std::strcpy(argv[argc],arg15.c_str()); ++argc; }
   if(arg16!="") { std::strcpy(argv[argc],arg16.c_str()); ++argc; }
   if(arg17!="") { std::strcpy(argv[argc],arg17.c_str()); ++argc; }
+  if(arg18!="") { std::strcpy(argv[argc],arg18.c_str()); ++argc; }
+  if(arg19!="") { std::strcpy(argv[argc],arg19.c_str()); ++argc; }
+  if(arg20!="") { std::strcpy(argv[argc],arg20.c_str()); ++argc; }
+  if(arg21!="") { std::strcpy(argv[argc],arg21.c_str()); ++argc; }
   for(int i = 0;i<argc;++i) std::cout<<argv[i]<<" ";
   std::cout<<std::endl;
 
-  AnalysisManager *ana = new ReactorAnalysisManager();
+  AnalysisManager *ana = new AnalysisManager();
+
   InputManager *inputManager = new InputManager(argc,argv);
   InputBuilder *builder = new ReactorInputBuilder();
   builder->installSpectrumBuilder(new ReactorSpectrumBuilder());
   inputManager->setInputBuilder(builder);
-  ana->setInputManager(inputManager);
-  ana->registerModule(inputManager);
 
   GSFitManager *gsFitManager = new GSFitManager();
-  gsFitManager->registerDependence(inputManager);
-  ana->registerModule(gsFitManager);
 
   OutputManager *outManager = new OutputManager();
-  outManager->registerDependence(inputManager);
-  outManager->registerDependence(gsFitManager);
   outManager->setOutputBuilder(new SimpleOutputBuilder());
-  ana->setOutputManager(outManager);
-  ana->registerModule(outManager);
+
+  StatModule::setup(inputManager);
+  StatModule::setup(gsFitManager);
+  StatModule::setup(outManager);
 
   PlotManager *plotManager = new SimplePlotManager();
-  plotManager->registerDependence(gsFitManager);
-  plotManager->registerDependence(outManager);
-  plotManager->registerDependence(inputManager);
   outManager->setPlotManager(plotManager);
 
-
+  PrepareData *data = new PrepareData();
+  SimpleFit *fit = new SimpleFit();
+  NMOTest *nmo = new NMOTest();
+  ScanPar *scan = new ScanPar();
   CorrelationManager *correlationManager = new CorrelationManager();
-  correlationManager->registerDependence(inputManager);
-  correlationManager->registerDependence(gsFitManager);
-  correlationManager->registerDependence(outManager);
-  ana->registerModule(correlationManager);
-
   ContourManager *contourManager = new ContourManager();
-  contourManager->registerDependence(inputManager);
-  contourManager->registerDependence(gsFitManager);
-  contourManager->registerDependence(outManager);
-  ana->registerModule(contourManager);
 
+  ana->registerModule(inputManager);
+  ana->registerModule(data);
+  ana->registerModule(fit);
+  ana->registerModule(nmo);
+  ana->registerModule(scan);
+  ana->registerModule(correlationManager);
+  ana->registerModule(contourManager);
+  ana->registerModule(outManager);
 
   ana->init();
   ana->run();
@@ -118,8 +123,8 @@ TEST_F(BestFitFixture, TAUP_npmt_near) {
 }
 TEST_F(BestFitFixture, Asimov_exact) {
   load_species(species);
-  for(int subEntry = 0; subEntry<2; ++subEntry) {
-    setEntry(0,subEntry);
+  for(int sub = 0; sub<2; ++sub) {
+    setEntry(0,sub);
     load_result("data/plotEvPPSHTAsimov.root",reference_fit,rough_reference_fit);
     load_result("NLLValidHTAsimov.root",new_fit,rough_new_fit);
     const size_t N = reference_fit.size();
@@ -132,9 +137,9 @@ TEST_F(BestFitFixture, Asimov_exact) {
 }
 TEST_F(BestFitFixture, toyMC_exact) {
   load_species(species);
-  for(int entry = 0; entry<10; ++entry) {
-    for(int subEntry = 0; subEntry<2; ++subEntry) {
-      setEntry(entry,subEntry);
+  for(int ent = 0; ent<10; ++ent) {
+    for(int sub = 0; sub <2; ++sub) {
+      setEntry(ent,sub);
       load_result("data/plotEvPPSHTRND.root",reference_fit,rough_reference_fit);
       load_result("NLLValidHTRND.root",new_fit,rough_new_fit);
       const size_t N = reference_fit.size();
@@ -149,15 +154,16 @@ TEST_F(BestFitFixture, toyMC_exact) {
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-  trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
+  trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
 	      "deltaM231_err=0.18","deltaM221_err=0.18",
-	      "print_contour=true","plot_profiles=default.Reactor","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
+	      "print_contour=true","plot_profiles=default.deltaM231","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
 	      "contour_N=4",
 	      "corr_variables=default.Reactor:default.deltaM231:default.deltaM221",
-	      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}");
-  trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
-	      "fitFakeData=true","fitAsimov=true","fitInverseMH=true");
-  trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","Data_histName=Evis_hist_poissonAppSum","seed=1",
-	      "fitFakeData=true","repeat=10","seed=1","fitInverseMH=true");
+	      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}",
+	      "pullPars=Reactor:deltaM231","Reactor_pullType=square","Reactor_min=0.9","Reactor_max=1");
+  trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
+	      "fitFakeData=true","fitAsimov=true","fitNMO=true","SimpleFit=false");
+  trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
+	      "fitFakeData=true","repeat=10","seed=1","fitNMO=true","SimpleFit=false");
   return RUN_ALL_TESTS();
 }
