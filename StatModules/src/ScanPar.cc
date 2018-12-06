@@ -32,9 +32,9 @@ bool ScanPar::run(int) {
     //gMinuit->mnmigr(); // just minimize, doesn't calculate errors
     getGSFitManager()->getFitManager()->getMinuitValues();
     getGSFitManager()->eval();
-    static_cast<OutputManager*>(this->find("OutputManager"))->subFit(-1);
+    getOutputManager()->subFit(-1);
     printf("Scanning [%10s] (%3d/%3d;%5.2lf,%5.2lf,%5.2lf) -> %10.2lf\n",parName.c_str(),i,Npoint,xx,left,right,
-	   static_cast<GSFitManager*>(find("GSFitManager"))->minus2lnlikelihood());
+	   getGSFitManager()->minus2lnlikelihood());
   }
   gMinuit->Command(Form("SET STRategy %d",fI));
   gMinuit->SetPrintLevel(0);
