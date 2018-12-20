@@ -18,7 +18,7 @@ DECLARE_MODULE(GSFitManager);
 bool GSFitManager::run(int) {
   sumpdf()->cache();
   restoreFitControl();
-  getFitManager()->setMaxCalls(500000);
+  getFitManager()->setMaxCalls(20000);
   clock_t startCPU, stopCPU; 
   timeval startTime, stopTime, totalTime;
   tms startProc, stopProc; 
