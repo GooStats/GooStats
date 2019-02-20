@@ -17,6 +17,7 @@ void SimplePlotManager::draw(int ,const std::vector<DatasetManager*> &datasets) 
   for(auto group : datasetsgroups) {
     auto cc = drawSingleGroup(group.first,group.second);
     if(!cc) continue;
+    toBeSaved.insert(cc);
     if(createPdf()) {
       string tail = "";
       if(datasetsgroups.size()>1) {

@@ -168,10 +168,10 @@ TGraph *ContourManager::LLprofile(const std::string &parName) {
   gMinuit->SetPrintLevel(-1);
   int fI = gMinuit->fIstrat; // the strategy
   for(int i = 0;i<Npoint;++i) {
-    if(i==1) gMinuit->Command("SET STRategy 0");
+    //if(i==1) gMinuit->Command("SET STRategy 0");
     gMinuit->Command(Form("SET PARameter %d %lf",id,left+(right-left)/(Npoint-1)*i));
-    //gMinuit->Migrad();
-    gMinuit->mnmigr(); // just minimize, doesn't calculate errors
+    gMinuit->Migrad();
+    //gMinuit->mnmigr(); // just minimize, doesn't calculate errors
     Double_t   fmin;
     Double_t   fedm;
     Double_t   errdef;
@@ -249,6 +249,8 @@ void ContourManager::get_par_range(const std::string &parName,double &left,doubl
   auto min = [](double x,double y) { return x<y?x:y; };
   if(left<var->lowerlimit) { left = var->lowerlimit; right+=min(var->upperlimit-right,0.5*sigma); }
   if(right>var->upperlimit) { right = var->upperlimit; left-=min(left-var->lowerlimit,0.5*sigma); }
+  if(GlobalOption()->has("profile_"+parName+"_min")) left = std::stod(GlobalOption()->query("profile_"+parName+"_min"));
+  if(GlobalOption()->has("profile_"+parName+"_max")) right = std::stod(GlobalOption()->query("profile_"+parName+"_max"));
 }
 
 void ContourManager::register_vars() {
