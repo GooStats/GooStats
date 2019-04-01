@@ -12,7 +12,7 @@
 std::map<PdfBase*,int> SumPdf::funMap;
 MEM_DEVICE fptype *dev_componentWorkSpace[NPDFSIZE_SumPdf];
 DEVICE_VECTOR<fptype>* componentWorkSpace[NPDFSIZE_SumPdf];
-MEM_CONSTANT fptype* dev_raw_masks[20];
+MEM_DEVICE fptype* dev_raw_masks[NPDFSIZE_SumPdf];
 int SumPdf::maskId = 0;
 std::map<BinnedDataSet*,int> SumPdf::maskmap;
 
