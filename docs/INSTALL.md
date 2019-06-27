@@ -1,31 +1,27 @@
+# Pre-requsite
+
+`GooStats` need installation of `cmake` and `CERN ROOT`. Contact your system admin is you don't have these two software.
+
 # Installation guide for GooStats
 
-- Download GooStats
+- Create a folder for `GooStas` and go to that folder
 
 	  mkdir GooStats-release
 	  cd GooStats-release
-	  git clone git@github.com:GooStats/GooStats.git
-	  cd GooStats
-	  GooStatsVersion=4.0.1
-	  git checkout ${GooStatsVersion}
-	  cd ../..
+- download the installation script and run it. **Make sure you have internet at this step.** It will download the `GooStats` and `googletest`, create a bunch of folders, and symbol link the `compile.sh`
 
-- symbol link the `download.sh` and `compile.sh` I created for you, and download GooStats
+	  wget https://raw.githubusercontent.com/GooStats/GooStats/v5.0.0/setup/download.sh
+	  bash download.sh
 
-	  ln -s GooStats-release/GooStats/setup/download.sh
-	  ln -s GooStats-release/GooStats/setup/compile.sh
-	  ./download.sh
-- this script will create a script for setting up environment `setup.sh`, and you might want to inlcude it in `.bashrc`
+- run the `compile.sh`. **Make sure you have GPU at this step**. This script will compile `GooFit` and `googletest`, and also create a script for setting up environment `setup.sh`
 
-	  echo "source $(readlink -f GooStats-release/setup.sh)" >> ~/.bashrc
-- If you are working on a cluster, launch an interactive job to a cluster node equipped with GPU: `qsub -q gpu -I`
-- compile
-	
-	  ./compile.sh
-- then go to bx-GooStats folder, this is your working folder. type `make` to compile
+	  bash compile.sh
+  - Tips: to get GPU, if you are working on a cluster, launch an interactive job to a cluster node equipped with GPU: `qsub -q gpu -I` or `srun -p myPartition --gres=gpu:1 -A myPorj  -c 40 -N 1 -t 1:00:00 --pty bash`
+
+- compile example project `naive-Reactor`
 	  
-	  source GooStats-release/setup.sh
-	  cd GooStats-release/GooStats/Modules/naive-Reactor
+	  source setup.sh
+	  cd GooStats/Modules/naive-Reactor
 	  make
 
 - Run your first fit
@@ -37,3 +33,22 @@
 
 	  make test
 	  ./autoTest
+
+you should see
+
+    [==========] Running 4 tests from 1 test case.
+    [----------] Global test environment set-up.
+    [----------] 4 tests from BestFitFixture
+    [ RUN      ] BestFitFixture.TAUP_npmt_exact
+    [       OK ] BestFitFixture.TAUP_npmt_exact (10 ms)
+    [ RUN      ] BestFitFixture.TAUP_npmt_near
+    [       OK ] BestFitFixture.TAUP_npmt_near (8 ms)
+    [ RUN      ] BestFitFixture.Asimov_exact
+    [       OK ] BestFitFixture.Asimov_exact (15 ms)
+    [ RUN      ] BestFitFixture.toyMC_exact
+    [       OK ] BestFitFixture.toyMC_exact (152 ms)
+    [----------] 4 tests from BestFitFixture (185 ms total)
+     
+    [----------] Global test environment tear-down
+    [==========] 4 tests from 1 test case ran. (185 ms total)
+    [  PASSED  ] 4 tests.
