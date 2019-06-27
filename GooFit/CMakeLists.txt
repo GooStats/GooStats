@@ -194,7 +194,7 @@ endif()
 
 # The target is setup to avoid clashes with fakeroot
 # Include directories are not picked up by FindCUDA
-find_package(ROOT REQUIRED COMPONENTS Minuit)
+find_package(ROOT REQUIRED COMPONENTS Minuit TreePlayer)
 add_library(Root INTERFACE)
 include_directories(BEFORE "include/goofit/rootstuff")
 include_directories(AFTER SYSTEM "${ROOT_INCLUDE_DIRS}")
