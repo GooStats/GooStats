@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # download GooStats
-GooStatsVersion=4.0.1
+GooStatsVersion=5.0.0
 if [ ! -f v${GooStatsVersion}.tar.gz ]; then
   wget https://github.com/GooStats/GooStats/archive/v${GooStatsVersion}.tar.gz
 fi
