@@ -19,7 +19,7 @@ class PullPdf : public DataPdf {
   public:
     PullPdf(std::string n, Variable* var,
 	fptype m,fptype s,
-	fptype mt/* mt is the exposure of the subsidiary exp. */);
+	fptype mt/* mt is the exposure of the subsidiary exp. */,bool half_ = false); // minus infinity 
 
     __host__ virtual fptype normalise () const{return 1;}
 
@@ -35,6 +35,7 @@ class PullPdf : public DataPdf {
     fptype data_backup = -99;
     const fptype sigma;
     const fptype masstime;
+    const bool half;
 };
 
 #endif

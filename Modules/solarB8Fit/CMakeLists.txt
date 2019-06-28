@@ -1,0 +1,7 @@
+include_directories("include")
+add_subdirectory(src)
+add_executable(solarB8Fit solarB8Fit.cc)
+target_link_libraries(solarB8Fit GooStatsLib)
+target_link_libraries(solarB8Fit solarB8_module)
+target_link_libraries(solarB8Fit solarB8_gpu_module)
+target_link_libraries(solarB8Fit AllGPU)
