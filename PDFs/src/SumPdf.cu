@@ -466,16 +466,14 @@ int SumPdf::NDF() {
       if(dataset->getBinContent(i)>0) NnonZeroBins++;
     }
   }
-  int NfreePar = 0; {
-    parCont params;
-    getParameters(params); 
-    std::set<Variable*> pars;
-    for(auto par: params) {
-      pars.insert(par);
-    }
-    for(auto par: pars) {
-      if(!(par->fixed || par->error == 0)) NfreePar++;
-    }
+  return NnonZeroBins - Nfree();
+}
+int SumPdf::Nfree() {
+  int NfreePar = 0; 
+  parCont params;
+  getParameters(params); 
+  for(auto par: params) {
+    if(!(par->fixed || par->error == 0)) NfreePar++;
   }
-  return NnonZeroBins - NfreePar;
+  return NfreePar;
 }

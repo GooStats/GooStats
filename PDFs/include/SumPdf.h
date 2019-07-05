@@ -33,7 +33,8 @@ public:
   const std::vector<Variable*> &Weights() const { return _weights; }
   BinnedDataSet *getData();
   double Norm() const { return norm; }
-  int NDF() ;
+  int NDF() final;
+  int Nfree() final;
   static int registerFunc(PdfBase *pdf);
   std::unique_ptr<fptype []> fill_random() override;
   std::unique_ptr<fptype []> fill_Asimov() override;
