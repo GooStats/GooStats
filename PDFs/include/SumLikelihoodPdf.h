@@ -24,6 +24,7 @@ public:
   void fill_Asimov();
   void cache();
   void restore();
+  int Nfree();
 
 private:
   __host__ void setData(BinnedDataSet *data);

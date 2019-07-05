@@ -20,6 +20,8 @@ public:
   virtual std::unique_ptr<fptype []> fill_Asimov() = 0;
   virtual void cache() = 0;
   virtual void restore() = 0;
+  virtual int NDF() = 0;
+  virtual int Nfree() = 0;
 };
 
 #endif

@@ -78,3 +78,12 @@ void SumLikelihoodPdf::restore() {
     if(pdf) pdf->restore();
   }
 }
+int SumLikelihoodPdf::Nfree() {
+  int NfreePar = 0; 
+  parCont params;
+  getParameters(params); 
+  for(auto par: params) {
+    if(!(par->fixed || par->error == 0)) NfreePar++;
+  }
+  return NfreePar;
+}

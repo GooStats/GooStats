@@ -105,11 +105,12 @@ void GSFitManager::eval() {
   sumpdf()->copyParams();
   m_chi2 = sumpdf()->calculateNLL();
   // NDF
-  m_NDF = 0;
+  int NnonzeroBins = 0;
   for(auto component : sumpdf()->Components()) {
-    SumPdf *pdf = dynamic_cast<SumPdf*>(component);
-    if(pdf) m_NDF += pdf->NDF();
+    DataPdf *pdf = dynamic_cast<DataPdf*>(component);
+    if(pdf) NnonzeroBins += pdf->NDF() + pdf->Nfree();
   }
+  m_NDF = NnonzeroBins - sumpdf()->Nfree();
   restoreFitControl();
 }
 FitManager *GSFitManager::getFitManager() {
