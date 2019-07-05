@@ -7,21 +7,21 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-/*! \class ReactorSpectrumBuilder
+/*! \class solarB8SpectrumBuilder
  *  \brief example builder class used by InputManager
  *
  *   This is a utlity class and is responsible for building the Configset 
  */
-#ifndef ReactorSpectrumBuilder_H
-#define ReactorSpectrumBuilder_H
+#ifndef solarB8SpectrumBuilder_H
+#define solarB8SpectrumBuilder_H
 #include "BasicSpectrumBuilder.h"
-class ReactorSpectrumBuilder : public BasicSpectrumBuilder {
+class solarB8SpectrumBuilder : public BasicSpectrumBuilder {
   public:
     GooPdf *buildSpectrum(const std::string &, DatasetManager *) final;
   private:
-    SpectrumBuilderFun buildReactor;
-    SpectrumBuilderFun buildOscillatedReactor;
+    SpectrumBuilderFun buildsolarB8;
+    SpectrumBuilderFun buildOscillatedsolarB8;
   private:
-    GooPdf *_buildOscillatedReactor(const std::string &name,DatasetManager *dataset,bool oscOn);
+    GooPdf *_buildOscillatedsolarB8(const std::string &name,DatasetManager *dataset,bool oscOn);
 };
 #endif

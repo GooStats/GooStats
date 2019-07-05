@@ -36,29 +36,29 @@ GooPdf *solarB8SpectrumBuilder::buildOscillatedsolarB8(const std::string &name,
   return _buildOscillatedsolarB8(name,dataset,true);
 }
 GooPdf *solarB8SpectrumBuilder::_buildOscillatedsolarB8(const std::string &name,
-    DatasetManager *dataset,bool oscOn) {
+    DatasetManager *dataset,bool ) {
   std::string pdfName = dataset->name()+"."+name;
   Variable *E = dataset->get<Variable*>(name+"_E"); 
-  GooPdf *b8 = buildMC("B8",dataset);
-  GooPdf *es_nuE = new ESPdf(pdfName+"_IBD",E,ESPdf::nuE);
-  GooPdf *es_nuX = new ESPdf(pdfName+"_IBD",E,ESPdf::nuX);
+  PdfBase *b8 = dataset->get<PdfBase*>("B8EnuPdf");
+  //GooPdf *es_nuE = new ESPdf(pdfName+"_IBD",E,ESPdf::nuE);
+  //GooPdf *es_nuX = new ESPdf(pdfName+"_IBD",E,ESPdf::nuX);
   GooPdf *osc = new SolarNuOscPdf(pdfName+"_osc",E,
       dataset->get<std::vector<Variable*>>("sinThetas"),
       dataset->get<std::vector<Variable*>>("deltaM2s"),
       dataset->get<double>("Ne"),true); // Pee
-  GooPdf *osc1m = new SolarNuOscPdf(pdfName+"_osc",E,
-      dataset->get<std::vector<Variable*>>("sinThetas"),
-      dataset->get<std::vector<Variable*>>("deltaM2s"),
-      dataset->get<double>("Ne"),false); // 1-Pee
+  //GooPdf *osc1m = new SolarNuOscPdf(pdfName+"_osc",E,
+  //    dataset->get<std::vector<Variable*>>("sinThetas"),
+  //    dataset->get<std::vector<Variable*>>("deltaM2s"),
+  //    dataset->get<double>("Ne"),false); // 1-Pee
   std::vector<PdfBase*> NuEcomp,NuXcomp;
   NuEcomp.push_back(b8);
   NuEcomp.push_back(osc);
-  NuEcomp.push_back(es_nuE);
+  //NuEcomp.push_back(es_nuE);
   GooPdf *nuEES = new ProductPdf(name,NuEcomp,E,dataset->get<double>("NHatomPerkton"));
-  NuXcomp.push_back(b8);
-  NuXcomp.push_back(osc1m);
-  NuXcomp.push_back(es_nuX);
-  GooPdf *nuEES = new ProductPdf(name,NuXcomp,E,dataset->get<double>("NHatomPerkton"));
+  //NuXcomp.push_back(b8);
+  //NuXcomp.push_back(osc1m);
+  ////NuXcomp.push_back(es_nuX);
+  //GooPdf *nuEES = new ProductPdf(name,NuXcomp,E,dataset->get<double>("NHatomPerkton"));
   // final formula:
   // f[x] = phi(E) [ #nu per day x MeV x cm^2 ]
   // 		* sigma(E) [ cm^2 ]
@@ -66,5 +66,5 @@ GooPdf *solarB8SpectrumBuilder::_buildOscillatedsolarB8(const std::string &name,
   // 		* NHatmPerkm [ per kt ]
   // 	unit: #IBD per (day x kt)
   // here E is energy of the neutrino, rather than Evis
-  return new ProductPdf(name,components,E,dataset->get<double>("NHatomPerkton"));
+  return nuEES;
 }

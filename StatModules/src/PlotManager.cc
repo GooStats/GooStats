@@ -93,7 +93,7 @@ TCanvas *PlotManager::drawSingleGroup(const std::string &name,const std::vector<
   }
   TCanvas *cc = static_cast<TCanvas*>(gROOT->GetListOfCanvases()->FindObject((name+"_cc").c_str()));
   if(cc) return nullptr;
-  cc = new TCanvas((name+"_cc").c_str(),("plot for "+name).c_str(),500*w,500*h);
+  cc = new TCanvas((name+"_cc").c_str(),("plot for "+name).c_str(),500*w,500/0.7*h);
   cc->Divide(w,h);
   for(size_t i = 1;i<=datasets.size();++i) {
     auto dataset = datasets.at(i-1);
@@ -127,6 +127,11 @@ TCanvas *PlotManager::drawSingleGroup(const std::string &name,const std::vector<
   return cc;
 }
 void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf *sumpdf,std::map<std::string,Config> config) {
+  TPad *curr_pad = static_cast<TPad*>(gPad);
+  //////////////////////////// for main pad ///////////////////////////////////
+  curr_pad->cd();
+  TPad *main_pad = new TPad(gPad->GetName()+TString("_main"),gPad->GetTitle()+TString(" main"),0,0.3,1,1);
+  main_pad->cd();
   // create TLegend
   TLegend *leg = new TLegend(0.4,0.40,0.96,0.96);
   leg->SetMargin(0.15);
@@ -216,6 +221,36 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
   leg->SetY1NDC(0.96-0.04*leg->GetNRows());
   if(0.96-0.04*leg->GetNRows()<0.2)  leg->SetY1NDC(0.2);
   leg->DrawClone();
+  //////////////////////////// for residual pad ////////////////////////////////
+  curr_pad->cd();
+  TPad *res_pad = new TPad(gPad->GetName()+TString("_res"),gPad->GetTitle()+TString(" residual"),0,0,1,0.3);
+  res_pad->cd();
+  res_pad->SetLogy(false);
+  res_pad->SetGridy(true);
+  res_pad->SetTopMargin(0.05);
+  res_pad->SetBottomMargin(0.05);
+  TH1 *res = (TH1*)xvarHist->DrawClone("hist");
+  res->SetName((sumpdf->getName()+"_res").c_str());
+  res->SetTitle((sumpdf->getName()+"_res").c_str());
+  toBeSaved.insert(res);
+  res->GetYaxis()->SetTitle("D-M / #sqrt{D}");
+  res->GetYaxis()->SetTitleSize(0.1);
+  res->GetYaxis()->SetTitleOffset(0.6);
+  res->GetYaxis()->SetLabelSize(0.1);
+  res->GetYaxis()->SetNdivisions(505);
+  res->GetYaxis()->SetRangeUser(-3.5,3.5);
+  res->GetXaxis()->SetLabelSize(0);
+  res->GetXaxis()->SetTitleSize(0);
+  for(int i = 1;i<=res->GetNbinsX();++i) {
+    double D = xvarHist->GetBinContent(i);
+    double M = total_h->Eval(res->GetBinCenter(i));
+    res->SetBinContent(i,(D-M)/sqrt(D+(D==0)));
+    res->SetBinError(i,0);
+  }
+  // plot two pad
+  curr_pad->cd();
+  main_pad->Draw();
+  res_pad->Draw();
 }
 void PlotManager::drawLikelihoodpValue(int ,double LL,const std::vector<double> &LLs) {
   double mu = 0; double sigma = 0;
