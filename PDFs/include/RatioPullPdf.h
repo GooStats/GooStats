@@ -26,6 +26,8 @@ class RatioPullPdf : public DataPdf {
     std::unique_ptr<fptype []> fill_Asimov() final;
     void cache() final;
     void restore() final;
+    int NDF() final { return 0; }
+    int Nfree() final { return 1; }
 
   private:
     const int index_v1, index_v2;
