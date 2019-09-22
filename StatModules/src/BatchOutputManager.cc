@@ -20,7 +20,7 @@
 bool BatchOutputManager::init() {
   const InputManager *inputManager = static_cast<InputManager*>(find("InputManager"));
   const OptionManager *gOp = inputManager->GlobalOption();
-  if(gOp->has("unit")) TextOutputManager::set_unit(gOp->query("unit"));
+  if(gOp->has("unit")) TextOutputManager::set_unit(gOp->get("unit"));
   cd();
   tree = std::make_shared<TTree>("fit_results","Fit result of GooStats"); 
   bindAllParameters(inputManager->getTotalPdf());

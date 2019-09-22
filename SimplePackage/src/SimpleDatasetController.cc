@@ -13,23 +13,23 @@
 #include "Utility.h"
 bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   try {
-    dataset->set("exposure", ::atof(configset->query("exposure").c_str()));
-    Variable *Evis = configset->createVar(configset->query("EvisVariable"),0,0,
-	::atof(configset->query("Evis_min").c_str()),
-	::atof(configset->query("Evis_max").c_str()));
-    Evis->numbins = ::atoi(configset->query("Evis_nbins").c_str());
+    dataset->set("exposure", configset->get<double>("exposure"));
+    Variable *Evis = configset->createVar(configset->get("EvisVariable"),0,0,
+        configset->get<double>("Evis_min"),
+        configset->get<double>("Evis_max"));
+    Evis->numbins = configset->get<double>("Evis_nbins");
     dataset->set("Evis", Evis);
 
     if(configset->has("anaScaling")) {
-      Variable *EvisFine = configset->createVar(configset->query("EvisVariable")+"_fine",0,0,
-	  Evis->lowerlimit,Evis->upperlimit);
-      int scale = ::atoi(configset->query("anaScaling").c_str());
+      Variable *EvisFine = configset->createVar(configset->get("EvisVariable")+"_fine",0,0,
+          Evis->lowerlimit,Evis->upperlimit);
+      int scale = configset->get<double>("anaScaling");
       EvisFine->numbins = Evis->numbins*scale;
       dataset->set("EvisFine", EvisFine);
       dataset->set("anaScaling", scale);
     } 
 
-    std::vector<std::string> components(GooStats::Utility::splitter(configset->query("components"),":"));;
+    std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"),":"));;
     dataset->set("components", components);
 
     std::vector<Variable*> Ns;
@@ -44,131 +44,131 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     bool useAna = false;
     bool useNL = false;
     for(auto component: components) {
-      std::string type = configset->query(component+"_type");
+      std::string type = configset->get(component+"_type");
       dataset->set(component+"_type",type);
       dataset->set(component+"_E",dataset->get<Variable*>("Evis"));
       if(type=="MC") {
-	dataset->set(component+"_freeMCscale",
-	    configset->hasAndYes(component+"_freeMCscale"));
-	dataset->set(component+"_freeMCshift",
-	    configset->hasAndYes(component+"_freeMCshift"));
+        dataset->set(component+"_freeMCscale",
+            configset->hasAndYes(component+"_freeMCscale"));
+        dataset->set(component+"_freeMCshift",
+            configset->hasAndYes(component+"_freeMCshift"));
       } else if(type.substr(0,3)=="Ana") {
-	useAna = true; // NL, res, feq
-	if(type=="AnaPeak") {
-	  dataset->set(component+"_Epeak", 
-	      configset->createVar(component+"_Epeak",
-		::atof(configset->query(component+"_Evis_init").c_str()),
-		::atof(configset->query(component+"_Evis_err").c_str()),
-		::atof(configset->query(component+"_Evis_min").c_str()),
-		::atof(configset->query(component+"_Evis_max").c_str())));
-	} else {
-	  useNL = true;
-	  Variable *inner_E = configset->createVar(component+"_inner_E",0,0,
-	      ::atof(configset->query(component+"_inner_min").c_str()),
-	      ::atof(configset->query(component+"_inner_max").c_str()));
-	  inner_E->numbins = ::atof(configset->query(component+"_inner_nbins").c_str());
-	  dataset->set(component+"_inner_E", inner_E); // energy
+        useAna = true; // NL, res, feq
+        if(type=="AnaPeak") {
+          dataset->set(component+"_Epeak", 
+              configset->createVar(component+"_Epeak",
+                configset->get<double>(component+"_Evis_init"),
+                configset->get<double>(component+"_Evis_err"),
+                configset->get<double>(component+"_Evis_min"),
+                configset->get<double>(component+"_Evis_max")));
+        } else {
+          useNL = true;
+          Variable *inner_E = configset->createVar(component+"_inner_E",0,0,
+              configset->get<double>(component+"_inner_min"),
+              configset->get<double>(component+"_inner_max"));
+          inner_E->numbins = configset->get<double>(component+"_inner_nbins");
+          dataset->set(component+"_inner_E", inner_E); // energy
 
-	  std::string inner_type = configset->query(component+"_inner_type");
-	  dataset->set(component+"_inner_type",inner_type);
-	  if(inner_type=="MC") {
-	    dataset->set(component+"_inner_freeMCscale",
-		configset->hasAndYes(component+"_inner_freeMCscale"));
-	    dataset->set(component+"_inner_freeMCshift",
-		configset->hasAndYes(component+"_inner_freeMCshift"));
-	  } else if(type=="AnaShifted") {
-	    dataset->set(component+"_dEvis", 
-		configset->createVar(component+"_dEvis",
-		  ::atof(configset->query(component+"_dEvis_init").c_str()),
-		  ::atof(configset->query(component+"_dEvis_err").c_str()),
-		  ::atof(configset->query(component+"_dEvis_min").c_str()),
-		  ::atof(configset->query(component+"_dEvis_max").c_str())));
-	  }
-	}
+          std::string inner_type = configset->get(component+"_inner_type");
+          dataset->set(component+"_inner_type",inner_type);
+          if(inner_type=="MC") {
+            dataset->set(component+"_inner_freeMCscale",
+                configset->hasAndYes(component+"_inner_freeMCscale"));
+            dataset->set(component+"_inner_freeMCshift",
+                configset->hasAndYes(component+"_inner_freeMCshift"));
+          } else if(type=="AnaShifted") {
+            dataset->set(component+"_dEvis", 
+                configset->createVar(component+"_dEvis",
+                  configset->get<double>(component+"_dEvis_init"),
+                  configset->get<double>(component+"_dEvis_err"),
+                  configset->get<double>(component+"_dEvis_min"),
+                  configset->get<double>(component+"_dEvis_max")));
+          }
+        }
       } 
     }
     if(useAna) {
-      dataset->set("RPFtype",configset->query("RPFtype"));
-      dataset->set("NLtype",configset->query("NLtype"));
+      dataset->set("RPFtype",configset->get("RPFtype"));
+      dataset->set("NLtype",configset->get("NLtype"));
       if(configset->has("feq"))
-	dataset->set("feq",::atof(configset->query("feq").c_str()));
+        dataset->set("feq",configset->get<double>("feq"));
       else
-	dataset->set("feq",1.0);
+        dataset->set("feq",1.0);
       if(useNL) {
-	std::vector<Variable*> NL;
-	Variable *LY = configset->createVar("LY",
-	    ::atof(configset->query("LY_init").c_str()),
-	    ::atof(configset->query("LY_err").c_str()),
-	    ::atof(configset->query("LY_min").c_str()),
-	    ::atof(configset->query("LY_max").c_str()));
-	NL.push_back(LY);
-	if(configset->has("NLtype") && configset->query("NLtype")=="expPar") {
-	  Variable *NL_b = configset->createVar("NL_b",
-	      ::atof(configset->query("NL_b_init").c_str()),
-	      ::atof(configset->query("NL_b_err").c_str()),
-	      ::atof(configset->query("NL_b_min").c_str()),
-	      ::atof(configset->query("NL_b_max").c_str()));
-	  NL.push_back(NL_b);
-	  Variable *NL_c = configset->createVar("NL_c",
-	      ::atof(configset->query("NL_c_init").c_str()),
-	      ::atof(configset->query("NL_c_err").c_str()),
-	      ::atof(configset->query("NL_c_min").c_str()),
-	      ::atof(configset->query("NL_c_max").c_str()));
-	  NL.push_back(NL_c);
-	  Variable *NL_e = configset->createVar("NL_e",
-	      ::atof(configset->query("NL_e_init").c_str()),
-	      ::atof(configset->query("NL_e_err").c_str()),
-	      ::atof(configset->query("NL_e_min").c_str()),
-	      ::atof(configset->query("NL_e_max").c_str()));
-	  NL.push_back(NL_e);
-	  Variable *NL_f = configset->createVar("NL_f",
-	      ::atof(configset->query("NL_f_init").c_str()),
-	      ::atof(configset->query("NL_f_err").c_str()),
-	      ::atof(configset->query("NL_f_min").c_str()),
-	      ::atof(configset->query("NL_f_max").c_str()));
-	  NL.push_back(NL_f);
-	} else {
-	  Variable *qc1 = configset->createVar("qc1",
-	      ::atof(configset->query("qc1_init").c_str()),
-	      ::atof(configset->query("qc1_err").c_str()),
-	      ::atof(configset->query("qc1_min").c_str()),
-	      ::atof(configset->query("qc1_max").c_str()));
-	  NL.push_back(qc1);
-	  Variable *qc2 = configset->createVar("qc2",
-	      ::atof(configset->query("qc2_init").c_str()),
-	      ::atof(configset->query("qc2_err").c_str()),
-	      ::atof(configset->query("qc2_min").c_str()),
-	      ::atof(configset->query("qc2_max").c_str()));
-	  NL.push_back(qc2);
-	}
-	dataset->set("NL",NL);
+        std::vector<Variable*> NL;
+        Variable *LY = configset->createVar("LY",
+            configset->get<double>("LY_init"),
+            configset->get<double>("LY_err"),
+            configset->get<double>("LY_min"),
+            configset->get<double>("LY_max"));
+        NL.push_back(LY);
+        if(configset->has("NLtype") && configset->get("NLtype")=="expPar") {
+          Variable *NL_b = configset->createVar("NL_b",
+              configset->get<double>("NL_b_init"),
+              configset->get<double>("NL_b_err"),
+              configset->get<double>("NL_b_min"),
+              configset->get<double>("NL_b_max"));
+          NL.push_back(NL_b);
+          Variable *NL_c = configset->createVar("NL_c",
+              configset->get<double>("NL_c_init"),
+              configset->get<double>("NL_c_err"),
+              configset->get<double>("NL_c_min"),
+              configset->get<double>("NL_c_max"));
+          NL.push_back(NL_c);
+          Variable *NL_e = configset->createVar("NL_e",
+              configset->get<double>("NL_e_init"),
+              configset->get<double>("NL_e_err"),
+              configset->get<double>("NL_e_min"),
+              configset->get<double>("NL_e_max"));
+          NL.push_back(NL_e);
+          Variable *NL_f = configset->createVar("NL_f",
+              configset->get<double>("NL_f_init"),
+              configset->get<double>("NL_f_err"),
+              configset->get<double>("NL_f_min"),
+              configset->get<double>("NL_f_max"));
+          NL.push_back(NL_f);
+        } else {
+          Variable *qc1 = configset->createVar("qc1",
+              configset->get<double>("qc1_init"),
+              configset->get<double>("qc1_err"),
+              configset->get<double>("qc1_min"),
+              configset->get<double>("qc1_max"));
+          NL.push_back(qc1);
+          Variable *qc2 = configset->createVar("qc2",
+              configset->get<double>("qc2_init"),
+              configset->get<double>("qc2_err"),
+              configset->get<double>("qc2_min"),
+              configset->get<double>("qc2_max"));
+          NL.push_back(qc2);
+        }
+        dataset->set("NL",NL);
       }
       std::vector<Variable*> res;
       Variable *sdn = configset->createVar("sdn",
-	  ::atof(configset->query("sdn_init").c_str()),
-	  ::atof(configset->query("sdn_err").c_str()),
-	  ::atof(configset->query("sdn_min").c_str()),
-	  ::atof(configset->query("sdn_max").c_str()));
+          configset->get<double>("sdn_init"),
+          configset->get<double>("sdn_err"),
+          configset->get<double>("sdn_min"),
+          configset->get<double>("sdn_max"));
       res.push_back(sdn);
       Variable *v1 = configset->createVar("v1",
-	  ::atof(configset->query("v1_init").c_str()),
-	  ::atof(configset->query("v1_err").c_str()),
-	  ::atof(configset->query("v1_min").c_str()),
-	  ::atof(configset->query("v1_max").c_str()));
+          configset->get<double>("v1_init"),
+          configset->get<double>("v1_err"),
+          configset->get<double>("v1_min"),
+          configset->get<double>("v1_max"));
       res.push_back(v1);
       Variable *sigmaT = configset->createVar("sigmaT",
-	  ::atof(configset->query("sigmaT_init").c_str()),
-	  ::atof(configset->query("sigmaT_err").c_str()),
-	  ::atof(configset->query("sigmaT_min").c_str()),
-	  ::atof(configset->query("sigmaT_max").c_str()));
+          configset->get<double>("sigmaT_init"),
+          configset->get<double>("sigmaT_err"),
+          configset->get<double>("sigmaT_min"),
+          configset->get<double>("sigmaT_max"));
       res.push_back(sigmaT);
-      if(configset->query("RPFtype")=="MG") {
-	Variable *g2 = configset->createVar("g2",
-	    ::atof(configset->query("g2_init").c_str()),
-	    ::atof(configset->query("g2_err").c_str()),
-	    ::atof(configset->query("g2_min").c_str()),
-	    ::atof(configset->query("g2_max").c_str()));
-	res.push_back(g2);
+      if(configset->get("RPFtype")=="MG") {
+        Variable *g2 = configset->createVar("g2",
+            configset->get<double>("g2_init"),
+            configset->get<double>("g2_err"),
+            configset->get<double>("g2_min"),
+            configset->get<double>("g2_max"));
+        res.push_back(g2);
       }
       dataset->set("res",res);
     }

@@ -13,7 +13,7 @@
 #include "GSFitManager.h"
 void ToyMCLikelihoodEvaluator::get_p_value(GSFitManager *gsFitManager,InputManager *manager,double LL,double &p,double &perr,FitControl *fit) {
   const OptionManager *gOp = manager->GlobalOption();
-  int N = gOp->has("toyMC_size")?atoi(gOp->query("toyMC_size").c_str()):100;
+  int N = gOp->has("toyMC_size")?gOp->get<double>("toyMC_size"):100;
   if(N==0) return;
   SumLikelihoodPdf *totalPdf = manager->getTotalPdf();
   totalPdf->setFitControl(fit);

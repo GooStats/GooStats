@@ -1,7 +1,6 @@
 add_library(GooStatsSimple
   SimpleDatasetController.cc
   SimpleInputBuilder.cc
-  SimpleOptionParser.cc
   SimpleOutputBuilder.cc
   SimpleSpectrumBuilder.cc
   SimplePlotManager.cc

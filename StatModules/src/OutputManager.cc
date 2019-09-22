@@ -75,16 +75,16 @@ void OutputManager::subFit(int event) {
   // print on screen
   if(event>=0) outputBuilder->flushOstream(batchOut.get(),outputHelper.get(),std::cout);
   // make a plot
-  if(plot && !((!getInputManager()->GlobalOption()->has("disablePlots") && getInputManager()->GlobalOption()->has("repeat") && std::atoi(getInputManager()->GlobalOption()->query("repeat").c_str())>0)
-      ||getInputManager()->GlobalOption()->hasAndYes("disablePlots"))) {
+  if(plot && !((!GlobalOption()->has("disablePlots") && GlobalOption()->has("repeat") && GlobalOption()->get<double>("repeat")>0)
+      ||GlobalOption()->hasAndYes("disablePlots"))) {
     outputBuilder->draw(event,getGSFitManager(),plot.get(),getInputManager());
   }
 }
 bool OutputManager::run(int event) {
   // save to disk
   batchOut->run(event);
-  if(plot && !((!getInputManager()->GlobalOption()->has("disablePlots") && getInputManager()->GlobalOption()->has("repeat") && std::atoi(getInputManager()->GlobalOption()->query("repeat").c_str())>0)
-      ||getInputManager()->GlobalOption()->hasAndYes("disablePlots"))) {
+  if(plot && !((!GlobalOption()->has("disablePlots") && GlobalOption()->has("repeat") && GlobalOption()->get<double>("repeat")>0)
+      ||GlobalOption()->hasAndYes("disablePlots"))) {
     plot->run(event);
   }
   static int count = 0;

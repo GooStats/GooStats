@@ -161,7 +161,7 @@ TGraph *ContourManager::LLprofile(const std::string &parName) {
   double left,right;
   get_par_range(parName,left,right);
   int Npoint = 40;
-  if(GlobalOption()->has("profile_N")) Npoint = atoi(GlobalOption()->query("profile_N").c_str());
+  if(GlobalOption()->has("profile_N")) Npoint = GlobalOption()->get<double>("profile_N");
   int id = get_id(parName);
   std::vector<double> x,y;
   gMinuit->FixParameter(id-1);
@@ -196,7 +196,7 @@ TGraph *ContourManager::LLprofile(const std::string &parName) {
 
 TObject *ContourManager::LLcontour(const std::string &par1,const std::string &par2,const std::vector<double> &) {
   int Npoint = 16;
-  if(GlobalOption()->has("contour_N")) Npoint = atoi(GlobalOption()->query("contour_N").c_str());
+  if(GlobalOption()->has("contour_N")) Npoint = GlobalOption()->get<double>("contour_N");
   TGraph *contour = dynamic_cast<TGraph*>(gMinuit->Contour(Npoint,get_id(par1)-1,get_id(par2)-1));
   //  TH2D *contour = new TH2D("","",Npoint,l1,r1,Npoint,l2,r2);
   //  var1->fixed = var2->fixed = true;
@@ -236,7 +236,7 @@ int ContourManager::get_id(const std::string &parName) const {
 }
 
 std::string ContourManager::label(const std::string &parName) {
-  if(GlobalOption()->has("label_"+parName)) return GlobalOption()->query("label_"+parName);
+  if(GlobalOption()->has("label_"+parName)) return GlobalOption()->get("label_"+parName);
   return parName;
 }
 
@@ -249,18 +249,18 @@ void ContourManager::get_par_range(const std::string &parName,double &left,doubl
   auto min = [](double x,double y) { return x<y?x:y; };
   if(left<var->lowerlimit) { left = var->lowerlimit; right+=min(var->upperlimit-right,0.5*sigma); }
   if(right>var->upperlimit) { right = var->upperlimit; left-=min(left-var->lowerlimit,0.5*sigma); }
-  if(GlobalOption()->has("profile_"+parName+"_min")) left = std::stod(GlobalOption()->query("profile_"+parName+"_min"));
-  if(GlobalOption()->has("profile_"+parName+"_max")) right = std::stod(GlobalOption()->query("profile_"+parName+"_max"));
+  if(GlobalOption()->has("profile_"+parName+"_min")) left = GlobalOption()->get<double>("profile_"+parName+"_min");
+  if(GlobalOption()->has("profile_"+parName+"_max")) right = GlobalOption()->get<double>("profile_"+parName+"_max");
 }
 
 void ContourManager::register_vars() {
   if(GlobalOption()->has("plot_profiles")) {
-    profiles_vars = GooStats::Utility::splitter(GlobalOption()->query("plot_profiles"),":");
+    profiles_vars = GooStats::Utility::splitter(GlobalOption()->get("plot_profiles"),":");
     for(auto var : profiles_vars)
       std::cout<<"plot profile ["<<var<<"]"<<std::endl;
   }
   if(GlobalOption()->has("plot_contours"))
-    for(auto var : GooStats::Utility::splitter(GlobalOption()->query("plot_contours"),";")) {
+    for(auto var : GooStats::Utility::splitter(GlobalOption()->get("plot_contours"),";")) {
       auto var_pairs = GooStats::Utility::splitter(var,":");
       contours_vars.push_back(std::make_pair(var_pairs.at(0),var_pairs.at(1)));
       std::cout<<"plot contour ["<<var_pairs.at(0)<<"-"<<var_pairs.at(1)<<"]"<<std::endl;

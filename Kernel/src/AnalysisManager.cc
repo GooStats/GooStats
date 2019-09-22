@@ -36,7 +36,7 @@ bool AnalysisManager::run(int ) {
   };
   bool ok = true;
   unsigned long long N_event = 1;
-  if(GlobalOption()->has("repeat")) N_event = std::stoull(GlobalOption()->query("repeat"));
+  if(GlobalOption()->has("repeat")) N_event = GlobalOption()->get<double>("repeat");
   for(unsigned long long event = 0;event<N_event;++event) {
     for(auto mod : modules) {
       ok &= mod->run(event);

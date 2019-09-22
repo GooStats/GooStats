@@ -13,11 +13,11 @@
 #include "GSFitManager.h"
 bool ScanPar::run(int) {
   if(!GlobalOption()->has("scanPar")) return true;
-  auto parName = GlobalOption()->query("scanPar");
+  auto parName = GlobalOption()->get("scanPar");
   auto var = getGSFitManager()->get_var(parName);
-  auto left = std::stod(GlobalOption()->query("scanParMin"));
-  auto right = std::stod(GlobalOption()->query("scanParMax"));
-  auto Npoint = std::atoi(GlobalOption()->query("scanParN").c_str());
+  auto left = GlobalOption()->get<double>("scanParMin");
+  auto right = GlobalOption()->get<double>("scanParMax");
+  int Npoint = GlobalOption()->get<double>("scanParN");
   var->fixed = true;
   for(int i = 0;i<Npoint;++i) {
     double xx = left+(right-left)/(Npoint-1)*i;

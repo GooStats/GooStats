@@ -3,10 +3,10 @@ add_library(GooStatsKernel
   ParSyncManager.cc
   NLLCheckFixture.cc
   GooStatsNLLCheck.cc
-  ConfigsetManager.cc
   BasicSpectrumBuilder.cc
   TextOutputManager.cc
   OutputHelper.cc
+  OptionManager.cc
   Module.cc
   BestFitFixture.cc
   AnalysisManager.cc

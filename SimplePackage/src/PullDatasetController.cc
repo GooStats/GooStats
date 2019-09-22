@@ -16,15 +16,15 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
     dataset->set("var", configset->var(varName));
     if(!configset->has(varName+"_pullType")) { // default: gaus
       dataset->set("type", std::string("gaus"));
-      dataset->set("exposure", ::atof(configset->query("exposure").c_str()));
-      dataset->set("mean", ::atof(configset->query(varName+"_centroid").c_str()));
-      dataset->set("sigma", ::atof(configset->query(varName+"_sigma").c_str()));
-    } else if(configset->query(varName+"_pullType")=="square") {
+      dataset->set("exposure", configset->get<double>("exposure"));
+      dataset->set("mean", configset->get<double>(varName+"_centroid"));
+      dataset->set("sigma", configset->get<double>(varName+"_sigma"));
+    } else if(configset->get(varName+"_pullType")=="square") {
       dataset->set("type", std::string("square"));
-      dataset->set("lowerlimit", ::atof(configset->query(varName+"_min").c_str()));
-      dataset->set("upperlimit", ::atof(configset->query(varName+"_max").c_str()));
+      dataset->set("lowerlimit", configset->get<double>(varName+"_min"));
+      dataset->set("upperlimit", configset->get<double>(varName+"_max"));
     } else {
-      throw GooStatsException("Unknown Pull type: ["+configset->query(varName+"_pullType")+"]");
+      throw GooStatsException("Unknown Pull type: ["+configset->get(varName+"_pullType")+"]");
     }
   } catch (GooStatsException &ex) {
     std::cout<<"Exception caught during fetching parameter configurations. probably you missed iterms in your configuration files. Read the READ me to find more details"<<std::endl;
@@ -51,10 +51,10 @@ bool PullDatasetController::buildLikelihoods(DatasetManager *dataset) {
   auto type = dataset->get<std::string>("type");
   if(type=="gaus") {
     GooPdf *pdf = new PullPdf(dataset->name(),
-			      dataset->get<Variable*>("var"),
-			      dataset->get<double>("mean"),
-			      dataset->get<double>("sigma"),
-			      dataset->get<double>("exposure"));
+        dataset->get<Variable*>("var"),
+        dataset->get<double>("mean"),
+        dataset->get<double>("sigma"),
+        dataset->get<double>("exposure"));
     this->setLikelihood(dataset,pdf);
   }
   return true; 

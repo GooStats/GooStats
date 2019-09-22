@@ -41,13 +41,13 @@ bool CorrelationManager::finish() {
 
 void CorrelationManager::register_vars() {
   if(GlobalOption()->has("corr_variables")) {
-    corr_vars = GooStats::Utility::splitter(GlobalOption()->query("corr_variables"),":");
+    corr_vars = GooStats::Utility::splitter(GlobalOption()->get("corr_variables"),":");
     for(auto var : corr_vars)
       std::cout<<"analyzing corr. for ["<<var<<"]"<<std::endl;
   }
 }
 TString CorrelationManager::label(TString parName) {
-  if(GlobalOption()->has(("label_"+parName).Data())) return GlobalOption()->query(("label_"+parName).Data());
+  if(GlobalOption()->has(("label_"+parName).Data())) return GlobalOption()->get(("label_"+parName).Data());
   return parName;
 }
 void CorrelationManager::print() {
