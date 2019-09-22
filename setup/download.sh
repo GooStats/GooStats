@@ -3,7 +3,7 @@
 # download GooStats
 GooStatsVersion=6.0.0
 if [ ! -f v${GooStatsVersion}.tar.gz ]; then
-  wget https://github.com/GooStats/GooStats/archive/v${GooStatsVersion}.tar.gz
+  wget -O v${GooStatsVersion}.tar.gz https://github.com/GooStats/GooStats/archive/v${GooStatsVersion}.tar.gz
 fi
 if [ ! -d GooStats-${GooStatsVersion} ]; then
   tar zxvf v${GooStatsVersion}.tar.gz
