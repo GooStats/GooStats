@@ -229,7 +229,7 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
   res_pad->SetGridy(true);
   res_pad->SetTopMargin(0.05);
   res_pad->SetBottomMargin(0.05);
-  TH1 *res = (TH1*)xvarHist->DrawClone("hist");
+  TH1 *res = (TH1*)xvarHist->DrawClone("e");
   res->SetName((sumpdf->getName()+"_res").c_str());
   res->SetTitle((sumpdf->getName()+"_res").c_str());
   toBeSaved.insert(res);
@@ -245,7 +245,7 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
     double D = xvarHist->GetBinContent(i);
     double M = total_h->Eval(res->GetBinCenter(i));
     res->SetBinContent(i,(D-M)/sqrt(D+(D==0)));
-    res->SetBinError(i,0);
+    res->SetBinError(i,1);
   }
   // plot two pad
   curr_pad->cd();

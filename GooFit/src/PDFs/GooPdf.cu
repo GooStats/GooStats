@@ -125,7 +125,7 @@ EXEC_TARGET fptype calculateScaledBinAvg (fptype rawPdf, fptype* evtVal, unsigne
     const bool apply_scale = npe<RO_CACHE(dev_Nll_threshold[0]);
     if(apply_scale && (expEvents>10) ) {
       const fptype diff = measureEvents-expEvents;
-      const fptype err_square = expEvents*RO_CACHE(dev_Nll_scaleFactor[0]);
+      const fptype err_square = measureEvents*RO_CACHE(dev_Nll_scaleFactor[0]);
       const fptype pi = 3.1415926535897932384626433832795028841971693993751;
       result = 0.5*diff*diff/err_square + 0.5*log(2*pi*err_square);
     } else {

@@ -22,7 +22,7 @@
 #include "ScanPar.h"
 #include "NMOTest.h"
 
-int main (int argc, char** argv) {
+int main (int argc, const char* argv[]) {
   AnalysisManager *ana = new AnalysisManager();
   InputManager *inputManager = new InputManager(argc,argv);
   InputBuilder *builder = new ReactorInputBuilder();

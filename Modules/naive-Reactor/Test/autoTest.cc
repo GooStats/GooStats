@@ -56,7 +56,7 @@ void trigger_fit(const std::string arg1 = "reactor", const std::string arg2 = "d
 
   AnalysisManager *ana = new AnalysisManager();
 
-  InputManager *inputManager = new InputManager(argc,argv);
+  InputManager *inputManager = new InputManager(argc,const_cast<const char**>(argv));
   InputBuilder *builder = new ReactorInputBuilder();
   builder->installSpectrumBuilder(new ReactorSpectrumBuilder());
   inputManager->setInputBuilder(builder);

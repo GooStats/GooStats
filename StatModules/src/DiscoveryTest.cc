@@ -13,7 +13,7 @@
 #include "OutputManager.h"
 bool DiscoveryTest::run(int ev) {
   if(!GlobalOption()->has("DiscoveryTest")) return true;
-  auto parName = GlobalOption()->query("DiscoveryTest");
+  auto parName = GlobalOption()->get("DiscoveryTest");
   auto var = getGSFitManager()->get_var(parName);
   var->fixed = true;
   var->value = 0;

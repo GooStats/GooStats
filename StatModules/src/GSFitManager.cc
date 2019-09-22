@@ -55,7 +55,7 @@ const SumLikelihoodPdf *GSFitManager::sumpdf() const {
   return getInputManager()->getTotalPdf();
 }
 bool GSFitManager::LLfit() const {
- return !getInputManager()->GlobalOption()->hasAndYes("chisquareFit");
+ return !GlobalOption()->hasAndYes("chisquareFit");
 }
 int GSFitManager::get_id(const std::string &parName) const {
   unsigned int counter = 0; 

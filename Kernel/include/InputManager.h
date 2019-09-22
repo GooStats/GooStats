@@ -27,12 +27,12 @@ class SumLikelihoodPdf;
 class InputManager : public Module {
   public:
     InputManager() : Module("InputManager") {};
-    void setArgs(int _c,char **_v) { argc = _c; argv = _v; }
-    InputManager(int _c,char **_v) : Module("InputManager"), argc(_c), argv(_v) {};
+    void setArgs(int _c,const char **_v) { argc = _c; argv = _v; }
+    InputManager(int _c,const char **_v) : Module("InputManager"), argc(_c), argv(_v) {};
     virtual bool init() override;
   protected:
     int argc = -1;    ///< command line arguments
-    char **argv = nullptr; ///< command line arguments
+    const char **argv = nullptr; ///< command line arguments
 
   public:
     void setInputBuilder(InputBuilder *);

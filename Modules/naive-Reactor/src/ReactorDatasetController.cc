@@ -16,79 +16,79 @@ bool ReactorDatasetController::collectInputs(DatasetManager *dataset) {
   try {
     std::vector<Variable*> fractions;
     Variable *U235 = configset->createVar("U235",
-	::atof(configset->query("U235_init").c_str()),
-	::atof(configset->query("U235_err").c_str()),
-	::atof(configset->query("U235_min").c_str()),
-	::atof(configset->query("U235_max").c_str()));
+        configset->get<double>("U235_init"),
+        configset->get<double>("U235_err"),
+        configset->get<double>("U235_min"),
+        configset->get<double>("U235_max"));
     fractions.push_back(U235);
     Variable *U238 = configset->createVar("U238",
-	::atof(configset->query("U238_init").c_str()),
-	::atof(configset->query("U238_err").c_str()),
-	::atof(configset->query("U238_min").c_str()),
-	::atof(configset->query("U238_max").c_str()));
+        configset->get<double>("U238_init"),
+        configset->get<double>("U238_err"),
+        configset->get<double>("U238_min"),
+        configset->get<double>("U238_max"));
     fractions.push_back(U238);
     Variable *Pu239 = configset->createVar("Pu239",
-	::atof(configset->query("Pu239_init").c_str()),
-	::atof(configset->query("Pu239_err").c_str()),
-	::atof(configset->query("Pu239_min").c_str()),
-	::atof(configset->query("Pu239_max").c_str()));
+        configset->get<double>("Pu239_init"),
+        configset->get<double>("Pu239_err"),
+        configset->get<double>("Pu239_min"),
+        configset->get<double>("Pu239_max"));
     fractions.push_back(Pu239);
     Variable *Pu241 = configset->createVar("Pu241",
-	::atof(configset->query("Pu241_init").c_str()),
-	::atof(configset->query("Pu241_err").c_str()),
-	::atof(configset->query("Pu241_min").c_str()),
-	::atof(configset->query("Pu241_max").c_str()));
+        configset->get<double>("Pu241_init"),
+        configset->get<double>("Pu241_err"),
+        configset->get<double>("Pu241_min"),
+        configset->get<double>("Pu241_max"));
     fractions.push_back(Pu241);
     dataset->set("fractions", fractions);
     std::vector<double> coefficients;
-    coefficients.push_back(::atof(configset->query("Huber_U235_0").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U235_1").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U235_2").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U238_0").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U238_1").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_U238_2").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu239_0").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu239_1").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu239_2").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu241_0").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu241_1").c_str()));
-    coefficients.push_back(::atof(configset->query("Huber_Pu241_2").c_str()));
+    coefficients.push_back(configset->get<double>("Huber_U235_0"));
+    coefficients.push_back(configset->get<double>("Huber_U235_1"));
+    coefficients.push_back(configset->get<double>("Huber_U235_2"));
+    coefficients.push_back(configset->get<double>("Huber_U238_0"));
+    coefficients.push_back(configset->get<double>("Huber_U238_1"));
+    coefficients.push_back(configset->get<double>("Huber_U238_2"));
+    coefficients.push_back(configset->get<double>("Huber_Pu239_0"));
+    coefficients.push_back(configset->get<double>("Huber_Pu239_1"));
+    coefficients.push_back(configset->get<double>("Huber_Pu239_2"));
+    coefficients.push_back(configset->get<double>("Huber_Pu241_0"));
+    coefficients.push_back(configset->get<double>("Huber_Pu241_1"));
+    coefficients.push_back(configset->get<double>("Huber_Pu241_2"));
     dataset->set("coefficients", coefficients);
-    dataset->set("reactorPower", ::atof(configset->query("reactorPower").c_str()));
-    dataset->set("distance", ::atof(configset->query("distance").c_str()));
-    dataset->set("NHatomPerkton", ::atof(configset->query("NHatomPerkton").c_str()));
+    dataset->set("reactorPower", configset->get<double>("reactorPower"));
+    dataset->set("distance", configset->get<double>("distance"));
+    dataset->set("NHatomPerkton", configset->get<double>("NHatomPerkton"));
     std::vector<Variable*> sinTheta_2s;
     Variable *sinTheta12_2 = configset->createVar("sinTheta12_2",
-	::atof(configset->query("sinTheta12_2_init").c_str()),
-	::atof(configset->query("sinTheta12_2_err").c_str()),
-	::atof(configset->query("sinTheta12_2_min").c_str()),
-	::atof(configset->query("sinTheta12_2_max").c_str()));
+        configset->get<double>("sinTheta12_2_init"),
+        configset->get<double>("sinTheta12_2_err"),
+        configset->get<double>("sinTheta12_2_min"),
+        configset->get<double>("sinTheta12_2_max"));
     sinTheta_2s.push_back(sinTheta12_2);
     Variable *sinTheta13_2 = configset->createVar("sinTheta13_2",
-	::atof(configset->query("sinTheta13_2_init").c_str()),
-	::atof(configset->query("sinTheta13_2_err").c_str()),
-	::atof(configset->query("sinTheta13_2_min").c_str()),
-	::atof(configset->query("sinTheta13_2_max").c_str()));
+        configset->get<double>("sinTheta13_2_init"),
+        configset->get<double>("sinTheta13_2_err"),
+        configset->get<double>("sinTheta13_2_min"),
+        configset->get<double>("sinTheta13_2_max"));
     sinTheta_2s.push_back(sinTheta13_2);
     Variable *sinTheta23_2 = configset->createVar("sinTheta23_2",
-	::atof(configset->query("sinTheta23_2_init").c_str()),
-	::atof(configset->query("sinTheta23_2_err").c_str()),
-	::atof(configset->query("sinTheta23_2_min").c_str()),
-	::atof(configset->query("sinTheta23_2_max").c_str()));
+        configset->get<double>("sinTheta23_2_init"),
+        configset->get<double>("sinTheta23_2_err"),
+        configset->get<double>("sinTheta23_2_min"),
+        configset->get<double>("sinTheta23_2_max"));
     sinTheta_2s.push_back(sinTheta23_2);
     dataset->set("sinThetas", sinTheta_2s);
     std::vector<Variable*> deltaM2s;
     Variable *deltaM221 = configset->createVar("deltaM221",
-	::atof(configset->query("deltaM221_init").c_str()),
-	::atof(configset->query("deltaM221_err").c_str()),
-	::atof(configset->query("deltaM221_min").c_str()),
-	::atof(configset->query("deltaM221_max").c_str()));
+        configset->get<double>("deltaM221_init"),
+        configset->get<double>("deltaM221_err"),
+        configset->get<double>("deltaM221_min"),
+        configset->get<double>("deltaM221_max"));
     deltaM2s.push_back(deltaM221);
     Variable *deltaM231 = configset->createVar("deltaM231",
-	::atof(configset->query("deltaM231_init").c_str()),
-	::atof(configset->query("deltaM231_err").c_str()),
-	::atof(configset->query("deltaM231_min").c_str()),
-	::atof(configset->query("deltaM231_max").c_str()));
+        configset->get<double>("deltaM231_init"),
+        configset->get<double>("deltaM231_err"),
+        configset->get<double>("deltaM231_min"),
+        configset->get<double>("deltaM231_max"));
     deltaM2s.push_back(deltaM231);
     dataset->set("deltaM2s", deltaM2s);
   } catch (GooStatsException &ex) {

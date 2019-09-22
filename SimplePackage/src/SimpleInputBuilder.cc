@@ -20,7 +20,6 @@
 #include "SimpleSpectrumBuilder.h"
 #include "SimpleDatasetController.h"
 #include "PullDatasetController.h"
-#include "SimpleOptionParser.h"
 #include "SumLikelihoodPdf.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -31,7 +30,7 @@ SimpleInputBuilder::SimpleInputBuilder() :
     folder(std::getenv("SimpleInputBuilderData")?std::getenv("SimpleInputBuilderData"):""),
     spcBuilder(std::make_shared<BasicSpectrumBuilder>())  { }
 
-std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **argv) {
+std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,const char *argv[]) {
   if(argc<2) {
     std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
@@ -40,7 +39,7 @@ std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,char **ar
   return argc>2?std::string(argv[2]):std::string("output.root");
 }
 
-std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,char **argv) {
+std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,const char *argv[]) {
   if(argc<2) {
     std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
@@ -54,8 +53,7 @@ std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,ch
 }
 
 ConfigsetManager *SimpleInputBuilder::buildConfigset(ParSyncManager *parManager,const InputConfig &config) {
-  ConfigsetManager *configset = new ConfigsetManager(*parManager->createParSyncSet(config));
-  configset->setOptionManager(createOptionManager());
+  ConfigsetManager *configset = new ConfigsetManager(*parManager->createParSyncSet(config),new OptionManager());
   return configset;
 }
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,ConfigsetManager* configset) {
@@ -64,10 +62,10 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
   std::vector<std::string> componentsTH1;
   struct txtSource { std::string component; std::string txt; };
   std::vector<txtSource> componentsTxt;
-  for(auto component : GooStats::Utility::splitter(configset->query("inputSpectra"),":"))
+  for(auto component : GooStats::Utility::splitter(configset->get("inputSpectra"),":"))
     if(configset->has(component + "_inputTxt")) 
       componentsTxt.push_back(
-	  (txtSource) {component,configset->query(component + "_inputTxt")});
+	  (txtSource) {component,configset->get(component + "_inputTxt")});
     else
       componentsTH1.push_back(component);
 
@@ -100,7 +98,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
   // load TFile
   if(componentsTH1.size() && configset->has("inputSpectraFiles")) {
     std::vector<std::string> sourceTFilesName(
-	GooStats::Utility::splitter(configset->query("inputSpectraFiles"),":"));;
+	GooStats::Utility::splitter(configset->get("inputSpectraFiles"),":"));;
     std::vector<TFile *> sourceTFiles;
     for(auto fileName : sourceTFilesName) {
       TFile *file = TFile::Open(fileName.c_str());
@@ -116,7 +114,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
     for(auto component : componentsTH1) {
       std::string histName; TH1 *th1(nullptr);
       if(configset->has(component+"_histName"))
-	histName = configset->query(component+"_histName");
+	histName = configset->get(component+"_histName");
       for(auto file: sourceTFiles) {
 	th1 = static_cast<TH1*>(file->Get(histName.c_str()));
 	if(th1) break;
@@ -129,7 +127,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
 	}
 	std::cout<<"List of histograms to be loaded: "<<std::endl;
 	for(auto component : componentsTH1) 
-	  std::cout<<"["<<component<<"] <"<<(configset->has(component+"_histName")?configset->query(component+"_histName"):"")<<">"<<std::endl;
+	  std::cout<<"["<<component<<"] <"<<(configset->has(component+"_histName")?configset->get(component+"_histName"):"")<<">"<<std::endl;
 	throw GooStatsException("Cannot load pdf from TFiles");
       }
       int n;
@@ -147,14 +145,14 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
   }
 }
 void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
-  std::vector<std::string> components(GooStats::Utility::splitter(configset->query("components"),":"));;
+  std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"),":"));;
   for(auto component: components) {
     // warning: no error checking
     configset->createVar(component,
-	::atof(configset->query("N"+component+"_init").c_str()),
-	::atof(configset->query("N"+component+"_err").c_str()),
-	::atof(configset->query("N"+component+"_min").c_str()),
-	::atof(configset->query("N"+component+"_max").c_str()));
+        configset->get<double>("N"+component+"_init"),
+        configset->get<double>("N"+component+"_err"),
+        configset->get<double>("N"+component+"_min"),
+        configset->get<double>("N"+component+"_max"));
   } 
 }
 
@@ -190,7 +188,7 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumPro
   return true;
 }
 
-bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,int argc,char **argv) {
+bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,int argc,const char *argv[]) {
   configset->parse(argc,argv);
   return true;
 }
@@ -208,13 +206,10 @@ std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDataset
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
   if(configset->has("pullPars"))
-  for(auto par : GooStats::Utility::splitter(configset->query("pullPars"),":")) {
+  for(auto par : GooStats::Utility::splitter(configset->get("pullPars"),":")) {
       controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(configset,par+"_pull")));
   }
   return controllers;
-}
-OptionManager *SimpleInputBuilder::createOptionManager() {
-  return new SimpleOptionParser();
 }
 SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetManager*> &datasets) {
   std::vector<PdfBase*> likelihoodTerms;

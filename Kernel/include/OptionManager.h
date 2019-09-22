@@ -10,18 +10,30 @@
 #ifndef OptionManager_H
 #define OptionManager_H
 #include <string>
+#include <map>
 // protocol for option manager class
 class OptionManager {
   public:
     // can be fileName or key=value sentence
-    virtual bool parse(const std::string &fileName) = 0;
-    virtual bool parse(int argc,char **argv) = 0;
-    virtual std::string query(const std::string &key) const = 0;
-    virtual bool has(const std::string &key) const = 0;
+    bool parse(const std::string &fileName);
+    bool parse(int argc,const char *argv[]);
+    template<typename T = std::string> T get(const std::string &,bool=true) const;
+    template<typename T = std::string> void set(const std::string &,const T &,bool = false);
+    bool has(const std::string &) const;
     //! yes(key): if user forgot to put key, program will throw
-    virtual bool yes(const std::string &key) const = 0;
+    bool yes(const std::string &key) const;
     //! hasAndYes(key): if user forgot to put key, program return false
-    virtual bool hasAndYes(const std::string &key) const = 0;
-    virtual void printAllOptions() const = 0;
+    bool hasAndYes(const std::string &key) const;
+    void printAllOptions() const;
+  private:
+    std::map<std::string,std::string> m_str;
+    std::map<std::string,double> m_double;
+    std::map<std::string,long> m_long;
 };
+#define DECLARE_OptionManager(T) \
+template<> T OptionManager::get<T>(const std::string&,bool) const; \
+template<> void OptionManager::set<T>(const std::string&,const T&,bool); 
+DECLARE_OptionManager(std::string);
+DECLARE_OptionManager(double);
+DECLARE_OptionManager(long);
 #endif

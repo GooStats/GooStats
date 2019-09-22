@@ -17,7 +17,7 @@
 #include "OutputManager.h"
 bool PrepareData::init() {
   if(GlobalOption()->has("seed"))
-    seed = ::atoi(GlobalOption()->query("seed").c_str());
+    seed = GlobalOption()->get<double>("seed");
   else
     seed = time(nullptr);
   gRandom->SetSeed(seed);

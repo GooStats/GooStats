@@ -23,10 +23,10 @@ class SimpleInputBuilder : public InputBuilder {
   public:
     SimpleInputBuilder();
     //! load the name of output file from command-line args.
-    std::string loadOutputFileNameFromCmdArgs(int ,char **) override;
+    std::string loadOutputFileNameFromCmdArgs(int ,const char *[]) override;
     //! load number of configs / location of configuration files from command-line args.
     //! here we use pointer to allow polymorphism. Better design would use template.
-    std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,char **argv) override;
+    std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,const char *argv[]) override;
     //! construct and fill the IDataManager part
     ConfigsetManager *buildConfigset(ParSyncManager *parManager,const InputConfig &config) override;
     //! fill raw spectrum providers
@@ -49,10 +49,8 @@ class SimpleInputBuilder : public InputBuilder {
     bool buildComponenets(DatasetManager *,RawSpectrumProvider *provider) override;
     //! set-up data-set level parameters
     bool configParameters(DatasetManager *) override;
-    //! provide the option manager
-    OptionManager *createOptionManager() override;
     //! initialize the OptionManager part of ConfigsetManager, and parse the config file
-    bool fillOptions(ConfigsetManager *configset,int argc,char **argv) override;
+    bool fillOptions(ConfigsetManager *configset,int argc,const char *argv[]) override;
     bool fillOptions(ConfigsetManager *configset,const std::string &configFileName) override;
     //! build the total pdf from the datasets
     SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
