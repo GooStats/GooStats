@@ -13,7 +13,7 @@ MEM_CONSTANT fptype* dev_raw_histograms[100]; // Multiple histograms for the cas
 MEM_CONSTANT fptype* dev_quenched_histograms[100]; 
 unsigned int HistogramPdf::totalHistograms = 0; 
 
-EXEC_TARGET fptype device_EvalRawHistogram (fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_EvalRawHistogram (fptype* evt, fptype* , unsigned int* indices) {
     const fptype lo = RO_CACHE(functorConstants[RO_CACHE(indices[ 2])]);
     const fptype step = RO_CACHE(functorConstants[RO_CACHE(indices[ 2])+1]);
     const int bin = (int) FLOOR((evt[RO_CACHE(indices[RO_CACHE(indices[0]) + 2])]-lo)/step);

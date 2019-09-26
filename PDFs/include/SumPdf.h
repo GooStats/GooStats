@@ -57,8 +57,8 @@ protected:
   std::vector<unsigned int> pindices;
   fptype* dev_iConsts; 
   int workSpaceIndex;
-  bool extended; 
   fptype norm;
+  bool extended; 
   static std::map<PdfBase*,int> funMap;
   mutable bool m_updated;
   thrust::host_vector<fptype> cached_sumV;

@@ -16,7 +16,7 @@ add_library(GooStatsKernel
   InputManager.cc
   SpectrumBuilder.cc
   Utility.cc)
-cuda_add_library(GooStatsLib_gpu
+goofit_add_library(GooStatsLib_gpu
   GPUManager.cu
   )
 target_link_libraries(GooStatsKernel GooStatsLib_gpu)

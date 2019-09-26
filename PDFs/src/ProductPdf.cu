@@ -11,7 +11,7 @@
 #include <utility>
 #include "SumPdf.h"
 
-EXEC_TARGET fptype device_ProductPdfsExtSimple (fptype* evt, fptype* p, unsigned int* indices) { 
+EXEC_TARGET fptype device_ProductPdfsExtSimple (fptype* evt, fptype* , unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 
   const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
   const fptype npe_lo = RO_CACHE(functorConstants[cIndex]);

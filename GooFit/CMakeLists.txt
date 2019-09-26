@@ -36,12 +36,12 @@ endif()
 
 
 ### Options ###
-set(DEVICE_LISTING CUDA OMP TBB CPP Auto)
-set(HOST_LISTING OMP TBB CPP)
+set(DEVICE_LISTING CUDA OMP CPP TBB Auto)
+set(HOST_LISTING OMP CPP TBB Auto)
 mark_as_advanced(DEVICE_LISTING HOST_LISTING)
 
 set(GOOFIT_DEVICE Auto CACHE STRING "The compute device, options are ${DEVICE_LISTING}")
-set(GOOFIT_HOST CPP CACHE STRING "The compute device, options are ${HOST_LISTING}")
+set(GOOFIT_HOST Auto CACHE STRING "The compute device, options are ${HOST_LISTING}")
 
 # Requires CMake 3.3 or greater
 if(NOT ${GOOFIT_DEVICE} IN_LIST DEVICE_LISTING)
@@ -54,47 +54,35 @@ endif()
 if(GOOFIT_DEVICE STREQUAL Auto)
     find_package(CUDA 6.0)
     if(CUDA_FOUND)
-        set(GOOFIT_DEVICE CUDA)
-        set(CUDA_NVCC_FLAGS
-	  "${CUDA_NVCC_FLAGS};--compiler-options;-Wall,-Wextra,-Werror=return-type")
-        #LIST(APPEND MG_CUDA_LIBRARIES ${CUDA_LIBRARIES} -lcutil)
-
-        ## Disable warnings: FindCUDA.cmake does not handle system includes correctly
-        #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-w")
-
-        ## Error with GCC 4.7: https://bugs.archlinux.org/task/29359
-        #EXECUTE_PROCESS(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-        #IF (GCC_VERSION VERSION_GREATER 4.7.1)
-        #    MESSAGE("--- GCC 4.7.1 or higher detected, using pre-include to solve compilation error")
-        #    SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}; --pre-include ${CMAKE_CURRENT_SOURCE_DIR}/include/undef_atomics_int128.h")
-        #ENDIF()
-
-        # Choose architecture
-        #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30")
-
-        IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            # -G -g : CUDA debug mode (useful with cuda-memcheck)
-            #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-G;-g;-lineinfo")
-            # -DTHRUST_DEBUG : Thrust debug mode
-            set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-DTHRUST_DEBUG;-lineinfo")
-        ELSE()
-            SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Xcicc;-O3;-Xptxas;-O3;-g;-lineinfo")
-        ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(GOOFIT_DEVICE CUDA CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
     else()
-        set(GOOFIT_DEVICE OMP)
+        find_package(OpenMP)
+        if(OpenMP_CXX_FOUND OR OpenMP_FOUND)
+            set(GOOFIT_DEVICE OMP CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
+        else()
+            set(GOOFIT_DEVICE CPP CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
+        endif()
     endif()
     message(STATUS "Auto device selection: ${GOOFIT_DEVICE}")
 endif()
 
-# Only default to off for CUDA
-if(GOOFIT_DEVICE STREQUAL CUDA)
-    option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" OFF)
-else()
-    option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" ON)
+if(GOOFIT_HOST STREQUAL Auto)
+    if(GOOFIT_DEVICE STREQUAL OMP)
+        set(GOOFIT_HOST OMP)
+    elseif(GOOFIT_DEVICE STREQUAL TBB)
+        set(GOOFIT_HOST TBB)
+    else()
+        set(GOOFIT_HOST CPP)
+    endif()
+    message(STATUS "Auto host selection: ${GOOFIT_HOST}")
 endif()
 
+# Nicer filling in for GUI
+set_property(CACHE GOOFIT_DEVICE PROPERTY STRINGS ${DEVICE_LISTING})
+set_property(CACHE GOOFIT_HOST PROPERTY STRINGS ${HOST_LISTING})
 
-set(GOOFIT_SEPARATE_COMP on)
+option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" ON)
+
 if(GOOFIT_SEPARATE_COMP)
     add_definitions("-DSEPARABLE")
 endif()
@@ -184,7 +172,6 @@ if(GOOFIT_DEVICE STREQUAL OMP OR GOOFIT_HOST STREQUAL OMP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     find_package(Threads REQUIRED)
     link_libraries(Threads::Threads)
-    message(FATAL_ERROR "don't use OMP!")
 endif()
 
 if(GOOFIT_DEVICE STREQUAL TBB OR GOOFIT_HOST STREQUAL TBB)
@@ -335,6 +322,7 @@ install(TARGETS goofit_lib Root
 install(FILES "${project_config}" "${version_config}" DESTINATION "${config_install_dir}")
 install(EXPORT "${TARGETS_EXPORT_NAME}" NAMESPACE "${namespace}" DESTINATION "${config_install_dir}")
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(DIRECTORY ${THRUST_INCLUDE_DIRS}/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 
 option(GOOFIT_EXAMPLES "Build the example programs" ON)

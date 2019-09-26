@@ -10,15 +10,15 @@
 #include "DarkNoiseConvolutionPdf.h"
 #include "PdfCache.h"
 MEM_CONSTANT fptype* dev_raw_dn_histos[100]; // dark noise histograms for different PDF
-EXEC_TARGET fptype device_ConvolveDnHisto(fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_ConvolveDnHisto(fptype* evt, fptype* , unsigned int* indices) {
   const int workSpaceIndex = RO_CACHE(indices[1]); // ok
   const int npe_lo = RO_CACHE(indices[2]); // ok
   const int dn_max = RO_CACHE(indices[3]); // ok
   const int npe_bin = FLOOR(evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])])-npe_lo;
 
   fptype ret     = 0; 
-  const int loop_max = dn_max<npe_bin?dn_max:npe_bin;
-  for (unsigned dn = 0; dn<= loop_max; ++dn) {
+  const unsigned int loop_max = dn_max<npe_bin?dn_max:npe_bin;
+  for (unsigned int dn = 0; dn<= loop_max; ++dn) {
     const fptype model = RO_CACHE(PdfCache_dev_array[workSpaceIndex][npe_bin-dn]); 
     const fptype resol = RO_CACHE(dev_raw_dn_histos[workSpaceIndex][dn]);
     ret += model*resol;

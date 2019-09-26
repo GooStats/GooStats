@@ -11,3 +11,5 @@
 -Wall
 -Wextra
 -I../googletest-install/include
+-I../GooFit-install/include
+-I../GooFit-install/include/fakecuda

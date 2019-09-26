@@ -16,9 +16,9 @@ bool GPUManager::preinit() {
   }
   return true;
 }
+#ifdef __CUDACC__
 bool GPUManager::report(bool siliently) const {
   int devicesCount(1);
-#ifdef __CUDACC__
   cudaGetDeviceCount(&devicesCount);
   if(devicesCount>1000) {
     printf("number of devices larger than 1000. this is suspicious. Please modify the code here or login to the GPU node.");
@@ -30,11 +30,12 @@ bool GPUManager::report(bool siliently) const {
   }
   return false;
 #else
+bool GPUManager::report(bool ) const {
   return true;
 #endif
 }
-bool GPUManager::report(int gpu_id,bool siliently) const {
 #ifdef __CUDACC__
+bool GPUManager::report(int gpu_id,bool siliently) const {
   cudaSetDevice(gpu_id);
   cudaError_t cuda_status;
   //// show memory usage of GPU
@@ -76,6 +77,8 @@ bool GPUManager::report(int gpu_id,bool siliently) const {
   }
 //  if( !(prop.major>3 || prop.major==3 && prop.minor>=5) )
 //    return false;
+#else
+bool GPUManager::report(int ,bool ) const {
 #endif
   return true;
 }

@@ -138,7 +138,7 @@ EXEC_TARGET fptype device_npe_ScaledPoisson (fptype* evt, fptype* p, unsigned in
   const fptype logP3 = x3S*logmuS-muS-lgamma(x3S+1);
 
   /* Finalize */
-  const fptype ret = (EXP(logP1)+4.*EXP(logP2)+EXP(logP2))/(6*scale);
+  const fptype ret = (EXP(logP1)+4.*EXP(logP2)+EXP(logP3))/(6*scale);
 
 #ifdef RPF_CHECK
   {
