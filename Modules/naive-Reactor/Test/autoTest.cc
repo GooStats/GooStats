@@ -98,30 +98,19 @@ void load_species(std::vector<std::string> &species) {
 #include "species.icc"
 }
 
-TEST_F(BestFitFixture, TAUP_npmt_exact) {
-  load_species(species);
-  load_result("data/plotEvPPS.root",reference_fit,rough_reference_fit);
-  load_result("NLLValid.root",new_fit,rough_new_fit);
-  const size_t N = reference_fit.size();
-  ASSERT_EQ ( 44u, N );
-  for(size_t i = 0;i<N;++i) {
-    EXPECT_DOUBLE_EQ(reference_fit.at(i),new_fit.at(i))
-      << species.at(i);
-  }
-}
 TEST_F(BestFitFixture, TAUP_npmt_near) {
   load_species(species);
   load_result("data/plotEvPPS.root",reference_fit,rough_reference_fit);
   load_result("NLLValid.root",new_fit,rough_new_fit);
   const size_t N = reference_fit.size();
   ASSERT_EQ ( 44u, N );
-  const double precision = 0.001;
+  const double precision = 1e-4;
   for(size_t i = 0;i<N;++i) {
     EXPECT_NEAR(reference_fit.at(i),new_fit.at(i),fabs(precision*reference_fit.at(i))) 
       << species.at(i);
   }
 }
-TEST_F(BestFitFixture, Asimov_exact) {
+TEST_F(BestFitFixture, Asimov_near) {
   load_species(species);
   for(int sub = 0; sub<2; ++sub) {
     setEntry(0,sub);
@@ -129,13 +118,14 @@ TEST_F(BestFitFixture, Asimov_exact) {
     load_result("NLLValidHTAsimov.root",new_fit,rough_new_fit);
     const size_t N = reference_fit.size();
     ASSERT_EQ ( 44u, N );
+    const double precision = 1e-4;
     for(size_t i = 0;i<N;++i) {
-      EXPECT_DOUBLE_EQ(reference_fit.at(i),new_fit.at(i))
-	<< species.at(i);
+      EXPECT_NEAR(reference_fit.at(i),new_fit.at(i),fabs(precision*reference_fit.at(i))+precision) 
+        << species.at(i);
     }
   }
 }
-TEST_F(BestFitFixture, toyMC_exact) {
+TEST_F(BestFitFixture, toyMC_near) {
   load_species(species);
   for(int ent = 0; ent<10; ++ent) {
     for(int sub = 0; sub <2; ++sub) {
@@ -144,9 +134,10 @@ TEST_F(BestFitFixture, toyMC_exact) {
       load_result("NLLValidHTRND.root",new_fit,rough_new_fit);
       const size_t N = reference_fit.size();
       ASSERT_EQ ( 44u, N );
+      const double precision = 1e-4;
       for(size_t i = 0;i<N;++i) {
-	EXPECT_DOUBLE_EQ(reference_fit.at(i),new_fit.at(i))
-	  << species.at(i);
+        EXPECT_NEAR(reference_fit.at(i),new_fit.at(i),fabs(precision*reference_fit.at(i))) 
+          << species.at(i);
       }
     }
   }
@@ -155,15 +146,15 @@ TEST_F(BestFitFixture, toyMC_exact) {
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   trigger_fit("reactor","data_recE.cfg","NLLValid","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
-	      "deltaM231_err=0.18","deltaM221_err=0.18",
-	      "print_contour=true","plot_profiles=default.deltaM231","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
-	      "contour_N=4",
-	      "corr_variables=default.Reactor:default.deltaM231:default.deltaM221",
-	      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}",
-	      "pullPars=Reactor:deltaM231","Reactor_pullType=square","Reactor_min=0.9","Reactor_max=1");
+      "deltaM231_err=0.18","deltaM221_err=0.18",
+      "print_contour=true","plot_profiles=default.deltaM231","plot_contours=default.Reactor:default.deltaM231;default.Reactor:default.deltaM221",
+      "contour_N=4",
+      "corr_variables=default.Reactor:default.deltaM231:default.deltaM221",
+      "label_default.Reactor=N_{REA}","label_default.deltaM231=#deltam_{32}^{2}","label_default.deltaM221=#deltam_{21}^{2}",
+      "pullPars=Reactor:deltaM231","Reactor_pullType=square","Reactor_min=0.9","Reactor_max=1");
   trigger_fit("reactor","data_recE.cfg","NLLValidHTAsimov","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
-	      "fitFakeData=true","fitAsimov=true","fitNMO=true","SimpleFit=false");
+      "fitFakeData=true","fitAsimov=true","fitNMO=true","SimpleFit=false");
   trigger_fit("reactor","data_recE.cfg","NLLValidHTRND","inputSpectraFiles=data/data_hist.root","main_histName=Evis_hist_poissonAppSum","seed=1",
-	      "fitFakeData=true","repeat=10","seed=1","fitNMO=true","SimpleFit=false");
+      "fitFakeData=true","repeat=10","seed=1","fitNMO=true","SimpleFit=false");
   return RUN_ALL_TESTS();
 }
