@@ -11,17 +11,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Werror=return-type ${CMAKE_CXX_FLAGS}")
+add_compile_options(-Wall -Wextra -pedantic -Werror)
+#set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Werror=return-type ${CMAKE_CXX_FLAGS}")
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
-message(STATUS ${CMAKE_MODULE_PATH})
-if(CUDA_FOUND)
-  include(CUDAsafeAddLibraryAndExe)
-else()
-  macro(CUDA_GEN_GPU_LIBRARY cuda_target)
-    add_library(${cuda_target} INTERFACE)
-  endmacro()
-endif()
 ################################## google test
 enable_testing()
 find_package(GTest REQUIRED)
@@ -29,11 +21,10 @@ include_directories(${GTEST_INCLUDE_DIRS})
 ##################################
 
 ### GOOFIT
+message(STATUS "search from: $ENV{GOOFIT_DIR}---$ENV{CMAKE_PREFIX_PATH}---$ENV{CMAKE_APPBUNDLE_PATH}")
 find_package(GOOFIT CONFIG REQUIRED)
+message(STATUS "GOOFIT: ${GOOFIT_LIBRARY_DIRS}")
 INITIALIZE_GOOFIT()
-#find_package(ROOT REQUIRED COMPONENTS RIO Net)
-#find_package(ROOT COMPONENTS TreePlayer)
-#include(${ROOT_USE_FILE}/../modules/RootNewMacros.cmake)
 
 set(GOOSTATS_NO_WARNING ON)
 if(GOOSTATS_NO_WARNING AND CUDA_FOUND AND "${CUDA_VERSION}" VERSION_GREATER 7.0)

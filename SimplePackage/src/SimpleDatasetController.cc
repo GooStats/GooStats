@@ -188,4 +188,4 @@ bool SimpleDatasetController::buildLikelihoods(DatasetManager *dataset) {
       dataset->get<Variable*>(std::string("Evis")));
   this->setLikelihood(dataset,pdf);
   return true; 
-};
+}

@@ -84,15 +84,15 @@ template<> void DatasetManager::set<T>(const std::string&,T); \
 template<> T DatasetManager::get<T>(const std::string& ) const; \
 template<> T DatasetManager::get<T>(const std::string& ) ; \
 template<> bool DatasetManager::has<T>(const std::string& ) const;
-DECLARE_DatasetManager(std::string);
-DECLARE_DatasetManager(int);
-DECLARE_DatasetManager(bool);
-DECLARE_DatasetManager(double);
-DECLARE_DatasetManager(Variable*);
-DECLARE_DatasetManager(PdfBase*);
-DECLARE_DatasetManager(std::vector<std::string>);
-DECLARE_DatasetManager(std::vector<double>);
-DECLARE_DatasetManager(std::vector<Variable*>);
-DECLARE_DatasetManager(std::vector<PdfBase*>);
-DECLARE_DatasetManager(BinnedDataset*);
+DECLARE_DatasetManager(std::string)
+DECLARE_DatasetManager(int)
+DECLARE_DatasetManager(bool)
+DECLARE_DatasetManager(double)
+DECLARE_DatasetManager(Variable*)
+DECLARE_DatasetManager(PdfBase*)
+DECLARE_DatasetManager(std::vector<std::string>)
+DECLARE_DatasetManager(std::vector<double>)
+DECLARE_DatasetManager(std::vector<Variable*>)
+DECLARE_DatasetManager(std::vector<PdfBase*>)
+DECLARE_DatasetManager(BinnedDataset*)
 #endif
