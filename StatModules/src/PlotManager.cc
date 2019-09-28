@@ -82,14 +82,14 @@ TCanvas *PlotManager::drawSingleGroup(const std::string &name,const std::vector<
     case 4: w = 2; h = 2; break;
     case 6: w = 2; h = 3; break;
     default:
-	    int N = datasets.size();
-	    h = 1;
-	    w = N/h + (N%h!=0);
-	    while(w>5) {
-	      ++h;
-	      w = N/h + (N % h !=0);
-	    }
-	    break;
+            int N = datasets.size();
+            h = 1;
+            w = N/h + (N%h!=0);
+            while(w>5) {
+              ++h;
+              w = N/h + (N % h !=0);
+            }
+            break;
   }
   TCanvas *cc = static_cast<TCanvas*>(gROOT->GetListOfCanvases()->FindObject((name+"_cc").c_str()));
   if(cc) return nullptr;
@@ -106,18 +106,16 @@ TCanvas *PlotManager::drawSingleGroup(const std::string &name,const std::vector<
     const auto &components(dataset->get<std::vector<std::string>>("components"));
     for(auto component : components) {
       if(!dataset->has<int>(component+"_style") ||
-	 !dataset->has<int>(component+"_width")) continue;
+          !dataset->has<int>(component+"_width")) continue;
       const auto &style(dataset->get<int>(component+"_style"));
       const auto &width(dataset->get<int>(component+"_width"));
       int color;
       if(dataset->has<std::string>(component+"_color")) 
-	color = getColor(dataset->get<std::string>(component+"_color"));
+        color = getColor(dataset->get<std::string>(component+"_color"));
       else if(dataset->has<int>(component+"_color")) 
-	color = dataset->get<int>(component+"_color");
+        color = dataset->get<int>(component+"_color");
       else continue;
-      configs.insert( std::make_pair(
-	  component, (Config) { 
-	    color,style + (style==0),width+(width==0) } ) );
+      configs.insert( { component, { color,style + (style==0),width+(width==0) } } );
     }
     if(configs.size()==0) 
       std::cout<<"colors/linestyles are not set or size are not consistent, default styles are used"<<std::endl;
@@ -141,8 +139,8 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
   std::string npeName = npeFullName.substr(npeFullName.find(".")+1);
   // -------------- data histogram
   TH1D *xvarHist = new TH1D((sumpdf->getName()+"_data").c_str(), 
-			    (sumpdf->getName()+"_data").c_str(),
-			    npe->numbins, npe->lowerlimit, npe->upperlimit);
+      (sumpdf->getName()+"_data").c_str(),
+      npe->numbins, npe->lowerlimit, npe->upperlimit);
   // fill data histogram
   BinnedDataSet *data_spectra = sumpdf->getData();
   for(int i = 0;i<npe->numbins;++i) {
@@ -168,14 +166,14 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
   xvarHist->GetXaxis()->SetNoExponent();
   xvarHist->GetXaxis()->SetTitle(npeName.c_str());
   xvarHist->GetYaxis()->SetTitle(Form("Events / (%s #times %.2lf %s)",TextOutputManager::get_unit().c_str(),
-				      (npe->upperlimit-npe->lowerlimit)/npe->numbins,npeName.c_str()));
+        (npe->upperlimit-npe->lowerlimit)/npe->numbins,npeName.c_str()));
   xvarHist->GetXaxis()->CenterTitle();
   xvarHist->GetYaxis()->CenterTitle();
   xvarHist->DrawClone("e");
   toBeSaved.insert(xvarHist);
   // add to legend
   leg->AddEntry(xvarHist,TextOutputManager::data(
-	sumpdf->getName(),sumpdf->Norm(),"days #times tons").c_str(),"lpe"); // we agree it's day ton
+        sumpdf->getName(),sumpdf->Norm(),"days #times tons").c_str(),"lpe"); // we agree it's day ton
   // -------------- total model
   sumpdf->cache();
   TF1Helper *total_helper = new TF1Helper(sumpdf,1);
@@ -300,7 +298,7 @@ PlotManager::TF1Helper::TF1Helper(GooPdf *pdf,double norm) {
   double numbins = var->numbins;
   double de = (up-lo)/numbins;
   data = new TH1D(Form("%s_h_%.5lf_%d",(pdf->getName()+"_h").c_str(),norm,++hash), 
-		  "", numbins,lo,up);
+      "", numbins,lo,up);
   std::vector<fptype> binValues;
   // if you see ``clamping to minimum'' warning, 
   // the observables in the Pdf and DataSet are consistent
@@ -310,7 +308,7 @@ PlotManager::TF1Helper::TF1Helper(GooPdf *pdf,double norm) {
     //    std::cout<<pdf->getName()<<" "<<i<<" "<<binValues[i-1]<<" "<<de<<" "<<norm<<std::endl;
   }
   f = new TF1(pdf->getName().c_str(),this,&TF1Helper::eval,lo,up,0,"TF1Helper","eval");
-};
+}
 double PlotManager::TF1Helper::eval(double *xx, double *) {
   return data->Interpolate(xx[0]);
 }

@@ -45,7 +45,7 @@ bool PullDatasetController::configureParameters(DatasetManager *dataset) {
     var->penalty_sigma = dataset->get<double>("sigma");
   }
   return true; 
-};
+}
 #include "PullPdf.h"
 bool PullDatasetController::buildLikelihoods(DatasetManager *dataset) {
   auto type = dataset->get<std::string>("type");
@@ -58,4 +58,4 @@ bool PullDatasetController::buildLikelihoods(DatasetManager *dataset) {
     this->setLikelihood(dataset,pdf);
   }
   return true; 
-};
+}

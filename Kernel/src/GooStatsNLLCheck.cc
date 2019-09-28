@@ -1,6 +1,6 @@
 #include "GooStatsNLLCheck.h"
 #include "TFile.h"
-ClassImp(GooStatsNLLCheck);
+ClassImp(GooStatsNLLCheck)
 GooStatsNLLCheck *GooStatsNLLCheck::me = nullptr;
 GooStatsNLLCheck *GooStatsNLLCheck::get() {
   if(!me) me = new GooStatsNLLCheck();

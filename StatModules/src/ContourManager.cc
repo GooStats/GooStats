@@ -64,7 +64,7 @@ void ContourManager::plot_profiles() {
       gr->GetY()[i]=2*(gr->GetY()[i]-minLL);
       //std::cout<<i<<" "<<minLL<<" "<<gr->GetX()[i]<<" "<<gr->GetY()[i]<<std::endl;
     }
-    double min = 1e10,L,R;
+    double min = 1e10,L = gr->GetX()[0],R = gr->GetX()[gr->GetN()-1];
     for(double xx = get_var(var)->value; xx>gr->GetX()[0]; xx-= (gr->GetX()[1]-gr->GetX()[0])/100) {
       if(fabs(gr->Eval(xx)-1)<min) {
         min = fabs(gr->Eval(xx)-1);

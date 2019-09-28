@@ -53,17 +53,17 @@ template <> T DatasetManager::get<T>(const std::string &_name) const { \
 template <> bool DatasetManager::has<T>(const std::string &_name) const { \
   return var.find(_name)!=var.end(); \
 } 
-DEFINE_DatasetManager(std::string,m_str,"");
-DEFINE_DatasetManager(int,m_int,0);
-DEFINE_DatasetManager(bool,m_bool,false);
-DEFINE_DatasetManager(double,m_double,0);
-DEFINE_DatasetManager(Variable*,m_var,nullptr);
-DEFINE_DatasetManager(PdfBase *,m_pdf,nullptr);
-DEFINE_DatasetManager(std::vector<std::string>,m_components,std::vector<std::string>());
-DEFINE_DatasetManager(std::vector<double>,m_coeff,std::vector<double>());
-DEFINE_DatasetManager(std::vector<Variable*>,m_vars,std::vector<Variable*>());
-DEFINE_DatasetManager(std::vector<PdfBase*>,m_pdfs,std::vector<PdfBase*>());
-DEFINE_DatasetManager(BinnedDataset*,m_bindata,nullptr);
+DEFINE_DatasetManager(std::string,m_str,"")
+DEFINE_DatasetManager(int,m_int,0)
+DEFINE_DatasetManager(bool,m_bool,false)
+DEFINE_DatasetManager(double,m_double,0)
+DEFINE_DatasetManager(Variable*,m_var,nullptr)
+DEFINE_DatasetManager(PdfBase *,m_pdf,nullptr)
+DEFINE_DatasetManager(std::vector<std::string>,m_components,std::vector<std::string>())
+DEFINE_DatasetManager(std::vector<double>,m_coeff,std::vector<double>())
+DEFINE_DatasetManager(std::vector<Variable*>,m_vars,std::vector<Variable*>())
+DEFINE_DatasetManager(std::vector<PdfBase*>,m_pdfs,std::vector<PdfBase*>())
+DEFINE_DatasetManager(BinnedDataset*,m_bindata,nullptr)
 
 void DatasetManager::setLikelihood(Passkey<DatasetDelegate>,GooPdf *pdf) {
   likelihood = std::shared_ptr<GooPdf>(pdf);

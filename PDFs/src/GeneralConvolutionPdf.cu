@@ -20,7 +20,7 @@ int totalGeneralConvolutions = 0;
 MEM_CONSTANT fptype* dev_modWorkSpace_general[100];
 MEM_CONSTANT fptype* dev_resWorkSpace_general[100]; 
 
-EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* p, unsigned int* indices) { 
+EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* , unsigned int* indices) { 
   const fptype obs_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; // ok
 
   const int cIndex = RO_CACHE(indices[5]);
@@ -52,8 +52,8 @@ EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* p, unsigned
   // 1 2 4 2 4 2 ... 1
 
   const int intvar_lastval = intvar_numbins-2;
-  for (unsigned intvar_bin = arr_begin+1; intvar_bin <= intvar_lastval ; ++intvar_bin) {
-    const unsigned int factor = (((intvar_bin - arr_begin) % 2) ? 4 : 2);
+  for (int intvar_bin = arr_begin+1; intvar_bin <= intvar_lastval ; ++intvar_bin) {
+    const int factor = (((intvar_bin - arr_begin) % 2) ? 4 : 2);
     const fptype model = RO_CACHE(dev_modWorkSpace_general[workSpaceIndex][intvar_bin]); 
     const fptype resol = (model == 0) ? 0: RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+intvar_bin*obs_numbins]); 
     ret += factor * model*resol;
@@ -76,7 +76,7 @@ EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* p, unsigned
   return ret; 
 }
 
-EXEC_TARGET fptype device_ConvolveSharedPdfs_general (fptype* evt, fptype* p, unsigned int* indices) { 
+EXEC_TARGET fptype device_ConvolveSharedPdfs_general (fptype* evt, fptype* , unsigned int* indices) { 
   const fptype obs_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; // ok
 
   const int cIndex = RO_CACHE(indices[5]); // ok
@@ -108,7 +108,7 @@ EXEC_TARGET fptype device_ConvolveSharedPdfs_general (fptype* evt, fptype* p, un
   const int numToLoad = min(GEN_CONVOLUTION_CACHE_SIZE , (BLOCKIDX<GRIDDIM-1)?static_cast<unsigned int>(BLOCKDIM):static_cast<unsigned int>(obs_numbins%BLOCKDIM));
   // We have intvar_numbins to load while we have numToLoad threads.
   const int intvar_lastval = intvar_numbins-2;
-  for (unsigned intvar_bin_blockstart = arr_begin; intvar_bin_blockstart <= intvar_lastval; intvar_bin_blockstart+= numToLoad) {
+  for (int intvar_bin_blockstart = arr_begin; intvar_bin_blockstart <= intvar_lastval; intvar_bin_blockstart+= numToLoad) {
     if (THREADIDX < numToLoad) { 
       const int intvar_bin = intvar_bin_blockstart+THREADIDX;
       if(intvar_bin<=intvar_lastval) {

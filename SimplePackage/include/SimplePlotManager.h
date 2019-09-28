@@ -12,9 +12,10 @@
 #include "PlotManager.h"
 class SimplePlotManager : public PlotManager {
   public:
-    virtual void draw(int event,const std::vector<DatasetManager*> &datasets) final;
+    void draw(int event,const std::vector<DatasetManager*> &datasets) final;
   private:
     virtual std::map<std::string,std::vector<DatasetManager*>>
       groupByName(const std::vector<DatasetManager*>&);
+    using PlotManager::draw;
 };
 #endif

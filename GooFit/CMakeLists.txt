@@ -17,7 +17,7 @@ set(GOOFIT_VERSION "${GOOFIT_VERSION_MAJOR}.${GOOFIT_VERSION_MINOR}.${GOOFIT_VER
 configure_file (
     "${PROJECT_SOURCE_DIR}/include/goofit/Version.h.in"
     "${PROJECT_BINARY_DIR}/include/goofit/Version.h"
-)
+    )
 
 include_directories("${PROJECT_BINARY_DIR}/include")
 
@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-  
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
         "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
@@ -36,12 +36,12 @@ endif()
 
 
 ### Options ###
-set(DEVICE_LISTING CUDA OMP TBB CPP Auto)
-set(HOST_LISTING OMP TBB CPP)
+set(DEVICE_LISTING CUDA OMP CPP TBB Auto)
+set(HOST_LISTING OMP CPP TBB Auto)
 mark_as_advanced(DEVICE_LISTING HOST_LISTING)
 
 set(GOOFIT_DEVICE Auto CACHE STRING "The compute device, options are ${DEVICE_LISTING}")
-set(GOOFIT_HOST CPP CACHE STRING "The compute device, options are ${HOST_LISTING}")
+set(GOOFIT_HOST Auto CACHE STRING "The compute device, options are ${HOST_LISTING}")
 
 # Requires CMake 3.3 or greater
 if(NOT ${GOOFIT_DEVICE} IN_LIST DEVICE_LISTING)
@@ -54,47 +54,35 @@ endif()
 if(GOOFIT_DEVICE STREQUAL Auto)
     find_package(CUDA 6.0)
     if(CUDA_FOUND)
-        set(GOOFIT_DEVICE CUDA)
-        set(CUDA_NVCC_FLAGS
-	  "${CUDA_NVCC_FLAGS};--compiler-options;-Wall,-Wextra,-Werror=return-type")
-        #LIST(APPEND MG_CUDA_LIBRARIES ${CUDA_LIBRARIES} -lcutil)
-
-        ## Disable warnings: FindCUDA.cmake does not handle system includes correctly
-        #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-w")
-
-        ## Error with GCC 4.7: https://bugs.archlinux.org/task/29359
-        #EXECUTE_PROCESS(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-        #IF (GCC_VERSION VERSION_GREATER 4.7.1)
-        #    MESSAGE("--- GCC 4.7.1 or higher detected, using pre-include to solve compilation error")
-        #    SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}; --pre-include ${CMAKE_CURRENT_SOURCE_DIR}/include/undef_atomics_int128.h")
-        #ENDIF()
-
-        # Choose architecture
-        #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30")
-
-        IF (CMAKE_BUILD_TYPE STREQUAL "Debug")
-            # -G -g : CUDA debug mode (useful with cuda-memcheck)
-            #SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-G;-g;-lineinfo")
-            # -DTHRUST_DEBUG : Thrust debug mode
-            set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-DTHRUST_DEBUG;-lineinfo")
-        ELSE()
-            SET(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Xcicc;-O3;-Xptxas;-O3;-g;-lineinfo")
-        ENDIF (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(GOOFIT_DEVICE CUDA CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
     else()
-        set(GOOFIT_DEVICE OMP)
+        find_package(OpenMP)
+        if(OpenMP_CXX_FOUND OR OpenMP_FOUND)
+            set(GOOFIT_DEVICE OMP CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
+        else()
+            set(GOOFIT_DEVICE CPP CACHE STRING "The compute device, options are ${DEVICE_LISTING}" FORCE)
+        endif()
     endif()
     message(STATUS "Auto device selection: ${GOOFIT_DEVICE}")
 endif()
 
-# Only default to off for CUDA
-if(GOOFIT_DEVICE STREQUAL CUDA)
-    option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" OFF)
-else()
-    option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" ON)
+if(GOOFIT_HOST STREQUAL Auto)
+    if(GOOFIT_DEVICE STREQUAL OMP)
+        set(GOOFIT_HOST OMP CACHE STRING "The host device, options are ${HOST_LISTING}" FORCE)
+    elseif(GOOFIT_DEVICE STREQUAL TBB)
+        set(GOOFIT_HOST TBB CACHE STRING "The host device, options are ${HOST_LISTING}" FORCE)
+    else()
+        set(GOOFIT_HOST CPP CACHE STRING "The host device, options are ${HOST_LISTING}" FORCE)
+    endif()
+    message(STATUS "Auto host selection: ${GOOFIT_HOST}")
 endif()
 
+# Nicer filling in for GUI
+set_property(CACHE GOOFIT_DEVICE PROPERTY STRINGS ${DEVICE_LISTING})
+set_property(CACHE GOOFIT_HOST PROPERTY STRINGS ${HOST_LISTING})
 
-set(GOOFIT_SEPARATE_COMP on)
+option(GOOFIT_SEPARATE_COMP "Enable separate compilation of PDFs" ON)
+
 if(GOOFIT_SEPARATE_COMP)
     add_definitions("-DSEPARABLE")
 endif()
@@ -120,7 +108,7 @@ add_definitions("-DTHRUST_HOST_SYSTEM=THRUST_HOST_SYSTEM_${GOOFIT_HOST}")
 
 # -Wl,--no-undefined,--no-allow-shlib-undefined")
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 if(CMAKE_VERSION VERSION_LESS 3.7)
     set(CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake/support_old_cmake ${CMAKE_MODULE_PATH})
 endif()
@@ -148,6 +136,11 @@ if(GOOFIT_MPI)
 endif()
 
 if(GOOFIT_DEVICE STREQUAL CUDA)
+    message(STATUS "CMAKE_MODULE_PATH: <${CMAKE_MODULE_PATH}>")
+    include(CUDAsafeAddLibraryAndExe) # written by Xuefeng
+    if(NOT CUDA_FOUND)
+        find_package(CUDA 6.0 REQUIRED)
+    endif()
     set(CUDA_NVCC_FLAGS; ${CUDA_NVCC_FLAGS}; -std=c++11; ${CMAKE_CXX_FLAGS})
     if(GOOFIT_SEPARATE_COMP)
         set(CUDA_SEPARABLE_COMPILATION ON)
@@ -184,7 +177,6 @@ if(GOOFIT_DEVICE STREQUAL OMP OR GOOFIT_HOST STREQUAL OMP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     find_package(Threads REQUIRED)
     link_libraries(Threads::Threads)
-    message(FATAL_ERROR "don't use OMP!")
 endif()
 
 if(GOOFIT_DEVICE STREQUAL TBB OR GOOFIT_HOST STREQUAL TBB)
@@ -202,13 +194,12 @@ target_link_libraries(Root INTERFACE ${ROOT_LIBRARIES})
 # Note: it is very important that the includes and links for root are after fakeroot!
 
 
-include(CUDAsafeAddLibraryAndExe) # written by Xuefeng
 function(goofit_add_library GNAME)
     if(GOOFIT_DEVICE STREQUAL CUDA)
         foreach(N ${ARGN})
             SET_SOURCE_FILES_PROPERTIES(${N} PROPERTIES CUDA_SOURCE_PROPERTY_FORMAT OBJ)
         endforeach()
-	# defined in CUDA_safe_add_libraryAndExe.cmake
+        # defined in CUDAsafeAddLibraryAndExe.cmake
         cuda_add_more_library(${GNAME} STATIC ${ARGN})
     else()
         foreach(N ${ARGN})
@@ -221,9 +212,9 @@ endfunction()
 
 function(goofit_add_executable NAMEEXE)
     if(GOOFIT_DEVICE STREQUAL CUDA)
-	# defined in CUDA_safe_add_libraryAndExe.cmake
-	cuda_add_more_executable(${NAMEEXE} ${ARGN})
-	link_libraries(${CUDA_LIBRARIES})
+        # defined in CUDA_safe_add_libraryAndExe.cmake
+        cuda_add_more_executable(${NAMEEXE} ${ARGN})
+        link_libraries(${CUDA_LIBRARIES})
     else()
         foreach(N ${ARGN})
             SET_SOURCE_FILES_PROPERTIES(${N} PROPERTIES LANGUAGE CXX)
@@ -316,25 +307,29 @@ get_target_property(mytest goofit_lib INTERFACE_CUDA_ALL_SEPARABLE_COMPILATION_O
 set(PACKAGE_GOOFIT_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
 set(PACKAGE_GOOFIT_LIBRARIES "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 foreach(CUDA_SEPARABLE_COMPILATION_OBJECT ${CUDA_ALL_SEPARABLE_COMPILATION_OBJECTS})
-  get_filename_component(this_file ${CUDA_SEPARABLE_COMPILATION_OBJECT} NAME)
-  list(APPEND PACKAGE_CUDA_ALL_SEPARABLE_COMPILATION_OBJECTS
-    "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/obj/${this_file}")
-  install(FILES "${CUDA_SEPARABLE_COMPILATION_OBJECT}" DESTINATION "${CMAKE_INSTALL_LIBDIR}/obj") 
+    get_filename_component(this_file ${CUDA_SEPARABLE_COMPILATION_OBJECT} NAME)
+    list(APPEND PACKAGE_CUDA_ALL_SEPARABLE_COMPILATION_OBJECTS
+        "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/obj/${this_file}")
+    install(FILES "${CUDA_SEPARABLE_COMPILATION_OBJECT}" DESTINATION "${CMAKE_INSTALL_LIBDIR}/obj") 
 endforeach()
 message(STATUS "property: ${PACKAGE_CUDA_ALL_SEPARABLE_COMPILATION_OBJECTS}")
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("${version_config}" VERSION 2.0.0 COMPATIBILITY SameMajorVersion)
 configure_package_config_file("cmake/Config.cmake.in" "${project_config}" INSTALL_DESTINATION "${config_install_dir}")
 install(TARGETS goofit_lib Root
-  EXPORT "${TARGETS_EXPORT_NAME}"
-  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-  INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 install(FILES "${project_config}" "${version_config}" DESTINATION "${config_install_dir}")
+install(DIRECTORY cmake DESTINATION "${PACKAGE_GOOFIT_LIBRARIES}")
 install(EXPORT "${TARGETS_EXPORT_NAME}" NAMESPACE "${namespace}" DESTINATION "${config_install_dir}")
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+if(NOT GOOFIT_DEVICE STREQUAL CUDA)
+  install(DIRECTORY ${THRUST_INCLUDE_DIRS}/thrust DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
 
 
 option(GOOFIT_EXAMPLES "Build the example programs" ON)

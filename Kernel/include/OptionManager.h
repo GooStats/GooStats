@@ -33,7 +33,7 @@ class OptionManager {
 #define DECLARE_OptionManager(T) \
 template<> T OptionManager::get<T>(const std::string&,bool) const; \
 template<> void OptionManager::set<T>(const std::string&,const T&,bool); 
-DECLARE_OptionManager(std::string);
-DECLARE_OptionManager(double);
-DECLARE_OptionManager(long);
+DECLARE_OptionManager(std::string)
+DECLARE_OptionManager(double)
+DECLARE_OptionManager(long)
 #endif

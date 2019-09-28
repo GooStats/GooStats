@@ -226,7 +226,7 @@ __host__ void GooPdf::initialise (std::vector<unsigned int> pindices, void* dev_
 
 __host__ void GooPdf::setDebugMask (int mask, bool setSpecific) const {
   cpuDebug = mask; 
-#if THRUST_DEVICE_BACKEND==THRUST_DEVICE_BACKEND_OMP
+#if THRUST_DEVICE_SYSTEM==THRUST_DEVICE_SYSTEM_OMP
   gpuDebug = cpuDebug;
   if (setSpecific) debugParamIndex = parameters; 
 #else

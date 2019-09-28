@@ -74,7 +74,7 @@ EXEC_TARGET fptype device_SumPdfsExt (fptype* evt, fptype* p, unsigned int* indi
 
   return ret; 
 }
-EXEC_TARGET fptype device_SumPdfsExtMask (fptype* evt, fptype* p, unsigned int* indices) { 
+EXEC_TARGET fptype device_SumPdfsExtMask (fptype* evt, fptype* , unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 
   const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
   const fptype npe_lo = RO_CACHE(functorConstants[cIndex]);
@@ -101,7 +101,7 @@ EXEC_TARGET fptype device_SumPdfsExtMask (fptype* evt, fptype* p, unsigned int* 
 
   return ret; 
 }
-EXEC_TARGET fptype device_SumPdfsExtSimple (fptype* evt, fptype* p, unsigned int* indices) { 
+EXEC_TARGET fptype device_SumPdfsExtSimple (fptype* evt, fptype* , unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 
   const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
   const fptype npe_lo = RO_CACHE(functorConstants[cIndex]);

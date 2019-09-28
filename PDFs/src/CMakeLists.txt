@@ -1,4 +1,4 @@
-cuda_add_more_library(GooStatsPDFs
+goofit_add_library(GooStatsPDFs
   DarkNoiseConvolutionPdf.cu
   DumperPdf.cu
   GeneralConvolutionPdf.cu

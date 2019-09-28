@@ -17,6 +17,7 @@ using namespace std;
 extern int host_callnumber;
 
 #if THRUST_DEVICE_SYSTEM!=THRUST_DEVICE_SYSTEM_CUDA
+#include <cstring> // for std::memcpy
 // OMP target - all 'device' memory is actually on host.
 #define ALIGN(n)
 #define MEM_DEVICE
@@ -28,9 +29,9 @@ extern int host_callnumber;
 // Use char* here because I need +1 to mean "offset by one byte", not "by one sizeof(whatever)".
 // Can't use void* because then the compiler doesn't know how to do pointer arithmetic.
 // This will fail if sizeof(char) is more than 1. But that should never happen, right?
-#define MEMCPY(target, source, count, direction) memcpy((char*) target, source, count)
-#define MEMCPY_TO_SYMBOL(target, source, count, offset, direction) memcpy(((char*) target)+offset, source, count)
-#define MEMCPY_FROM_SYMBOL(target, source, count, offset, direction) memcpy((char*) target, ((char*) source)+offset, count)
+#define MEMCPY(target, source, count, direction) std::memcpy((char*) target, source, count)
+#define MEMCPY_TO_SYMBOL(target, source, count, offset, direction) std::memcpy(((char*) target)+offset, source, count)
+#define MEMCPY_FROM_SYMBOL(target, source, count, offset, direction) std::memcpy((char*) target, ((char*) source)+offset, count)
 #define GET_FUNCTION_ADDR(fname) host_fcn_ptr = (void*) fname
 #define SYNCH dummySynch
 #define BLOCKIDX (1)

@@ -19,7 +19,7 @@
 //	   https://doi.org/10.1016/S0370-2693(03)00616-6.
 //	   (http://www.sciencedirect.com/science/article/pii/S0370269303006166)
 
-EXEC_TARGET fptype device_IBD (fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_IBD (fptype* evt, fptype* , unsigned int* indices) {
   const fptype eNeu = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
   const fptype ePos = eNeu - 1.293;
   const fptype eMass = 0.511;

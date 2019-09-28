@@ -64,8 +64,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,C
   std::vector<txtSource> componentsTxt;
   for(auto component : GooStats::Utility::splitter(configset->get("inputSpectra"),":"))
     if(configset->has(component + "_inputTxt")) 
-      componentsTxt.push_back(
-	  (txtSource) {component,configset->get(component + "_inputTxt")});
+      componentsTxt.push_back({component,configset->get(component + "_inputTxt")});
     else
       componentsTH1.push_back(component);
 

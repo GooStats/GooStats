@@ -21,7 +21,7 @@ template<MultiVariatePdf::MVLLType T>
 EXEC_TARGET fptype MVLL(const fptype k,const fptype n0,const fptype n1,const fptype m0,const fptype m1);
 #include "MultiVariatePdf.icc" // concrete implementation of the MultiVariate Likelihood
 template<MultiVariatePdf::MVLLType T>
-EXEC_TARGET fptype device_MV(fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_MV(fptype* evt, fptype* , unsigned int* indices) {
   const fptype mv_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
   const int cIndex = RO_CACHE(indices[1]);
   const fptype mv_lo = RO_CACHE(functorConstants[cIndex]);
@@ -64,8 +64,9 @@ MultiVariatePdf::MultiVariatePdf(std::string n, MVLLType MVLLtype,Variable *mv_v
   rate_1(get_Nids(rate_1_)),
   binVolume(binVolume_),
   sumpdf(sumpdf_),
-  Nbin(data->getNumBins()),
   MVid(totalPdf++),
+  sum_k(-99),I0(-99),I1(-99),
+  Nbin(data->getNumBins()),
   startbin(startbin_-static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)),
   endbin(endbin_-static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)),
   dev_iConsts(0LL)

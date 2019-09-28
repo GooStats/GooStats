@@ -29,9 +29,9 @@ template<> void OptionManager::set(const std::string &key,const T &value,bool al
 bool OptionManager::has(const std::string &key) const { 
   return m_str.find(key)!=m_str.end() || m_double.find(key)!=m_double.end() || m_long.find(key)!=m_long.end();
 } 
-DEFINE_DatasetManager(std::string,m_str,"");
-DEFINE_DatasetManager(double,m_double,0);
-DEFINE_DatasetManager(long,m_long,0);
+DEFINE_DatasetManager(std::string,m_str,"")
+DEFINE_DatasetManager(double,m_double,0)
+DEFINE_DatasetManager(long,m_long,0)
 //    if(!allowOverwrite) 
 //    throw GooStatsException("duplicate key inserted"); 
 
