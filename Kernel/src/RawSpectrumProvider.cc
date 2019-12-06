@@ -27,6 +27,9 @@ bool RawSpectrumProvider::registerComplexSpecies(const std::string &name,const s
   br_map.insert(make_pair(name,br_));
   return true;
 }
+std::map<std::string, std::map<std::string, double> > RawSpectrumProvider::get_br_map() {
+  return br_map;
+}
 int RawSpectrumProvider::n(const std::string &name) const { 
   if(n_map.find(name)!=n_map.end())
     return n_map.at(name); 
