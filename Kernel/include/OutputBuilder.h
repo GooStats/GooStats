@@ -22,6 +22,7 @@ class PlotManager;
 class GSFitManager;
 class OutputBuilder {
   public:
+    virtual ~OutputBuilder() {};
     //! load number of configs / location of configuration files from command-line args.
     virtual void registerOutputTerms(OutputHelper *, InputManager *,GSFitManager *) = 0;
     virtual void bindAllParameters(BatchOutputManager *,OutputHelper*) = 0;

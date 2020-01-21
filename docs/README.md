@@ -1,4 +1,7 @@
 # GooStats
+[![Build Status](https://travis-ci.org/GooStats/GooStats.svg?branch=master)](https://travis-ci.org/GooStats/GooStats)
+[![Build Status](https://travis-ci.org/DingXuefeng/GooStats.svg?branch=master)](https://travis-ci.org/DingXuefeng/GooStats)
+
 ## GooStats is an open source statistical analysis framework using GPUs. 
   - It provide handful tools to configura input parametrs, datasets, spectrums, pdfs etc. 
   - It also provide flexible text/plot/TTree output class. 

@@ -16,7 +16,7 @@ class TGraph;
 #include <utility>
 class TMinuit;
 class TFile;
-class Variable;
+struct Variable;
 class TCanvas;
 class FitManager;
 class OptionManager;

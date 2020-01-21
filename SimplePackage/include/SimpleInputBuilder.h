@@ -16,7 +16,7 @@
 #define SimpleInputBuilder_H
 #include "InputBuilder.h"
 #include <cstdlib>
-class InputConfig;
+struct InputConfig;
 #include <memory>
 class BasicSpectrumBuilder;
 class SimpleInputBuilder : public InputBuilder {

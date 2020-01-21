@@ -79,6 +79,7 @@ target_link_libraries(GooStatsLib
 		INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
 target_compile_features(GooStatsLib INTERFACE cxx_range_for)
 
+SET(COVERAGE OFF CACHE BOOL "Coverage")
 add_subdirectory(Modules)
 
 cuda_gen_gpu_library(AllGPU)

@@ -10,7 +10,7 @@
 #ifndef IDataManager_H
 #define IDataManager_H
 #include <memory>
-class Variable;
+struct Variable;
 // Synchronized parameter sets
 class IDataManager {
   public:

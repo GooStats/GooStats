@@ -20,6 +20,7 @@ class ParSyncManager {
   public:
     typedef IDataManager::strategy level;
   public:
+    virtual ~ParSyncManager() {};
     virtual BasicManager *createParSyncSet(const InputConfig&) { return new BasicManager("default"); }
     virtual std::map<std::string, level> getStrategies() { return std::map<std::string,level>(); };
     void init() { strategies = getStrategies(); initialized = true; }

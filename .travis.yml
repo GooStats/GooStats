@@ -1,0 +1,53 @@
+language: cpp
+os: linux
+jobs:
+  include:
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      env: ROOT_URL="https://root.cern/download/root_v6.18.04.Linux-ubuntu14-x86_64-gcc4.8.tar.gz"
+    - os: osx
+      osx_image: xcode10.3
+      compiler: clang
+      env: ROOT_URL="https://root.cern/download/root_v6.18.04.macosx64-10.14-clang100.tar.gz"
+addons:
+  apt:
+    packages: 
+      - lcov
+      - libx11-dev
+      - libxpm-dev
+      - libxft-dev
+      - libxext-dev
+  homebrew:
+    packages: 
+      - lcov
+      - coreutils
+      - libomp
+    update: true
+
+install:
+  - cd ../
+  - mkdir root
+  - travis_retry wget --no-check-certificate --quiet -O - "${ROOT_URL}" | tar --strip-components=1 -xz -C root
+  - source root/bin/thisroot.sh
+  - . GooStats/setup/download.sh
+  - . compile.sh
+  - source setup.sh
+  - cd GooStats/Modules/naive-Reactor
+
+script:
+  - export COVERAGE=1; make test
+  - ./autoTest
+
+after_success:
+  # Create lcov report
+  # capture coverage info
+  - lcov --directory . --capture --output-file coverage.info
+  # filter out system and extra files.
+  # To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
+  - lcov --remove coverage.info '/usr/*' '*Developer/CommandLineTools/*' --output-file coverage.info
+  # output coverage data for debugging (optional)
+  - lcov --list coverage.info
+  # Uploading to CodeCov
+  # '-f' specifies file(s) to use and disables manual coverage gathering and file search which has already been done above
+  - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"

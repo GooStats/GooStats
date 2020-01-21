@@ -20,7 +20,7 @@
 #include "solarB8InputBuilder.h"
 #include "solarB8SpectrumBuilder.h"
 
-int main (int argc, char** argv) {
+int main (int argc, const char** argv) {
   AnalysisManager *ana = new AnalysisManager();
 
   InputManager *inputManager = new InputManager(argc,argv);

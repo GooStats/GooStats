@@ -28,7 +28,7 @@ public:
   SumPdf (std::string n, const fptype norm_,const std::vector<Variable*> &, const std::vector<PdfBase*> &comps, Variable *npe);
   SumPdf (std::string n, const std::vector<PdfBase*> &comps, const std::vector<const BinnedDataSet*> &mask,Variable *npe);
   SumPdf (std::string n, const std::vector<PdfBase*> &comps, Variable *npe);
-  __host__ virtual fptype normalise () const;
+  __host__ fptype normalise () const final;
   const std::vector<PdfBase*> &Components() const { return components; }
   const std::vector<Variable*> &Weights() const { return _weights; }
   BinnedDataSet *getData();
@@ -38,8 +38,8 @@ public:
   static int registerFunc(PdfBase *pdf);
   std::unique_ptr<fptype []> fill_random() override;
   std::unique_ptr<fptype []> fill_Asimov() override;
-  void cache();
-  void restore();
+  void cache() final;
+  void restore() final;
 
 protected:
   void register_components(const std::vector<PdfBase*> &comps,int N);

@@ -11,7 +11,7 @@
 #define BasicManager_H
 #include "IDataManager.h"
 #include <string>
-class Variable;
+struct Variable;
 #include "BasicManagerImpl.h"
 class ParSyncManager;
 class BasicManager : public IDataManager {
