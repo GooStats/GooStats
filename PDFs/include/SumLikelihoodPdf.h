@@ -12,12 +12,13 @@
 
 #include <map>
 #include "goofit/PDFs/GooPdf.h"
-class Variable;
+struct Variable;
 
 class SumLikelihoodPdf : public GooPdf {
 public:
 
   SumLikelihoodPdf (std::string n, const std::vector<PdfBase*> &comps);
+  virtual ~SumLikelihoodPdf() {};
   __host__ virtual fptype normalise () const;
   const std::vector<PdfBase*> &Components() const { return components; }
   void fill_random();

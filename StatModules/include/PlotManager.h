@@ -38,14 +38,13 @@ class PlotManager : public StatModule {
     };
     class TF1Helper {
       public:
-	TF1Helper(GooPdf *pdf_,double norm_ = 1);
-	TF1 *getTF1() { return f; }
+        TF1Helper(GooPdf *pdf_,double norm_ = 1);
+        TF1 *getTF1() { return f; }
       private:
-	double eval(double *xx,double *par);
-	TH1 *data = nullptr; // root will delete it
-	double norm = -99;
+        double eval(double *xx,double *par);
+        TH1 *data = nullptr; // root will delete it
       private:
-	TF1 *f = nullptr; // root will delete it
+        TF1 *f = nullptr; // root will delete it
     };
   public:
     virtual void draw(int event,const std::vector<DatasetManager*> &datasets);
@@ -69,21 +68,21 @@ class PlotManager : public StatModule {
     //! configuration for plooting all species
     std::map<std::string, EColor> colorlibrary {
       {"kRed", kRed},
-	{"kOrange", kOrange},
-	{"kYellow", kYellow},
-	{"kGreen", kGreen},
-	{"kBlue", kBlue},
-	{"kViolet", kViolet},
-	{"kAzure", kAzure},
-	{"kWhite", kWhite},
-	{"kBlack", kBlack},
-	{"kGray", kGray},
-	{"kMagenta", kMagenta},
-	{"kCyan", kCyan},
-	{"kSpring", kSpring},
-	{"kTeal", kTeal},
-	{"kPink", kPink},
-	{"kBlack", kBlack},
+        {"kOrange", kOrange},
+        {"kYellow", kYellow},
+        {"kGreen", kGreen},
+        {"kBlue", kBlue},
+        {"kViolet", kViolet},
+        {"kAzure", kAzure},
+        {"kWhite", kWhite},
+        {"kBlack", kBlack},
+        {"kGray", kGray},
+        {"kMagenta", kMagenta},
+        {"kCyan", kCyan},
+        {"kSpring", kSpring},
+        {"kTeal", kTeal},
+        {"kPink", kPink},
+        {"kBlack", kBlack},
     };
 };
 #endif

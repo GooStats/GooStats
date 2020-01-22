@@ -174,7 +174,7 @@ endif()
 
 if(GOOFIT_DEVICE STREQUAL OMP OR GOOFIT_HOST STREQUAL OMP)
     find_package(OpenMP REQUIRED)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    link_libraries(OpenMP::OpenMP_CXX)
     find_package(Threads REQUIRED)
     link_libraries(Threads::Threads)
 endif()

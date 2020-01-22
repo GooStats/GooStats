@@ -12,7 +12,7 @@
 #include <string>
 #include <map>
 #include <memory>
-class Variable;
+struct Variable;
 class BasicManagerImpl {
   private:
     BasicManagerImpl(const std::string name_) : m_name(name_),m_var() {}

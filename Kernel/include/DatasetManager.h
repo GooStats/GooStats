@@ -25,6 +25,7 @@ class DatasetManager;
 class GooPdf;
 class DatasetDelegate {
   public:
+    virtual ~DatasetDelegate() {};
     virtual bool collectInputs(DatasetManager *) = 0;
     virtual bool configureParameters(DatasetManager *) = 0;
     virtual bool buildLikelihoods(DatasetManager *) = 0;
@@ -46,7 +47,7 @@ class DatasetDelegate {
 #include <memory>
 #include <vector>
 #include <string>
-class Variable;
+struct Variable;
 class GooPdf;
 class BinnedDataset;
 class DatasetManager {

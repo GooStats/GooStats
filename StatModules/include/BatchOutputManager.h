@@ -14,7 +14,7 @@
 #include <vector>
 #include "Module.h"
 class SumLikelihoodPdf;
-class Variable;
+struct Variable;
 class TFile;
 class BatchOutputManager : public Module {
   public:

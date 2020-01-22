@@ -18,7 +18,7 @@
 #include <vector>
 #include <memory>
 class RawSpectrumProvider;
-class Variable;
+struct Variable;
 class BinnedDataSet;
 class SimpleSpectrumBuilder : public BasicSpectrumBuilder {
   public:

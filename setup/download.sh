@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# download GooStats
-GooStatsVersion=6.1.0
-if [ ! -f v${GooStatsVersion}.tar.gz ]; then
-  wget -O v${GooStatsVersion}.tar.gz https://github.com/GooStats/GooStats/archive/v${GooStatsVersion}.tar.gz
-fi
-if [ ! -d GooStats-${GooStatsVersion} ]; then
-  tar zxvf v${GooStatsVersion}.tar.gz
-  mv GooStats-${GooStatsVersion} GooStats
-fi
-
 # download googletest
 googletestVersion=1.8.1
 if [ ! -f v${googletestVersion}.tar.gz ]; then
@@ -34,8 +24,8 @@ fi
 # make setup.sh
 cat >setup.sh<<EOF
 #!/bin/bash
-export GTEST_ROOT="$(readlink -f googletest-install)"
-export GOOFIT_DIR="$(readlink -f GooFit-install)"
+export GTEST_ROOT="$(pwd)/googletest-install"
+export GOOFIT_DIR="$(pwd)/GooFit-install"
 EOF
 
 ln -s GooStats/setup/compile.sh

@@ -11,7 +11,7 @@
 
 template<SolarNuOscPdf::PeeType T>
 EXEC_TARGET fptype SolarNuPee(
-  const fptype E_nu,const fptype Ne,const fptype deltaM21,const fptype deltaM2_31,const fptype sin_2theta12,const fptype sin_2theta13);
+  const fptype E_nu,const fptype Ne,const fptype deltaM21,const fptype ,const fptype sin_2theta12,const fptype sin_2theta13);
 
 template<SolarNuOscPdf::PeeType T>
 EXEC_TARGET fptype device_SolarNuOsc(fptype* evt, fptype* p, unsigned int* indices) {
@@ -25,7 +25,7 @@ EXEC_TARGET fptype device_SolarNuOsc(fptype* evt, fptype* p, unsigned int* indic
 }
 template<>
 EXEC_TARGET fptype SolarNuPee<SolarNuOscPdf::PeeType::Simple>(
-  const fptype E_nu,const fptype Ne,const fptype deltaM21,const fptype deltaM2_31,const fptype sin_2theta12,const fptype sin_2theta13) {
+  const fptype E_nu,const fptype Ne,const fptype deltaM21,const fptype ,const fptype sin_2theta12,const fptype sin_2theta13) {
   const fptype G_Fermi = 1.166e-5*1e-18; // in eV^{-2}
   const fptype one = 197.3e-9; // 1 = 197e-9 m*eV
   const fptype Na = 6.022e23; // mol^{-1}

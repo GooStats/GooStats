@@ -21,12 +21,13 @@ class SumLikelihoodPdf;
 class ConfigsetManager;
 class DatasetController;
 class DatasetManager;
-class InputConfig;
+struct InputConfig;
 class ParSyncManager;
 class RawSpectrumProvider;
 class ISpectrumBuilder;
 class InputBuilder {
   public:
+    virtual ~InputBuilder() {};
     //! load the name of output file from command-line args.
     virtual std::string loadOutputFileNameFromCmdArgs(int,const char *[]) = 0;
     //! load number of configs / location of configuration files from command-line args.

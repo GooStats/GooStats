@@ -18,7 +18,7 @@
 #include "SimpleFit.h"
 #include "DiscoveryTest.h"
 
-int main (int argc, char** argv) {
+int main (int argc, const char** argv) {
   AnalysisManager *ana = new AnalysisManager();
 
   InputManager *inputManager = new InputManager(argc,argv);
