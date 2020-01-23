@@ -37,7 +37,7 @@ install:
 
 script:
   - export COVERAGE=1; make test
-  - ./autoTest
+  - ctest --output-on-failure
 
 after_success:
   # Create lcov report

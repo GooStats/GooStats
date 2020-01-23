@@ -4,18 +4,17 @@
 
 # Installation guide for GooStats
 
-- Create a folder for `GooStas` and go to that folder
+- Create a folder for `GooStats` and go to that folder
 
 	  mkdir GooStats-release
 	  cd GooStats-release
 - download the installation script and run it. **Make sure you have internet at this step.** It will download the `GooStats` and `googletest`, create a bunch of folders, and symbol link the `compile.sh`
 
-	  wget https://raw.githubusercontent.com/GooStats/GooStats/master/setup/download.sh
-	  bash download.sh
-
+	  git clone https://github.com/GooStats/GooStats.git
+	  . GooStats/setup/download.sh
 - run the `compile.sh`. **Make sure you have GPU at this step**. This script will compile `GooFit` and `googletest`, and also create a script for setting up environment `setup.sh`
 
-	  bash compile.sh
+	  . compile.sh
   - Tips: to get GPU, if you are working on a cluster, launch an interactive job to a cluster node equipped with GPU: `qsub -q gpu -I` or `srun -p myPartition --gres=gpu:1 -A myPorj  -c 40 -N 1 -t 1:00:00 --pty bash`
 
 - compile example project `naive-Reactor`
