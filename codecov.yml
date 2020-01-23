@@ -1,5 +1,0 @@
-ignore:
-  - "*-install"
-  - "root"
-fixes:
-  - "GooStats/::/"  # move path   e.g., "before/path" => "after/path"

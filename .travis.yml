@@ -40,4 +40,4 @@ script:
   - cd build_GooStats; ctest --output-on-failure
 
 after_success:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./upload.sh ; fi
+  - ./upload.sh

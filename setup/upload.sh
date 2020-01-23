@@ -5,7 +5,7 @@
 lcov --directory . --capture --output-file coverage.info
 # filter out system and extra files.
 # To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
-lcov --remove coverage.info '/usr/*' '*Developer/CommandLineTools/*' --output-file coverage.info
+lcov --remove coverage.info '/usr/*' '*Developer/CommandLineTools/*' '*/root/*' '*-install/*' --output-file coverage.info
 # output coverage data for debugging (optional)
 lcov --list coverage.info
 # Uploading to CodeCov

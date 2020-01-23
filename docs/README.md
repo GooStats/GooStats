@@ -1,6 +1,8 @@
 # GooStats
 [![Build Status](https://img.shields.io/travis/GooStats/GooStats/master.svg?label=GooStats/GooStats/master)](https://travis-ci.org/GooStats/GooStats)
+[![codecov](https://codecov.io/gh/GooStats/GooStats/branch/master/graph/badge.svg)](https://codecov.io/gh/GooStats/GooStats)
 [![Build Status](https://img.shields.io/travis/DingXuefeng/GooStats/dingxf_dev.svg?label=DingXuefeng/GooStats/dingxf_dev)](https://travis-ci.org/DingXuefeng/GooStats)
+[![codecov](https://codecov.io/gh/DingXuefeng/GooStats/branch/dingxf_dev/graph/badge.svg)](https://codecov.io/gh/DingXuefeng/GooStats)
 
 ## GooStats is an open source statistical analysis framework using GPUs. 
   - It provide handful tools to configura input parametrs, datasets, spectrums, pdfs etc. 
