@@ -28,4 +28,5 @@ For any consult write to [Xuefeng Ding](mailto:xuefeng.ding.physics@gmail.com).
 This framework has been utilized in Borexino and JUNO project. The physics result obtained with Borexino Module (closed source) has been presented in 
 [TAUP 2017 poster](https://indico.cern.ch/event/606690/contributions/2591519/attachments/1499504/2334752/PosterTAUP_GPUfitter_v3.3.pdf)
 
-## Currently I'm working on Jenkins server to test it.
+If you need to cite the software, please use the following paper:
+- Ding, X. F. (2018). GooStats: A GPU-based framework for multi-variate analysis in particle physics. Journal of Instrumentation, 13(12), P12018–P12018. [https://doi.org/10.1088/1748-0221/13/12/P12018](https://doi.org/10.1088/1748-0221/13/12/P12018)
