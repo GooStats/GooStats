@@ -36,7 +36,7 @@ install:
 
 script:
   - pushd GooStats/Modules/naive-Reactor; export COVERAGE=1; make test; popd
-  - cd build_GooStats; ctest --output-on-failure
+  - pushd build_GooStats; ctest --output-on-failure; popd
 
 after_success:
   # Create lcov report
