@@ -1,6 +1,8 @@
 # GooStats
 [![Build Status](https://img.shields.io/travis/GooStats/GooStats/master.svg?label=GooStats/GooStats/master)](https://travis-ci.org/GooStats/GooStats)
+[![codecov](https://codecov.io/gh/GooStats/GooStats/branch/master/graph/badge.svg)](https://codecov.io/gh/GooStats/GooStats)
 [![Build Status](https://img.shields.io/travis/DingXuefeng/GooStats/dingxf_dev.svg?label=DingXuefeng/GooStats/dingxf_dev)](https://travis-ci.org/DingXuefeng/GooStats)
+[![codecov](https://codecov.io/gh/DingXuefeng/GooStats/branch/dingxf_dev/graph/badge.svg)](https://codecov.io/gh/DingXuefeng/GooStats)
 
 ## GooStats is an open source statistical analysis framework using GPUs. 
   - It provide handful tools to configura input parametrs, datasets, spectrums, pdfs etc. 
@@ -26,4 +28,5 @@ For any consult write to [Xuefeng Ding](mailto:xuefeng.ding.physics@gmail.com).
 This framework has been utilized in Borexino and JUNO project. The physics result obtained with Borexino Module (closed source) has been presented in 
 [TAUP 2017 poster](https://indico.cern.ch/event/606690/contributions/2591519/attachments/1499504/2334752/PosterTAUP_GPUfitter_v3.3.pdf)
 
-## Currently I'm working on Jenkins server to test it.
+If you need to cite the software, please use the following paper:
+- Ding, X. F. (2018). GooStats: A GPU-based framework for multi-variate analysis in particle physics. Journal of Instrumentation, 13(12), P12018–P12018. [https://doi.org/10.1088/1748-0221/13/12/P12018](https://doi.org/10.1088/1748-0221/13/12/P12018)
