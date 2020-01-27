@@ -93,7 +93,7 @@ void FitFun(int & __attribute__((__unused__)) npar, double * __attribute__((__un
   pars.resize(numPars); 
   int counter = 0; 
   for (auto i : FitManager::vars) {
-    if (::isnan(fp[counter])) cout << "Variable " << i->name << " " << i->index << " is NaN\n"; 
+    if (std::isnan(fp[counter])) cout << "Variable " << i->name << " " << i->index << " is NaN\n"; 
     pars[i->getIndex()] = fp[counter++] + i->blind; 
   }
   

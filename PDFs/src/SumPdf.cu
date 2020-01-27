@@ -350,7 +350,7 @@ __host__ double SumPdf::sumOfNll (int numVars) const {
 //    printf("\n");
   }
   if(first) { sum = 0; first = false; } else first = true;
-  delete host_array;
+  delete [] host_array;
   // debug end
   return thrust::reduce(results.begin(),results.end(),dummy,cudaPlus);
 }

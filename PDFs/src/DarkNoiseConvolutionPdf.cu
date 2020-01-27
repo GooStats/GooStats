@@ -139,7 +139,7 @@ __host__ fptype DarkNoiseConvolutionPdf::sumOfNll( int numVars ) const {
     printf("log(L) %.15le b %lf M %lf tot %.15lf\n",sum,host_array[i*3],host_array[i*3+1],sumV[i]*binVolume);
   }
   if(first) { sum = 0; first = false; } else first = true;
-  delete host_array;
+  delete [] host_array;
   // debug end
   return thrust::reduce(results.begin(),results.end(),dummy,cudaPlus);
 }

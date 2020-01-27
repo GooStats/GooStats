@@ -3,7 +3,10 @@
 #include "TFile.h"
 #include "TTree.h"
 
-NLLCheckFixture::NLLCheckFixture() {}
+#include "TSystem.h"
+NLLCheckFixture::NLLCheckFixture() {
+  gSystem->Load("libGooStatsNLLCheck.so");
+}
 NLLCheckFixture::~NLLCheckFixture() {}
 
 void NLLCheckFixture::SetUp() { }

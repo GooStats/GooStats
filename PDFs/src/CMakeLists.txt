@@ -20,4 +20,7 @@ goofit_add_library(GooStatsPDFs
   ResponseFunctionPdf_impl.cu
   SumLikelihoodPdf.cu
   SumPdf.cu)
+if(NLL_CHECK)
+  target_link_libraries(GooStatsPDFs GooStatsNLLCheck)
+endif()
 target_link_libraries(GooStatsPDFs GOOFIT::goofit_lib AllGPU)

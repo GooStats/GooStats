@@ -51,7 +51,7 @@ protected:
   static std::map<BinnedDataSet*,int> maskmap;
   bool updated() const { return m_updated; }
 #ifdef NLL_CHECK
-  __host__ double sumOfNll (int numVars) const;
+  __host__ double sumOfNll (int numVars) const final;
   friend class DarkNoiseConvolutionPdf;
 #endif
   std::vector<unsigned int> pindices;
