@@ -6,4 +6,4 @@ add_library(GooStatsSimple
   SimplePlotManager.cc
   PrepareData.cc
   PullDatasetController.cc)
-target_link_libraries(GooStatsSimple GooStatsKernel)
+target_link_libraries(GooStatsSimple GooStatsKernel GooStatsPDFs)

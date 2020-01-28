@@ -10,4 +10,4 @@ add_library(GooStatsStatModules
   OutputManager.cc
   PlotManager.cc
   ToyMCLikelihoodEvaluator.cc)
-target_link_libraries(GooStatsStatModules GooStatsKernel)
+target_link_libraries(GooStatsStatModules GooStatsKernel GOOFIT::goofit_lib)
