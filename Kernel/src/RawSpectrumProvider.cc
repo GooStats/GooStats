@@ -23,7 +23,23 @@ bool RawSpectrumProvider::registerSpecies(const std::string &name,int n_,const d
   de_map.insert(make_pair(name,de_));
   return true;
 }
+bool RawSpectrumProvider::registerPeak(const std::string &name,double peakE_) {
+  if(peakE_map.find(name)!=peakE_map.end()) {
+    std::cerr<<"Try to add ["<<name<<"] which already exists"<<std::endl;
+    //throw GooStatsException("RawSpectrumProvider::registerSpecies Duplicate entries");
+    return false;
+  }
+  std::cout<<"RawSpectrumProvider::registerPeak Register ["<<name<<"]"<<std::endl;
+  peakE_map.insert(make_pair(name,peakE_));
+  return true;
+}
 bool RawSpectrumProvider::registerComplexSpecies(const std::string &name,const std::map<std::string,double> &br_) {
+  if(br_map.find(name)!=br_map.end()) {
+    std::cerr<<"Try to add ["<<name<<"] which already exists"<<std::endl;
+    //throw GooStatsException("RawSpectrumProvider::registerSpecies Duplicate entries");
+    return false;
+  }
+  std::cout<<"RawSpectrumProvider::registerComplexSpecies Register ["<<name<<"]"<<std::endl;
   br_map.insert(make_pair(name,br_));
   return true;
 }
