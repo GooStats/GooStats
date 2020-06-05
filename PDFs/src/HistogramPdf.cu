@@ -35,7 +35,7 @@ EXEC_TARGET fptype device_ScaleShiftEvalRawHistogram (fptype* evt, fptype* p, un
   if(static_cast<unsigned int>(bin_lo)>=RO_CACHE(indices[5])/*bin_max*/) return RO_CACHE((dev_raw_histograms[wid])[bin_lo]);
   const fptype y_lo = RO_CACHE((dev_raw_histograms[wid])[bin_lo]);
   const fptype y_up = RO_CACHE((dev_raw_histograms[wid])[bin_lo+1]);
-  return y_lo+(y_up-y_lo)*(bin_fp-bin_lo);
+  return y_lo+(y_up-y_lo)*(bin_fp-bin_lo-0.5);
 }
 
 MEM_DEVICE device_function_ptr ptr_to_EvalRawHistogram = device_EvalRawHistogram; 
