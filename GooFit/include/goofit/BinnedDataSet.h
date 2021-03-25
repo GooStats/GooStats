@@ -2,14 +2,15 @@
 #define BINNED_DATASET_HH
 
 #include "goofit/DataSet.h"
+#include <vector>
 
 class BinnedDataSet : public DataSet {
   // Class for rectangularly binned datasets - every bin the same size. 
 
 public: 
-  BinnedDataSet (Variable* var, string n = ""); 
-  BinnedDataSet (std::vector<Variable*>& vars, string n = ""); 
-  BinnedDataSet (std::set<Variable*>& vars, string n = ""); 
+  BinnedDataSet (Variable* var, std::string n = ""); 
+  BinnedDataSet (std::vector<Variable*>& vars, std::string n = ""); 
+  BinnedDataSet (std::set<Variable*>& vars, std::string n = ""); 
   ~BinnedDataSet (); 
 
   virtual void addEventVector (std::vector<fptype>& vals, fptype weight = 1);
@@ -27,7 +28,7 @@ public:
 
 private:
   void cacheNumBins (); 
-  vector<unsigned int> convertValuesToBins (const vector<fptype>& vals) const; 
+  std::vector<unsigned int> convertValuesToBins (const std::vector<fptype>& vals) const; 
   unsigned int localToGlobal (std::vector<unsigned int>& locals) const; 
   void globalToLocal (std::vector<unsigned int>& locals, unsigned int global) const; 
 

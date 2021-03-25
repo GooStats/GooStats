@@ -28,7 +28,7 @@ extern fptype host_params[maxParams];
 extern unsigned int host_indices[maxIndicies];
 extern int totalParams;
 extern int totalConstants;
-extern string pdfName[maxIndicies];
+extern std::string pdfName[maxIndicies];
 template<class T>
 class DumperPdf;
 class SumPdf;
@@ -69,7 +69,7 @@ class PdfBase {
     __host__ std::string getName () const {return name;}
     __host__ virtual void getObservables (obsCont& ret) const;
     __host__ virtual void getParameters (parCont& ret) const;
-    __host__ Variable* getParameterByName (string n) const;
+    __host__ Variable* getParameterByName (std::string n) const;
     __host__ int getSpecialMask () const {return specialMask;}
     __host__ void setData (BinnedDataSet* data);
     __host__ void setData (UnbinnedDataSet* data);
@@ -82,6 +82,12 @@ class PdfBase {
     __host__ unsigned int registerConstants (unsigned int amount);
     __host__ virtual void recursiveSetNormalisation (fptype norm = 1) const;
     __host__ void unregisterParameter (Variable* var);
+    /// Register a function for this PDF to use in evalution
+    template <typename T>
+    void registerFunction(std::string name, const T &function) {
+        reflex_name_  = name;
+        function_ptr_ = get_device_symbol_address(function);
+    }
     __host__ void registerObservable (Variable* obs);
     __host__ void setIntegrationFineness (int i);
     __host__ void printProfileInfo (bool topLevel = true);
@@ -98,6 +104,11 @@ class PdfBase {
     void clearCurrentFit ();
 
   protected:
+    std::string reflex_name_; //< This is the name of the type of the PDF, for reflexion purposes. Must be set or
+                              // RecursiveSetIndicies must be overloaded.
+
+    void *function_ptr_{nullptr}; //< This is the function pointer to set on the device. Must be set or
+                                  // RecursiveSetIndicies must be overloaded.
     fptype numEvents;         // Non-integer to allow weighted events
     unsigned int numEntries;  // Eg number of bins - not always the same as number of events, although it can be.
     fptype* normRanges;       // This is specific to functor instead of variable so that MetricTaker::operator needn't use indices.

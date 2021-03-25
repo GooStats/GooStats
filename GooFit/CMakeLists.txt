@@ -135,6 +135,7 @@ if(GOOFIT_MPI)
     message(STATUS "where PROCS is the number of processors on which to execute the program, EXECUTABLE is the MPI program, and ARGS are the arguments to pass to the MPI program.")
 endif()
 
+include(AddThrust)
 if(GOOFIT_DEVICE STREQUAL CUDA)
     message(STATUS "CMAKE_MODULE_PATH: <${CMAKE_MODULE_PATH}>")
     include(CUDAsafeAddLibraryAndExe) # written by Xuefeng

@@ -1,19 +1,13 @@
-#ifndef __GLOBAL_CUDA_HH__
-#define __GLOBAL_CUDA_HH__
+#pragma once
 
-#include <thrust/detail/config/device_system.h>
+#include <thrust/detail/config.h>
+#include <thrust/system_error.h>
 #if THRUST_DEVICE_SYSTEM == THRUST_DEVICE_SYSTEM_CUDA
 #include <driver_types.h>      // Needed for cudaError_t
 #endif
 
-#if THRUST_DEVICE_SYSTEM == THRUST_DEVICE_SYSTEM_OMP
-#include <omp.h>
-#endif
-
-#include <thrust/functional.h> // Needed for Thrust constants
 #include <cmath>
 #include <string>
-using namespace std;
 extern int host_callnumber;
 
 #if THRUST_DEVICE_SYSTEM!=THRUST_DEVICE_SYSTEM_CUDA
@@ -65,23 +59,36 @@ enum gooError {gooSuccess = 0, gooErrorMemoryAllocation};
 #define SYNCH cudaDeviceSynchronize
 #define THREAD_SYNCH __syncthreads();
 #define DEVICE_VECTOR thrust::device_vector
-#define MEMCPY(target, source, count, direction) \
-do { cudaError_t ret = cudaMemcpy(target, source, count, direction); \
-  if(ret!=cudaSuccess) throw runtime_error(string(cudaGetErrorString(ret))); } while(0)
-#define MEMCPY_TO_SYMBOL(target, source, count, offset, direction) \
-do { cudaError_t ret = cudaMemcpyToSymbol(target, source, count, offset, direction); \
-  if(ret!=cudaSuccess) throw runtime_error(string(cudaGetErrorString(ret))); } while(0)
 #ifdef TARGET_SM35
 #define RO_CACHE(x) __ldg(&x)
 #else
 #define RO_CACHE(x) (x)
 #endif
-#define GET_FUNCTION_ADDR(fname) \
-do { cudaError_t ret = cudaMemcpyFromSymbol((void**) &host_fcn_ptr, fname, sizeof(void*)); \
-  if(ret!=cudaSuccess) { cerr<<__FILE__":"<<__LINE__<<" GET_FUNCTION_ADDR: cudaMemcpyFromSymbol failed."<<endl; throw runtime_error(string(cudaGetErrorString(ret)));} } while(0)
+
+#include <stdexcept>
+#define GOOFIT_CUDA_CHECK(function)                                                                                    \
+    {                                                                                                                  \
+        cudaError err = function;                                                                                      \
+        if(err != cudaSuccess) {                                                                                       \
+	    throw std::runtime_error(std::string(cudaGetErrorString(err)));						       \
+        }                                                                                                              \
+    }
+
+template <typename T>
+void *get_device_symbol_address(const T &symbol) {
+    void *result;
+    GOOFIT_CUDA_CHECK(cudaMemcpyFromSymbol(&result, symbol, sizeof(void *)));
+    return result;
+}
+
+#define MEMCPY(target, source, count, direction) GOOFIT_CUDA_CHECK(cudaMemcpy(target, source, count, direction));
+
+#define MEMCPY_TO_SYMBOL(target, source, count, offset, direction) \
+    GOOFIT_CUDA_CHECK(cudaMemcpyToSymbol(target, source, count, offset, direction));
+
 #define MEMCPY_FROM_SYMBOL(target, source, count, offset, direction) \
-do { cudaError_t ret = cudaMemcpyFromSymbol(target, source, count, offset, direction); \
-  if(ret!=cudaSuccess) { cerr<<__FILE__":"<<__LINE__<<" GET_FUNCTION_ADDR: cudaMemcpyFromSymbol failed."<<endl; throw runtime_error(string(cudaGetErrorString(ret)));} } while(0)
+    GOOFIT_CUDA_CHECK(cudaMemcpyFromSymbol(target, source, count, offset, direction));
+
 // For CUDA case, just use existing errors, renamed
 #include <driver_types.h>      // Needed for cudaError_t
 enum gooError {gooSuccess = cudaSuccess,
@@ -160,5 +167,3 @@ typedef float fptype;
 #define POW powf
 #endif
 
-
-#endif

@@ -15,7 +15,7 @@ __host__ ExpPdf::ExpPdf (std::string n, Variable* _x, Variable* alpha, Variable*
 {
   std::vector<unsigned int> pindices;
   pindices.push_back(registerParameter(alpha));
-  GET_FUNCTION_ADDR(ptr_to_Exp);
+  registerFunction("ptr_to_Exp",ptr_to_Exp);
   initialise(pindices); 
 }
 
