@@ -31,7 +31,7 @@ fptype host_timeHist[10000];
 MEM_DEVICE void* device_function_table[200]; // Not clear why this cannot be MEM_CONSTANT, but it causes crashes to declare it so. 
 void* host_function_table[200];
 unsigned int num_device_functions = 0; 
-map<void*, int> functionAddressToDeviceIndexMap; 
+std::map<void*, int> functionAddressToDeviceIndexMap; 
 
 // For use in debugging memory issues
 void printMemoryStatus (std::string file, int line) {
@@ -167,21 +167,25 @@ MEM_DEVICE device_metric_ptr ptr_to_Chisq        = calculateChisq;
 
 void* host_fcn_ptr = 0;
 
-void* getMetricPointer (std::string name) {
-  #define CHOOSE_PTR(ptrname) if (name == #ptrname) GET_FUNCTION_ADDR(ptrname);
-  host_fcn_ptr = 0; 
-  CHOOSE_PTR(ptr_to_Eval); 
-  CHOOSE_PTR(ptr_to_NLL); 
-  CHOOSE_PTR(ptr_to_Prob); 
-  CHOOSE_PTR(ptr_to_BinAvg); 
-  CHOOSE_PTR(ptr_to_ScaledBinAvg); 
-  CHOOSE_PTR(ptr_to_BinWithError); 
-  CHOOSE_PTR(ptr_to_Chisq); 
+void *getMetricPointer(EvalFunc val) {
+    if(val == EvalFunc::Eval) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_Eval);
+    } else if(val == EvalFunc::NLL) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_NLL);
+    } else if(val == EvalFunc::Prob) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_Prob);
+    } else if(val == EvalFunc::BinAvg) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_BinAvg);
+    } else if(val == EvalFunc::BinWithError) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_BinWithError);
+    } else if(val == EvalFunc::Chisq) {
+        host_fcn_ptr = get_device_symbol_address(ptr_to_Chisq);
+    } else {
+        throw GooStatsException("Non-existent metric pointer choice");
+    }
+    assert(host_fcn_ptr);
 
-  assert(host_fcn_ptr); 
-
-  return host_fcn_ptr;
-#undef CHOOSE_PTR
+    return host_fcn_ptr;
 }
 
 

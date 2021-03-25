@@ -2,7 +2,7 @@
 #include <cstdlib> 
 #include <climits> 
 
-DataSet::DataSet (Variable* var, string n)  
+DataSet::DataSet (Variable* var, std::string n)  
   : numEventsAdded(0)
   , name(n)
 {
@@ -10,7 +10,7 @@ DataSet::DataSet (Variable* var, string n)
   if (n == "") generateName();
 }
 
-DataSet::DataSet (std::vector<Variable*>& vars, string n)  
+DataSet::DataSet (std::vector<Variable*>& vars, std::string n)  
   : numEventsAdded(0)
   , name(n)
 {
@@ -20,7 +20,7 @@ DataSet::DataSet (std::vector<Variable*>& vars, string n)
   if (n == "") generateName();
 }
 
-DataSet::DataSet (std::set<Variable*>& vars, string n)  
+DataSet::DataSet (std::set<Variable*>& vars, std::string n)  
   : numEventsAdded(0)
   , name(n)
 {
@@ -37,18 +37,18 @@ DataSet::~DataSet () {
 }
 
 void DataSet::addEvent () {
-  vector<fptype> vals = getCurrentValues(); 
+  std::vector<fptype> vals = getCurrentValues(); 
   addEventVector(vals); 
 }
 
 void DataSet::addWeightedEvent (fptype weight) {
-  vector<fptype> vals = getCurrentValues(); 
+  std::vector<fptype> vals = getCurrentValues(); 
   addEventVector(vals, weight); 
 }
 
 void DataSet::addEvent (fptype val) {
   // Helper method to avoid the user having to wrap 
-  // every one-dimensional event in a vector. 
+  // every one-dimensional event in a std::vector. 
   assert(1 == variables.size()); 
 
   std::vector<fptype> helper;
@@ -56,8 +56,8 @@ void DataSet::addEvent (fptype val) {
   addEventVector(helper); 
 }
 
-vector<fptype> DataSet::getCurrentValues () const {
-  vector<fptype> values;
+std::vector<fptype> DataSet::getCurrentValues () const {
+  std::vector<fptype> values;
   for (varConstIt v = varsBegin(); v != varsEnd(); ++v) {
     values.push_back((*v)->value);
   }

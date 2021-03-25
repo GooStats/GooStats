@@ -8,9 +8,9 @@ unsigned int host_indices[maxIndicies];
 int host_callnumber = 0; 
 int totalParams = 0; 
 int totalConstants = 1; // First constant is reserved for number of events. 
-map<Variable*, std::set<PdfBase*> > variableRegistry; 
-map<PdfBase*, int> pdfIdMap;
-string pdfName[maxIndicies];
+std::map<Variable*, std::set<PdfBase*> > variableRegistry; 
+std::map<PdfBase*, int> pdfIdMap;
+std::string pdfName[maxIndicies];
 
 PdfBase::PdfBase (Variable* x, std::string n) 
   : name(n)
@@ -44,7 +44,7 @@ __host__ void PdfBase::recursiveSetNormalisation (fptype norm) const {
 int pdfId_global = -1;
 __host__ int PdfBase::registerPdf() {
   if(pdfIdMap.find(this)==pdfIdMap.end()) {
-    pdfIdMap.insert(make_pair(this,++pdfId_global));
+    pdfIdMap.insert(std::make_pair(this,++pdfId_global));
     pdfId = pdfId_global;
   }
   return pdfIdMap.at(this);
@@ -101,7 +101,7 @@ __host__ void PdfBase::getParameters (parCont& ret) const {
   }
 }
 
-__host__ Variable* PdfBase::getParameterByName (string n) const { 
+__host__ Variable* PdfBase::getParameterByName (std::string n) const { 
   for (parConstIter p = parameterList.begin(); p != parameterList.end(); ++p) {
     if ((*p)->name == n) return (*p);
   }
