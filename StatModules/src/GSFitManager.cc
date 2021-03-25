@@ -89,7 +89,7 @@ Variable *GSFitManager::get_var(const std::string &parName) {
   throw GooStatsException("par not found");
   return nullptr;
 }
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 void GSFitManager::eval() {
   getFitManager()->getMinuitValues();
   m_minim_conv = FitManager::minim_conv;

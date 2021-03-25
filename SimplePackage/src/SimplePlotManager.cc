@@ -10,7 +10,7 @@
 #include "SimplePlotManager.h"
 #include "DatasetManager.h"
 #include "TCanvas.h"
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 void SimplePlotManager::draw(int ,const std::vector<DatasetManager*> &datasets) {
   auto datasetsgroups = groupByName(datasets);
   size_t i = 0;
@@ -19,7 +19,7 @@ void SimplePlotManager::draw(int ,const std::vector<DatasetManager*> &datasets) 
     if(!cc) continue;
     toBeSaved.insert(cc);
     if(createPdf()) {
-      string tail = "";
+      std::string tail = "";
       if(datasetsgroups.size()>1) {
 	if(i==0) 
 	  tail = "(";

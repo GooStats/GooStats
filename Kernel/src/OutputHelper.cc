@@ -27,7 +27,7 @@ const std::vector<double*> OutputHelper::addresses() {
   return addr;
 }
 #include <iostream>
-double OutputHelper::value(const std::string &n) {
+double OutputHelper::value(const std::string &n) const {
   // remember to flush
   for(size_t i = 0;i<m_names.size();++i) {
     if(m_names.at(i)==n) return values.at(i);

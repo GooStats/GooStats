@@ -10,7 +10,7 @@
 #include "PrepareData.h"
 
 #include "SimpleSpectrumBuilder.h"
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 #include "InputManager.h"
 #include "TRandom.h"
 #include "GSFitManager.h"

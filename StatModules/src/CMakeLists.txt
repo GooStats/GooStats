@@ -10,4 +10,7 @@ add_library(GooStatsStatModules
   OutputManager.cc
   PlotManager.cc
   ToyMCLikelihoodEvaluator.cc)
-target_link_libraries(GooStatsStatModules GooStatsKernel GOOFIT::goofit_lib)
+target_include_directories(GooStatsStatModules PUBLIC
+  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/StatModules/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+target_link_libraries(GooStatsStatModules PUBLIC GooStatsKernel GooFit::goofit_lib ROOT::Tree)

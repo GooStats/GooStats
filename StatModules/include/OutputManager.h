@@ -35,6 +35,7 @@ class OutputManager : public StatModule {
     void setPlotManager(PlotManager *);
     BatchOutputManager *getBatchOutputManager() const { return batchOut.get(); }
     void subFit(int event);
+    const OutputHelper *getOutputHelper() const { return outputHelper.get(); }
   protected:
     std::shared_ptr<OutputHelper> outputHelper;
     std::shared_ptr<OutputBuilder> outputBuilder;

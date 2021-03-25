@@ -1,0 +1,3 @@
+[submodule "extern/GooStats/GooFit"]
+	path = extern/GooStats/GooFit
+	url = https://github.com/GooStats/GooFit.git

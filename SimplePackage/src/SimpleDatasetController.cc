@@ -11,6 +11,7 @@
 #include "ConfigsetManager.h"
 #include "GooStatsException.h"
 #include "Utility.h"
+#include "goofit/Variable.h"
 bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   try {
     dataset->set("exposure", configset->get<double>("exposure"));
@@ -179,7 +180,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   }
   return true; 
 }
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 bool SimpleDatasetController::buildLikelihoods(DatasetManager *dataset) {
   GooPdf *pdf = new SumPdf(dataset->name(),
       dataset->get<double>(std::string("exposure")),

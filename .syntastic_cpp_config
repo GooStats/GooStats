@@ -10,6 +10,7 @@
 -Werror=return-type
 -Wall
 -Wextra
--I../googletest-install/include
--I../GooFit-install/include
--I../GooFit-install/include/fakecuda
+-I../build_GooStats/_deps/thrust-src
+-I../build_GooStats/_deps/goofit-src/include
+-std=c++14
+-DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP

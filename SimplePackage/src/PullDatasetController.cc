@@ -10,6 +10,7 @@
 #include "PullDatasetController.h"
 #include "ConfigsetManager.h"
 #include "GooStatsException.h"
+#include "goofit/Variable.h"
 bool PullDatasetController::collectInputs(DatasetManager *dataset) {
   try {
     const auto &varName = dataset->name().substr(0,dataset->name().size()-5); // remove _pull

@@ -8,10 +8,11 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "ResponseFunctionPdf.h"
+#include "goofit/Variable.h"
 
 __host__ ResponseFunctionPdf::ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> NL,
 	std::vector<Variable*> res,
 	double feq) : GooPdf(npe,n) {
@@ -22,7 +23,7 @@ __host__ ResponseFunctionPdf::ResponseFunctionPdf (std::string n,
 }
 __host__ ResponseFunctionPdf::ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> NL,
 	std::vector<Variable*> res,
 	double feq,
@@ -35,7 +36,7 @@ __host__ ResponseFunctionPdf::ResponseFunctionPdf (std::string n,
 }
 __host__ ResponseFunctionPdf::ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> res,
 	double feq,
 	Variable *peakEvis) : GooPdf(npe,n) {
@@ -97,7 +98,7 @@ void ResponseFunctionPdf::chooseFunctionPtr(Variable *,const std::string &respon
     abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only Mach4/Echidna/expPar NL model are implemented in this class. If not enough, please post an github issue.");
   if(!(response_function == "GeneralizedGamma" || response_function == "ModifiedGaussian" || response_function == "ScaledPoisson"))
     abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " Only GeneralizedGamma/ModifiedGaussian/ScaledPoisson RPF model are implemented in this class. If not enough, please post an github issue.");
-#define CHOOSE_RPF(RPF,NL,TYPE) if((response_function == #RPF)&&(quenching_model == #NL)&&(rpf_type==Mean::TYPE)) GET_FUNCTION_ADDR(ptr_to_npe_##RPF##_##NL##_##TYPE);
+#define CHOOSE_RPF(RPF,NL,TYPE) if((response_function == #RPF)&&(quenching_model == #NL)&&(rpf_type==Mean::TYPE)) { GET_FUNCTION_ADDR(ptr_to_npe_##RPF##_##NL##_##TYPE); }
   CHOOSE_RPF(GeneralizedGamma,Mach4,normal);
   CHOOSE_RPF(GeneralizedGamma,Mach4,shifted);
   CHOOSE_RPF(GeneralizedGamma,Mach4,peak);

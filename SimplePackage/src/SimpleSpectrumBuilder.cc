@@ -11,6 +11,7 @@
 #include "GooStatsException.h"
 #include "DatasetManager.h"
 #include "goofit/BinnedDataSet.h"
+#include "goofit/Variable.h"
 #include "HistogramPdf.h"
 #include "ResponseFunctionPdf.h"
 #include "RawSpectrumProvider.h"
@@ -90,7 +91,7 @@ GooPdf *SimpleSpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManag
 }
 GooPdf *SimpleSpectrumBuilder::buildTODO(const std::string &name,DatasetManager *dataset) {
   std::string pdfName = dataset->name()+"."+name;
-  std::cerr<<"Species ["<<pdfName<<"] not implemented!"<<endl;
+  std::cerr<<"Species ["<<pdfName<<"] not implemented!"<<std::endl;
   throw GooStatsException("Species not implemented");
 }
 BinnedDataSet *SimpleSpectrumBuilder::loadRawSpectrum(Variable *x,const std::string &name) {

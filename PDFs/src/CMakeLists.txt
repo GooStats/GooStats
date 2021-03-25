@@ -1,7 +1,7 @@
 goofit_add_library(GooStatsPDFs
   DarkNoiseConvolutionPdf.cu
-  DumperPdf.cu
   GeneralConvolutionPdf.cu
+  GooStatsSumPdf.cu
   HistogramPdf.cu
   IBDPdf.cu
   IntegralInsideBinPdf.cu
@@ -19,8 +19,11 @@ goofit_add_library(GooStatsPDFs
   ResponseFunctionPdf_NLRES.cu
   ResponseFunctionPdf_impl.cu
   SumLikelihoodPdf.cu
-  SumPdf.cu)
+)
 if(NLL_CHECK)
-  target_link_libraries(GooStatsPDFs GooStatsNLLCheck)
+  target_link_libraries(GooStatsPDFs PUBLIC GooStatsNLLCheck)
 endif()
-target_link_libraries(GooStatsPDFs GOOFIT::goofit_lib AllGPU)
+target_link_libraries(GooStatsPDFs PUBLIC GooFit::PDFs)
+target_include_directories(GooStatsPDFs PUBLIC
+  "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/PDFs/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
