@@ -9,6 +9,8 @@
 /*****************************************************************************/
 #include "DarkNoiseConvolutionPdf.h"
 #include "PdfCache.h"
+#include "goofit/BinnedDataSet.h"
+#include "goofit/Variable.h"
 MEM_CONSTANT fptype* dev_raw_dn_histos[100]; // dark noise histograms for different PDF
 EXEC_TARGET fptype device_ConvolveDnHisto(fptype* evt, fptype* , unsigned int* indices) {
   const int workSpaceIndex = RO_CACHE(indices[1]); // ok

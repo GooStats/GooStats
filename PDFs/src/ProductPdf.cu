@@ -9,7 +9,8 @@
 /*****************************************************************************/
 #include "ProductPdf.h"
 #include <utility>
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
+#include "goofit/Variable.h"
 
 EXEC_TARGET fptype device_ProductPdfsExtSimple (fptype* evt, fptype* , unsigned int* indices) { 
   const int cIndex = RO_CACHE(indices[1]); 

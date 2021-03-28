@@ -8,7 +8,8 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "IntegralInsideBinPdf.h"
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
+#include "goofit/Variable.h"
 
 EXEC_TARGET fptype device_IntegralInsideBin (fptype* evt, fptype* , unsigned int* indices) { 
   const fptype npe_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 

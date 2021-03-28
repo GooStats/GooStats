@@ -11,9 +11,8 @@
 #include "InputBuilder.h"
 #include "ParSyncManager.h"
 #include "RawSpectrumProvider.h"
-#include "goofit/BinnedDataSet.h"
+#include "goofit/Variable.h"
 #include "GooStatsException.h"
-#include "DataPdf.h"
 #include "SumLikelihoodPdf.h"
 bool InputManager::init() {
   if(!parManager) {

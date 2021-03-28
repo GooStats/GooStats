@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "HistogramPdf.h"
+#include "goofit/Variable.h"
 
 MEM_CONSTANT fptype* dev_raw_histograms[100]; // Multiple histograms for the case of multiple PDFs
 MEM_CONSTANT fptype* dev_quenched_histograms[100]; 
@@ -103,10 +104,11 @@ __host__ HistogramPdf::HistogramPdf (std::string n, BinnedDataSet* hist,Variable
 
   copyHistogramToDevice(host_histogram);
 
-  if(scale&&shift)
-    GET_FUNCTION_ADDR(ptr_to_ScaleShiftEvalRawHistogram);
-  else
-    GET_FUNCTION_ADDR(ptr_to_EvalRawHistogram);
+  if(scale&&shift) {
+    GET_FUNCTION_ADDR(ptr_to_ScaleShiftEvalRawHistogram)
+  } else {
+    GET_FUNCTION_ADDR(ptr_to_EvalRawHistogram)
+  }
   initialise(pindices); 
 }
 

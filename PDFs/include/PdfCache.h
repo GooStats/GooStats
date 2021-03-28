@@ -12,10 +12,8 @@
 #include <map>
 #include "goofit/PdfBase.h"
 class PdfBase;
-#ifdef SEPARABLE
 extern DEVICE_VECTOR<fptype>* PdfCache_dev_vec[100];
 extern MEM_CONSTANT fptype* PdfCache_dev_array[100];
-#endif
 class PdfCache {
   public:
     static PdfCache *get();

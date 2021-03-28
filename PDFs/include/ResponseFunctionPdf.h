@@ -19,14 +19,14 @@ class ResponseFunctionPdf : public GooPdf {
     // normal
     ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> NL,
 	std::vector<Variable*> res,
 	double feq);
     // shifted
     ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> NL,
 	std::vector<Variable*> res,
 	double feq,
@@ -34,7 +34,7 @@ class ResponseFunctionPdf : public GooPdf {
     // peak
     ResponseFunctionPdf (std::string n, 
 	Variable* npe, Variable *energy, 
-        string response_function, string quenching_model, 
+        std::string response_function, std::string quenching_model, 
 	std::vector<Variable*> res,
 	double feq,
 	Variable *peakEvis);

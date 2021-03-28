@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "GeneralConvolutionPdf.h"
+#include "goofit/Variable.h"
 int totalGeneralConvolutions = 0; 
 
 #define GEN_CONVOLUTION_CACHE_SIZE 768u
@@ -76,72 +77,7 @@ EXEC_TARGET fptype device_ConvolvePdfs_general (fptype* evt, fptype* , unsigned 
   return ret; 
 }
 
-EXEC_TARGET fptype device_ConvolveSharedPdfs_general (fptype* evt, fptype* , unsigned int* indices) { 
-  const fptype obs_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; // ok
-
-  const int cIndex = RO_CACHE(indices[5]); // ok
-  const int workSpaceIndex = RO_CACHE(indices[6]); // ok
-  const int obs_numbins = RO_CACHE(indices[7]); // ok
-  const int intvar_numbins = RO_CACHE(indices[8]); // ok
-
-  const fptype obs_lo = RO_CACHE(functorConstants[cIndex]); // ok
-  const fptype obs_step = RO_CACHE(functorConstants[cIndex+1]); // ok
-  const fptype intvar_step = RO_CACHE(functorConstants[cIndex+2]); // ok
-
-  const int obs_bin = (int) FLOOR((obs_val-obs_lo)/obs_step); // ok
-  unsigned int arr_begin = 0;
-  while(RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+arr_begin*obs_numbins])<-1) ++arr_begin; // ugly. use -1 as the secret message..
-  arr_begin += (intvar_numbins-arr_begin+1)%2;
-
-  const fptype model_first = RO_CACHE(dev_modWorkSpace_general[workSpaceIndex][arr_begin]);
-  fptype ret     = model_first*(model_first==0?0:RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+arr_begin*obs_numbins]));
-#ifdef convolution_CHECK
-  { int intvar_bin = arr_begin; const fptype model = model_first; const fptype resol = model_first==0?0:RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+arr_begin*obs_numbins]);
-    int factor = 1;
-    if(obs_val==300.5)
-      printf("%s npe %.1lf e %d M %.10le R %.10le F %.10le sum %.10le\n",__func__,obs_val,intvar_bin,model,resol,factor*model*resol/3*intvar_step,ret/3*intvar_step); }
-#endif
-
-  MEM_SHARED static fptype modelCache[GEN_CONVOLUTION_CACHE_SIZE]; 
-  // Or number of loaders, or available threads.
-  // for the last block, we have only (obs_numbins%BLOCKDIM) threads
-  const int numToLoad = min(GEN_CONVOLUTION_CACHE_SIZE , (BLOCKIDX<GRIDDIM-1)?static_cast<unsigned int>(BLOCKDIM):static_cast<unsigned int>(obs_numbins%BLOCKDIM));
-  // We have intvar_numbins to load while we have numToLoad threads.
-  const int intvar_lastval = intvar_numbins-2;
-  for (int intvar_bin_blockstart = arr_begin; intvar_bin_blockstart <= intvar_lastval; intvar_bin_blockstart+= numToLoad) {
-    if (THREADIDX < numToLoad) { 
-      const int intvar_bin = intvar_bin_blockstart+THREADIDX;
-      if(intvar_bin<=intvar_lastval) {
-        modelCache[THREADIDX] = RO_CACHE(dev_modWorkSpace_general[workSpaceIndex][intvar_bin]);
-      }
-    }
-    THREAD_SYNCH 
-    // now model[intvar_bin_blockstart] ~ model[intvar_bin_blockstart+numToLoad-1] is loaded.
-    for (int intvar_bin_inBlock = 0; intvar_bin_inBlock < numToLoad; ++intvar_bin_inBlock) {
-      const int intvar_bin = intvar_bin_blockstart + intvar_bin_inBlock;
-      if (intvar_bin > intvar_lastval) break; 
-      const fptype model = modelCache[intvar_bin_inBlock]; 
-      const fptype resol = (model == 0) ? 0: RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+intvar_bin*obs_numbins]); 
-      const unsigned int factor = (((intvar_bin - arr_begin) % 2) ? 4 : 2);
-      ret += factor * model*resol;
-    }
-    THREAD_SYNCH // if you do not synch here, some thread will go to the next loop
-  }
-  const fptype model_last = RO_CACHE(dev_modWorkSpace_general[workSpaceIndex][intvar_numbins-1]);
-  ret    += model_last*(model_last==0 ? 0 : RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+(intvar_numbins-1)*obs_numbins]));
-//#ifdef convolution_CHECK
-//  { int intvar_bin = (intvar_numbins-1); const fptype model = model_last; const fptype resol = model_last==0?0:RO_CACHE(dev_resWorkSpace_general[workSpaceIndex][obs_bin+(intvar_numbins-1)*obs_numbins]);
-//    int factor = 1;
-//    if(obs_val==300.5)
-//      printf("%s npe %.1lf e %d M %.10le R %.10le F %.10le sum %.10le\n",__func__,obs_val,intvar_bin,model,resol,factor*model*resol/3*intvar_step,ret/3*intvar_step); }
-//#endif
-  ret /= 3;
-  ret *= intvar_step;
-  return ret; 
-}
-
 MEM_DEVICE device_function_ptr ptr_to_ConvolvePdfs_general = device_ConvolvePdfs_general; 
-MEM_DEVICE device_function_ptr ptr_to_ConvolveSharedPdfs_general = device_ConvolveSharedPdfs_general; 
 
 GeneralConvolutionPdf::GeneralConvolutionPdf (std::string n,
     Variable* obs, 
@@ -175,10 +111,7 @@ GeneralConvolutionPdf::GeneralConvolutionPdf (std::string n,
   paramIndices.push_back(obs->numbins); // 7
   paramIndices.push_back(intvar->numbins); // 8
 
-  if(syn_loading)
-    GET_FUNCTION_ADDR(ptr_to_ConvolveSharedPdfs_general);
-  else
-    GET_FUNCTION_ADDR(ptr_to_ConvolvePdfs_general);
+  GET_FUNCTION_ADDR(ptr_to_ConvolvePdfs_general);
   initialise(paramIndices);
   setIntegrationConstants(intvar->lowerlimit,intvar->upperlimit,intvar->numbins,obs->lowerlimit,obs->upperlimit,obs->numbins);
 } 

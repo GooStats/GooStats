@@ -24,7 +24,7 @@ __host__ fptype SumLikelihoodPdf::normalise () const {
   return 1; 
 }
 
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 #ifdef NLL_CHECK
 #include "GooStatsNLLCheck.h"
 #endif

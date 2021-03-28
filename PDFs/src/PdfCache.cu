@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "PdfCache.h"
+#include "goofit/Variable.h"
 DEVICE_VECTOR<fptype>* PdfCache_dev_vec[100];
 MEM_CONSTANT fptype* PdfCache_dev_array[100];
 PdfCache *PdfCache::cache = nullptr;

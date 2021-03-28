@@ -36,7 +36,7 @@ std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,const cha
     std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
-  return argc>2?std::string(argv[2]):std::string("output.root");
+  return argc>2?std::string(argv[2]):std::string("output");
 }
 
 std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,const char *argv[]) {

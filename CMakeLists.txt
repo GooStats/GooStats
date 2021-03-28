@@ -1,47 +1,19 @@
-cmake_minimum_required(VERSION 3.9)
-project(GOOSTATS CXX)
+cmake_minimum_required(VERSION 3.15)
+project(GOOSTATS)
 
-file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
-message(STATUS ${LOC_PATH})
-if(EXISTS ${LOC_PATH})
-    message(FATAL_ERROR "You cannot build in the source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory.")
+add_subdirectory(extern/GooStats/GooFit)
+INITIALIZE_CUDA()
+
+add_library(GooFit::goofit_lib ALIAS goofit_lib)
+add_library(GooFit::PDFs ALIAS PDFs)
+add_library(GTest::GTest ALIAS gtest_main)
+find_package(ROOT CONFIG REQUIRED COMPONENTS Minuit TreePlayer)
+if(GOOFIT_DEVICE STREQUAL CUDA)
+  set(CMAKE_CUDA_ARCHITECTURES ${GOOFIT_ARCH})
+  enable_language(CUDA)
 endif()
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-#add_compile_options(-Wall -Wextra -pedantic -Werror)
-add_compile_options(-Wall -Wextra -Werror)
-#set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra -Werror=return-type ${CMAKE_CXX_FLAGS}")
-
-################################## google test
-enable_testing()
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-##################################
-
-set(GOOSTATS_NO_WARNING ON)
-if(GOOSTATS_NO_WARNING AND CUDA_FOUND AND "${CUDA_VERSION}" VERSION_GREATER 7.0)
-  message(STATUS "GooStats silent_thrust_warning enabled!")
-set(CUDA_NVCC_FLAGS
-  "${CUDA_NVCC_FLAGS};-I${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
-include_directories("${PROJECT_SOURCE_DIR}/silent_thrust_warning/include")
-endif()
-
-### GOOFIT
-message(STATUS "search from: $ENV{GOOFIT_DIR}---$ENV{CMAKE_PREFIX_PATH}---$ENV{CMAKE_APPBUNDLE_PATH}")
-find_package(GOOFIT CONFIG REQUIRED)
-message(STATUS "GOOFIT: ${GOOFIT_LIBRARY_DIRS}")
-INITIALIZE_GOOFIT()
-
-
-include_directories("${PROJECT_SOURCE_DIR}/include")
 
 ### Options ###
-if(GOOSTATS_SEPARATE_COMP)
-    add_definitions("-DSEPARABLE")
-endif()
 if(MV_CHECK)
   add_definitions("-DMV_CHECK")
 endif()
@@ -62,24 +34,16 @@ if(Mask_CHECK)
 endif()
 
 
-include_directories("Kernel/include")
-include_directories("PDFs/include")
 add_subdirectory(PDFs) # gpu: GooStatsPDFs
 add_subdirectory(Kernel) # GooStatsKernel, GooStatsNLLCheck, TestFixture
-# also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
-include_directories("StatModules/include")
+## also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
 add_subdirectory(StatModules) # GooStatsStatModules
-include_directories("SimplePackage/include")
 add_subdirectory(SimplePackage) # GooStatsSimple
-include_directories("include")
 add_subdirectory(src) # GooStatsExperimental
 
 add_library(GooStatsLib INTERFACE)
 target_link_libraries(GooStatsLib 
 		INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
-target_compile_features(GooStatsLib INTERFACE cxx_range_for)
 
-SET(COVERAGE OFF CACHE BOOL "Coverage")
-add_subdirectory(Modules)
-
-cuda_gen_gpu_library(AllGPU)
+enable_testing()
+add_subdirectory(tests)

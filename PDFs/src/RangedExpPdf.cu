@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "RangedExpPdf.h"
+#include "goofit/Variable.h"
 
 EXEC_TARGET fptype device_RangedExpPdfs (fptype* evt, fptype* p, unsigned int* indices) { 
   const fptype x = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])]; 
@@ -46,7 +47,7 @@ RangedExpPdf::RangedExpPdf (std::string n, Variable *npe,Variable* p0, Variable*
   pindices.push_back(registerConstants(2));
   fptype constants[2] = { x_L, x_H };
   MEMCPY_TO_SYMBOL(functorConstants, constants, sizeof(constants), cIndex*sizeof(fptype), cudaMemcpyHostToDevice); 
-  if(!inversed) GET_FUNCTION_ADDR(ptr_to_RangedExpPdfs); else GET_FUNCTION_ADDR(ptr_to_inverseRangedExpPdfs);
+  if(!inversed) { GET_FUNCTION_ADDR(ptr_to_RangedExpPdfs); } else { GET_FUNCTION_ADDR(ptr_to_inverseRangedExpPdfs); }
   initialise(pindices); 
 }
 __host__ fptype RangedExpPdf::normalise () const {

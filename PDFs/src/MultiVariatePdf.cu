@@ -8,6 +8,8 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "MultiVariatePdf.h"
+#include "goofit/Variable.h"
+#include "goofit/BinnedDataSet.h"
 int MultiVariatePdf::totalPdf = 0;
 MEM_CONSTANT fptype* dev_mv_k[100];
 MEM_CONSTANT fptype* dev_mv_n0[100];
@@ -43,7 +45,7 @@ EXEC_TARGET fptype device_MV(fptype* evt, fptype* , unsigned int* indices) {
   return -ret; 
 }
 MEM_DEVICE device_function_ptr ptr_to_MV_StefanoDavini = device_MV<MultiVariatePdf::MVLLType::StefanoDavini>; 
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 const std::vector<int> MultiVariatePdf::get_pdfids(const std::vector<GooPdf*> &pdfs) {
   std::vector<int> ids;
   for(auto pdf : pdfs) 

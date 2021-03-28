@@ -19,7 +19,7 @@ class OutputHelper {
     void flush();
     const std::vector<std::string> names() const { return m_names; }
     const std::vector<double*> addresses();
-    double value(const std::string &n);
+    double value(const std::string &n) const;
   private:
     std::vector<std::function<double()>> functions;
     std::vector<std::string> m_names;

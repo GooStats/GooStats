@@ -10,13 +10,15 @@
 #ifndef DUMPER_PDF_HH
 #define DUMPER_PDF_HH
 #include "goofit/PDFs/GooPdf.h"
+#include "goofit/Variable.h"
+
 template<class Base>
 class DumperPdf : public Base {
   public:
     DumperPdf(Base *base) : Base(*base) {};
     void dumpPdf();
     void dumpPdf(BinnedDataSet *data);
-    void dumpPdf(const vector<BinnedDataSet*> &data);
+    void dumpPdf(const std::vector<BinnedDataSet*> &data);
     void dumpConvolution(Variable *var);
     void dumpIndices();
     virtual ~DumperPdf() {};
@@ -24,10 +26,10 @@ class DumperPdf : public Base {
 template<class Base>
 void DumperPdf<Base>::dumpPdf() {
   Variable *var = *(this->obsBegin());
-  vector<GooPdf*> pdfs;
-  vector<vector<fptype> > pdf_values;
+  std::vector<GooPdf*> pdfs;
+  std::vector<std::vector<fptype> > pdf_values;
 
-  vector<fptype> pdf_value;
+  std::vector<fptype> pdf_value;
   this->evaluateAtPoints(var,pdf_value);
   pdfs.push_back(this);
   pdf_values.push_back(pdf_value);

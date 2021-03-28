@@ -9,11 +9,12 @@
 /*****************************************************************************/
 #include "DumperPdf.h"
 #include "GeneralConvolutionPdf.h"
-#include "SumPdf.h"
+#include "goofit/PDFs/SumPdf.h"
 #include "SumLikelihoodPdf.h"
 #include "goofit/FitControl.h"
+#include "goofit/BinnedDataSet.h"
 void dumpVar(GooPdf *pdf) {
-  vector<Variable*> vars;
+  std::vector<Variable*> vars;
   vars.clear();
   pdf->getParameters(vars);
   for (auto var : vars) {
@@ -55,20 +56,20 @@ template<>
 void DumperPdf<SumPdf>::dumpPdf(BinnedDataSet *data) {
   copyParams();
   dumpVar(this);
-  vector<Variable*> vars;
+  std::vector<Variable*> vars;
   this->getParameters(vars);
   Variable *var = *(this->obsBegin());
-  vector<GooPdf*> pdfs;
-  vector<vector<fptype> > pdf_values;
+  std::vector<GooPdf*> pdfs;
+  std::vector<std::vector<fptype> > pdf_values;
 
-  vector<fptype> pdf_value;
+  std::vector<fptype> pdf_value;
   this->evaluateAtPoints(var,pdf_value);
   pdfs.push_back(this);
   pdf_values.push_back(pdf_value);
   for(unsigned int i = 0;i<components.size();++i) {
     GooPdf *pdf = dynamic_cast<GooPdf*>(components.at(i));
     if(!pdf) {
-      cerr<<"warning: <"<<components.at(i)->getName()<<"> is not a GooPdf"<<endl;
+      std::cerr<<"warning: <"<<components.at(i)->getName()<<"> is not a GooPdf"<<std::endl;
       continue;
     }
     pdf->evaluateAtPoints(var,pdf_value);
@@ -95,25 +96,25 @@ void DumperPdf<SumPdf>::dumpPdf(BinnedDataSet *data) {
   }
 }
 template<>
-void DumperPdf<SumLikelihoodPdf>::dumpPdf(const vector<BinnedDataSet*> &datas) {
+void DumperPdf<SumLikelihoodPdf>::dumpPdf(const std::vector<BinnedDataSet*> &datas) {
   copyParams();
   dumpVar(this);
 
   Variable *var;
-  map<PdfBase*,pair<string,vector<fptype> > > pdf_map; // name, value, norm
-  vector<vector<fptype> > sums_value;
+  std::map<PdfBase*,std::pair<std::string,std::vector<fptype> > > pdf_map; // name, value, norm
+  std::vector<std::vector<fptype> > sums_value;
   for(unsigned int i = 0;i<components.size();++i) {
-    vector<fptype> sum_value;
+    std::vector<fptype> sum_value;
     SumPdf *pdf = dynamic_cast<SumPdf*>(components.at(i));
     var = *(pdf->obsBegin());
     pdf->setData(datas.at(i));
     pdf->evaluateAtPoints(var,sum_value);
     sums_value.push_back(sum_value);
-    vector<PdfBase*> pdfs = pdf->components;
+    std::vector<PdfBase*> pdfs = pdf->components;
     for(unsigned int j = 0;j<pdfs.size();++j) {
       GooPdf *single_species = dynamic_cast<GooPdf*>(pdfs.at(j));
       if(pdf_map.find(static_cast<PdfBase*>(single_species))==pdf_map.end()) {
-        vector<fptype> pdf_value;
+        std::vector<fptype> pdf_value;
         single_species->evaluateAtPoints(var,pdf_value);
         pdf_map.insert(make_pair(static_cast<PdfBase*>(single_species),make_pair(single_species->getName(),pdf_value)));
       }
@@ -134,10 +135,10 @@ void DumperPdf<SumLikelihoodPdf>::dumpPdf(const vector<BinnedDataSet*> &datas) {
       double measureEvents = content;
       result += fvalue>0?(expEvents - measureEvents*EVALLOG(expEvents)+::lgamma(measureEvents+1)):0; 
       printf("log(L) %.10le b %lf M %lf tot %.10lf\n",result,center,content,fvalue*dvar);
-      vector<PdfBase*> pdfs = sum_pdf->components;
+      std::vector<PdfBase*> pdfs = sum_pdf->components;
       for(unsigned int k = 0;k<pdfs.size();++k) {
         PdfBase *pdf = pdfs.at(k);
-        pair<string,vector<fptype> > t = pdf_map.at(pdf);
+        std::pair<std::string,std::vector<fptype> > t = pdf_map.at(pdf);
         printf(" %s %.10le",t.first.c_str(),t.second.at(j)*dvar*sum_pdf->norm*host_params[host_indices[sum_pdf->parameters+2*k+1]]);
       }
       printf("\n");
@@ -148,21 +149,21 @@ template<>
 void DumperPdf<GooPdf>::dumpIndices() {
   copyParams();
   dumpVar(this);
-  cout<<"calling inside "<<__func__<<endl;
+  std::cout<<"calling inside "<<__func__<<std::endl;
   int i = 0;
   while(i<totalParams) {
-    cout<<"*"<<pdfName[i]<<"*=>";
-    cout<<"<|"<<host_indices[i]<<"|->|";
+    std::cout<<"*"<<pdfName[i]<<"*=>";
+    std::cout<<"<|"<<host_indices[i]<<"|->|";
     for(unsigned int j = 0;j<host_indices[i];++j)
       std::cout << host_indices[j+i+1] << ",";
     i+=host_indices[i]+1;
-    cout<<"|,("<<host_indices[i]<<")->(";
+    std::cout<<"|,("<<host_indices[i]<<")->(";
     for(unsigned int j = 0;j<host_indices[i];++j)
       std::cout << "["<<i+j+1<<"]"<<host_indices[j+i+1] << ",";
     i+=host_indices[i]+1;
-    cout<<")>;<=**";
-    cout<<endl;
+    std::cout<<")>;<=**";
+    std::cout<<std::endl;
   }
-  cout<<getName()<<" has the fit control "<<fitControl<<" : binned? "<<fitControl->binnedFit()<<" binErr? "<<fitControl->binErrors()<<endl;
+  std::cout<<getName()<<" has the fit control "<<fitControl<<" : binned? "<<fitControl->binnedFit()<<" binErr? "<<fitControl->binErrors()<<std::endl;
 }
 
