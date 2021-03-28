@@ -9,6 +9,8 @@
 /*****************************************************************************/
 #ifndef DatasetManagers_H
 #define DatasetManagers_H
+#include <map>
+#include <iostream>
 template <typename T>
 class Passkey {
   private:
@@ -23,6 +25,7 @@ class Passkey {
  */
 class DatasetManager;
 class GooPdf;
+class PdfBase;
 class DatasetDelegate {
   public:
     virtual ~DatasetDelegate() {};
@@ -43,7 +46,6 @@ class DatasetDelegate {
  *  The datasetmanager is desgined to take observer pattern, and usually
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
-#include "goofit/PDFs/GooPdf.h"
 #include <memory>
 #include <vector>
 #include <string>

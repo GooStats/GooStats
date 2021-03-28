@@ -7,7 +7,7 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "gtest/gtest.h"
+#include "fit.h"
 #include "AnalysisManager.h"
 #include "InputManager.h"
 #include "SimpleInputBuilder.h"
@@ -18,31 +18,30 @@
 #include "PrepareData.h"
 #include "SimpleFit.h"
 #include "OutputHelper.h"
+namespace GooStats {
+  const OutputHelper *fit() {
+    AnalysisManager *ana = new AnalysisManager();
 
-TEST (GooStats, simpleFit) {
-  AnalysisManager *ana = new AnalysisManager();
+    const char *argv[2] = {"exe","toyMC.cfg"};
+    auto inputManager = new InputManager(2,argv);
+    inputManager->setInputBuilder(new SimpleInputBuilder());
+    auto outManager = new OutputManager();
+    outManager->setOutputBuilder(new SimpleOutputBuilder());
+    outManager->setPlotManager(new SimplePlotManager());
 
-  const char *argv[2] = {"exe","toyMC.cfg"};
-  auto inputManager = new InputManager(2,argv);
-  inputManager->setInputBuilder(new SimpleInputBuilder());
-  auto outManager = new OutputManager();
-  outManager->setOutputBuilder(new SimpleOutputBuilder());
-  outManager->setPlotManager(new SimplePlotManager());
+    StatModule::setup(inputManager);
+    StatModule::setup(new GSFitManager());
+    StatModule::setup(outManager);
 
-  StatModule::setup(inputManager);
-  StatModule::setup(new GSFitManager());
-  StatModule::setup(outManager);
+    ana->registerModule(inputManager);
+    ana->registerModule(new PrepareData());
+    ana->registerModule(new SimpleFit());
+    ana->registerModule(outManager);
 
-  ana->registerModule(inputManager);
-  ana->registerModule(new PrepareData());
-  ana->registerModule(new SimpleFit());
-  ana->registerModule(outManager);
+    ana->init();
+    ana->run();
+    ana->finish();
 
-  ana->init();
-  ana->run();
-  ana->finish();
-
-  auto outputHelper = outManager->getOutputHelper();
-
-  EXPECT_NEAR(outputHelper->value("likelihood"),357.95898,0.00001);
+    return outManager->getOutputHelper();
+  }
 }

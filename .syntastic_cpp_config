@@ -10,7 +10,8 @@
 -Werror=return-type
 -Wall
 -Wextra
--I../build_GooStats/_deps/thrust-src
--I../build_GooStats/_deps/goofit-src/include
+-Iextern/GooStats/GooFit/include
+-Iextern/GooStats/GooFit/extern/NVIDIA/thrust
+-Iextern/GooStats/GooFit/extern/google/googletest/googletest/include
 -std=c++14
 -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP

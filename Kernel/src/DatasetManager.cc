@@ -9,6 +9,7 @@
 /*****************************************************************************/
 #include "DatasetManager.h"
 #include "GooStatsException.h"
+#include "goofit/PDFs/GooPdf.h"
 void DatasetDelegate::setLikelihood(DatasetManager *dataset,GooPdf *pdf) {
   dataset->setLikelihood(key,pdf);
 }

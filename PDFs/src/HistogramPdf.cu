@@ -105,9 +105,9 @@ __host__ HistogramPdf::HistogramPdf (std::string n, BinnedDataSet* hist,Variable
   copyHistogramToDevice(host_histogram);
 
   if(scale&&shift) {
-    GET_FUNCTION_ADDR(ptr_to_ScaleShiftEvalRawHistogram)
+    GET_FUNCTION_ADDR(ptr_to_ScaleShiftEvalRawHistogram);
   } else {
-    GET_FUNCTION_ADDR(ptr_to_EvalRawHistogram)
+    GET_FUNCTION_ADDR(ptr_to_EvalRawHistogram);
   }
   initialise(pindices); 
 }

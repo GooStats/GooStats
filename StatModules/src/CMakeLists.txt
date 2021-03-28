@@ -13,4 +13,4 @@ add_library(GooStatsStatModules
 target_include_directories(GooStatsStatModules PUBLIC
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/StatModules/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-target_link_libraries(GooStatsStatModules PUBLIC GooStatsKernel GooFit::goofit_lib ROOT::Tree)
+target_link_libraries(GooStatsStatModules PUBLIC GooStatsKernel goofit_base ROOT::Tree ROOT::Gpad)
