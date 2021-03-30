@@ -43,7 +43,11 @@ add_subdirectory(src) # GooStatsExperimental
 
 add_library(GooStatsLib INTERFACE)
 target_link_libraries(GooStatsLib 
-		INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
+  INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
+
+add_library(GooStatsLib_NLL INTERFACE)
+target_link_libraries(GooStatsLib_NLL
+  INTERFACE GooStatsKernel GooStatsSimple_NLL GooStatsStatModules GooStatsExperimental GooStatsPDFs_NLL)
 
 enable_testing()
 add_subdirectory(tests)
