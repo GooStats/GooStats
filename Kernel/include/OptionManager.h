@@ -11,7 +11,7 @@
 #define OptionManager_H
 #include <string>
 #include <map>
-// protocol for option manager class
+// protocol for option configset class
 class OptionManager {
   public:
     // can be fileName or key=value sentence

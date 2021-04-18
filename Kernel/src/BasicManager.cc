@@ -18,13 +18,13 @@ void BasicManager::adoptParent(IDataManager* parent_) {
 }
 BasicManager *BasicManager::chooseManager(const std::string &key) {
   if(strategyManager)
-    return static_cast<BasicManager*>(strategyManager->chooseManager(key,this));
+    return dynamic_cast<BasicManager*>(strategyManager->chooseManager(key,this));
   else
     throw GooStatsException("Please call BasicManager::setStrategyManager(..) before using any BasicManager for creating/refering/linking variables");
 }
 const BasicManager *BasicManager::chooseManager(const std::string &key) const {
   if(strategyManager)
-    return static_cast<const BasicManager*>(strategyManager->chooseManager(key,this));
+    return dynamic_cast<const BasicManager*>(strategyManager->chooseManager(key,this));
   else
     throw GooStatsException("Please call BasicManager::setStrategyManager(..) before using any BasicManager for creating/refering/linking variables");
 }

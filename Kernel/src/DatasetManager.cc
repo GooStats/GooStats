@@ -10,18 +10,8 @@
 #include "DatasetManager.h"
 #include "GooStatsException.h"
 #include "goofit/PDFs/GooPdf.h"
-void DatasetDelegate::setLikelihood(DatasetManager *dataset,GooPdf *pdf) {
-  dataset->setLikelihood(key,pdf);
-}
-bool DatasetManager::initialize() {
-  bool ok = true;
-  ok &= delegate->collectInputs(this);
-  ok &= delegate->configureParameters(this);
-  return ok;
-}
-bool DatasetManager::buildLikelihood() {
-  return delegate->buildLikelihoods(this);
-}
+#include "DatasetController.h"
+
 #define DEFINE_DatasetManager(T,var,ZERO) \
 template <> void DatasetManager::set<T>(const std::string &_name,T x) { \
   if(var.find(_name)==var.end()) { \
@@ -66,6 +56,6 @@ DEFINE_DatasetManager(std::vector<Variable*>,m_vars,std::vector<Variable*>())
 DEFINE_DatasetManager(std::vector<PdfBase*>,m_pdfs,std::vector<PdfBase*>())
 DEFINE_DatasetManager(BinnedDataset*,m_bindata,nullptr)
 
-void DatasetManager::setLikelihood(Passkey<DatasetDelegate>,GooPdf *pdf) {
+void DatasetManager::setLikelihood(GooPdf *pdf) {
   likelihood = std::shared_ptr<GooPdf>(pdf);
 }

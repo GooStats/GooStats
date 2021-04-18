@@ -11,31 +11,13 @@
 #define DatasetManagers_H
 #include <map>
 #include <iostream>
-template <typename T>
-class Passkey {
-  private:
-    friend T;
-    Passkey() {}
-    Passkey(const Passkey&) {}
-    Passkey& operator=(const Passkey&) = delete;
-};
 /*! \class DatasetDelegate
- *  \brief Delegate protocol for DatasetManager class. A delegate of
+ *  \brief Delegate protocol for DatasetManager class. A controller of
  *  DatasetManager will be called when initialize its components
  */
 class DatasetManager;
 class GooPdf;
 class PdfBase;
-class DatasetDelegate {
-  public:
-    virtual ~DatasetDelegate() {};
-    virtual bool collectInputs(DatasetManager *) = 0;
-    virtual bool configureParameters(DatasetManager *) = 0;
-    virtual bool buildLikelihoods(DatasetManager *) = 0;
-  protected:
-    void setLikelihood(DatasetManager *dataset,GooPdf *pdf);
-    Passkey<DatasetDelegate> key;
-};
 /*! \class DatasetManager
  *  \brief Manager class of dataset, the basic unit exposed to GooFit. A dataset
  *  correspond to one piece of likelihood. It can be more specific dataset: a
@@ -52,23 +34,21 @@ class DatasetDelegate {
 struct Variable;
 class GooPdf;
 class BinnedDataset;
+class DatasetController;
 class DatasetManager {
   public:
     DatasetManager(const std::string &name_) : m_name(name_) {};
     const std::string &name() const { return m_name; }
-    void setDelegate(DatasetDelegate *_d) { delegate = _d; }
-    bool initialize();
-    bool buildLikelihood();
+    void setController(DatasetController *_d) { controller = _d; }
+    void setLikelihood(GooPdf*);
     GooPdf *getLikelihood() { return likelihood.get(); }
     template<typename T> void set(const std::string &,T);
     template<typename T> T get(const std::string &) const;
     template<typename T> T get(const std::string &);
     template<typename T> bool has(const std::string &) const;
-  public:
-    void setLikelihood(Passkey<DatasetDelegate>, GooPdf*);
   private:
     std::shared_ptr<GooPdf> likelihood;
-    DatasetDelegate*  delegate;
+    DatasetController *controller;
     std::string m_name;
     std::map<std::string,std::string> m_str;
     std::map<std::string,int> m_int;

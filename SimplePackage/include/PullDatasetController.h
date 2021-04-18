@@ -24,8 +24,7 @@ class PullDatasetController : public DatasetController {
   public:
     PullDatasetController(ConfigsetManager *_c,const std::string &n="pull") : DatasetController(_c,n) { }
     bool collectInputs(DatasetManager *) override;
-    bool configureParameters(DatasetManager *) override;
-    bool buildLikelihoods(DatasetManager *) override;
+    bool buildLikelihood(DatasetManager *) override;
   private:
     std::string name;
 };

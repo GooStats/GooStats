@@ -17,8 +17,9 @@ EXEC_TARGET fptype device_RangedExpPdfs (fptype* evt, fptype* p, unsigned int* i
   const int cIndex = RO_CACHE(indices[3]); 
   const fptype x_L = RO_CACHE(functorConstants[cIndex]);
   const fptype x_H = RO_CACHE(functorConstants[cIndex+1]);
+  const fptype x_0 = (x_L+x_H)/2;
 
-  fptype ret = (x>=x_L && x<=x_H)?p0*EXP(-x/p1):0; 
+  fptype ret = (x>=x_L && x<=x_H)?p0*EXP(-(x-x_0)/p1):0; 
   //if(THREADIDX==0) printf("p0: %lf %lf %lf %lf %lf %lf\n",x,p0,p1,x_L,x_H,ret);
   return ret; 
 }
@@ -29,8 +30,9 @@ EXEC_TARGET fptype device_inverseRangedExpPdfs (fptype* evt, fptype* p, unsigned
   const int cIndex = RO_CACHE(indices[3]); 
   const fptype x_L = RO_CACHE(functorConstants[cIndex]);
   const fptype x_H = RO_CACHE(functorConstants[cIndex+1]);
+  const fptype x_0 = (x_L+x_H)/2;
 
-  fptype ret = (x>=x_L && x<=x_H)?1-p0*EXP(-x/p1):1; 
+  fptype ret = (x>=x_L && x<=x_H)?1-p0*EXP(-(x-x_0)/p1):1; 
   //if(THREADIDX==0) printf("1-p0: %lf %lf %lf %lf %lf %lf\n",x,p0,p1,x_L,x_H,ret);
   return ret; 
 }

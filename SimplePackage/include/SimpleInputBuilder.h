@@ -27,31 +27,20 @@ class SimpleInputBuilder : public InputBuilder {
     //! load number of configs / location of configuration files from command-line args.
     //! here we use pointer to allow polymorphism. Better design would use template.
     std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,const char *argv[]) override;
-    //! construct and fill the IDataManager part
-    ConfigsetManager *buildConfigset(ParSyncManager *parManager,const InputConfig &config) override;
     //! fill raw spectrum providers
     void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) override;
     //! create list of vars, so DatasetManager can call ConfigManager::var(name)
     void createVariables(ConfigsetManager*) override;
-    //! set-up config-set level parameters
-    bool configParameters(ConfigsetManager *) override { return true; }
     //! install spectrum type hanlder
     bool installSpectrumBuilder(ISpectrumBuilder *) override;
     //! build sets of datasetcontroller. each controller correspond to a spectrum
     std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
-    //! construct a dataset manager based on a datasetcontroller
-    DatasetManager *buildDataset(DatasetController *) override;
     //! fill data spectra
     bool fillDataSpectra(DatasetManager *,RawSpectrumProvider *) override { return true; }
     //! build the raw spectra used for convolution
     bool buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) override;
     //! build the components of datasetmanager
     bool buildComponenets(DatasetManager *,RawSpectrumProvider *provider) override;
-    //! set-up data-set level parameters
-    bool configParameters(DatasetManager *) override;
-    //! initialize the OptionManager part of ConfigsetManager, and parse the config file
-    bool fillOptions(ConfigsetManager *configset,int argc,const char *argv[]) override;
-    bool fillOptions(ConfigsetManager *configset,const std::string &configFileName) override;
     //! build the total pdf from the datasets
     SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
   private:

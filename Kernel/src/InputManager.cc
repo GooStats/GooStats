@@ -16,24 +16,23 @@
 #include "SumLikelihoodPdf.h"
 bool InputManager::init() {
   if(!parManager) {
-    std::cout<<"Warning: ParSyncManager not set, default strategy are used."<<std::endl;
+    std::cerr<<"Warning: ParSyncManager not set, default strategy are used."<<std::endl;
     setParSyncManager(new ParSyncManager());
   }
   if(!provider) {
-    std::cout<<"Warning: RawSpectrumProvider not set, default strategy are used."<<std::endl;
+    std::cerr<<"Warning: RawSpectrumProvider not set, default strategy are used."<<std::endl;
     setRawSpectrumProvider(new RawSpectrumProvider());
   }
   if(!builder) {
-    std::cout<<"Error: InputBuilder not set, please set it before calling InputManager::init"<<std::endl;
+    std::cerr<<"Error: InputBuilder not set, please set it before calling "
+              "InputManager::init"<<std::endl;
     throw GooStatsException("InputBuilder not set in InputManager");
   }
   outName = builder->loadOutputFileNameFromCmdArgs(argc,argv);
-  initialize_configsets();
-  fill_rawSpectrumProvider();
-  create_variables();
-  initialize_controllers();
-  initialize_datasets();
-  buildTotalPdf();
+  initializeConfigsets();
+  fillRawSpectrumProvider();
+  initializeDatasets();
+  totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
   cachePars();
   return true;
 }
@@ -49,58 +48,45 @@ void InputManager::setParSyncManager(ParSyncManager *par) {
 void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
   provider = std::shared_ptr<RawSpectrumProvider>(p);
 }
-void InputManager::initialize_configsets() {
+
+void InputManager::initializeConfigsets() {
   // step 1: load number of configs / location of configuration files from command-line args.
   auto configs = builder->loadConfigsFromCmdArgs(argc,argv);
-  if(!configs.size()) throw GooStatsException("No configset found");
+  if(configs.empty()) throw GooStatsException("No configset found");
   for(auto config : configs) {
     // step 2: for each config set, construct (empty) config objects
-    auto configset = builder->buildConfigset(parManager.get(),*config);
+    auto configset = new ConfigsetManager(*parManager->createParSyncSet(*config)
+                                                  ,new OptionManager());
     registerConfigset(configset);
     // step 3: populate options
-    builder->fillOptions(configset,config->configFile);
-    builder->fillOptions(configset,argc,argv);
+    configset->parse(config->configFile);
+    configset->parse(argc,argv);
     configset->printAllOptions();
-    // step 4: configure parameters of the configset
-    builder->configParameters(configset);
-  }
-}
-void InputManager::initialize_controllers() {
-  for(auto config : configsets) {
-    auto controllers = builder->buildDatasetsControllers(config.get());
-    config->setDatasetControllers(controllers);
-    for(auto controller : config->getDatasetControllers()) {
-      auto dataset = controller->createDataset();
-      dataset->setDelegate(controller.get());
-      this->registerDataset(dataset);
-    }
-  }
-}
-void InputManager::create_variables() {
-  std::cout<<"Dumping pre-created rates:"<<std::endl;
-  for(auto configset: configsets) {
-    builder->createVariables(configset.get());
+    builder->createVariables(configset);
     configset->dump(configset->name()+">");
   }
 }
-void InputManager::fill_rawSpectrumProvider() {
-  for(auto configset: configsets)
+
+void InputManager::fillRawSpectrumProvider() {
+  for(const auto& configset: configsets)
     builder->fillRawSpectrumProvider(provider.get(),configset.get());
 }
-void InputManager::initialize_datasets() {
-  for(auto dataset : datasets) {
-    dataset->initialize();
-    if(dataset->has<std::vector<std::string>>("components")) {
-      builder->fillDataSpectra(dataset.get(),provider.get());
-      builder->buildRawSpectra(dataset.get(),provider.get());
-      builder->buildComponenets(dataset.get(),provider.get());
+
+void InputManager::initializeDatasets() {
+  for(auto config : configsets) {
+    auto controllers = builder->buildDatasetsControllers(config.get());
+    for(auto controller : controllers) {
+      auto dataset = controller->createDataset();
+      this->registerDataset(dataset);
+      controller->collectInputs(dataset);
+      if(dataset->has<std::vector<std::string>>("components")) {
+        builder->fillDataSpectra(dataset,provider.get());
+        builder->buildRawSpectra(dataset,provider.get());
+        builder->buildComponenets(dataset,provider.get());
+      }
+      controller->buildLikelihood(dataset);
     }
-    builder->configParameters(dataset.get());
-    dataset->buildLikelihood();
   }
-}
-void InputManager::buildTotalPdf() {
-  totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
 }
 void InputManager::fillRandomData() {
   getTotalPdf()->fill_random();

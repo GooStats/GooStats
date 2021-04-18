@@ -38,12 +38,9 @@ class InputManager : public Module {
     void setInputBuilder(InputBuilder *);
     void setParSyncManager(ParSyncManager *);
     void setRawSpectrumProvider(RawSpectrumProvider *);
-    virtual void initialize_configsets();
-    virtual void fill_rawSpectrumProvider();
-    virtual void create_variables();
-    virtual void initialize_controllers();
-    virtual void initialize_datasets();
-    virtual void buildTotalPdf();
+    virtual void initializeConfigsets();
+    virtual void fillRawSpectrumProvider();
+    virtual void initializeDatasets();
     void fillRandomData();
     void fillAsimovData();
     std::vector<ConfigsetManager*> Configsets();
