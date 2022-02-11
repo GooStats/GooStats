@@ -5,4 +5,4 @@
 	- For more information about installation, please consult Google/StackOverflow and [nVidia documents](http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html) and your GPU cluster administrator.
 	
 - I got zero NLL
-	- I guess you have written a customized PDF. Check your customized PDF. Did you put/load indices in correct order? Did you get the parameters correctedly? Did you put constants correctedly?
+	- I guess you have written a customized PDF. Check your customized PDF. Did you put/load indices in correct order? Did you get the parameters correctly? Did you put constants correctly?

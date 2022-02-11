@@ -24,8 +24,7 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "HistogramPdf.h"
-#include "GeneralConvolutionPdf.h"
-#include "ResponseFunctionPdf.h"
+#include "DatasetManager.h"
 SimpleInputBuilder::SimpleInputBuilder() :
     folder(std::getenv("SimpleInputBuilderData")?std::getenv("SimpleInputBuilderData"):""),
     spcBuilder(std::make_shared<BasicSpectrumBuilder>())  { }
@@ -52,10 +51,6 @@ std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,co
   return configs;
 }
 
-ConfigsetManager *SimpleInputBuilder::buildConfigset(ParSyncManager *parManager,const InputConfig &config) {
-  ConfigsetManager *configset = new ConfigsetManager(*parManager->createParSyncSet(config),new OptionManager());
-  return configset;
-}
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,ConfigsetManager* configset) {
   if(!configset->has("inputSpectra")) return;
 
@@ -155,10 +150,6 @@ void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
   } 
 }
 
-DatasetManager *SimpleInputBuilder::buildDataset(DatasetController *controller) {
-  return controller->createDataset();
-}
-
 bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for(auto component : dataset->get<std::vector<std::string>>("components")) {
@@ -187,15 +178,6 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumPro
   return true;
 }
 
-bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,int argc,const char *argv[]) {
-  configset->parse(argc,argv);
-  return true;
-}
-bool SimpleInputBuilder::fillOptions(ConfigsetManager *configset,const std::string &configFile) {
-  configset->parse(configFile);
-  return true;
-}
-
 bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
   spcBuilder->AddSiblings(builder);
   return true;
@@ -219,7 +201,4 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
   }
   SumLikelihoodPdf *sumpdf = new SumLikelihoodPdf("full_likelihood",likelihoodTerms);
   return sumpdf;
-}
-bool SimpleInputBuilder::configParameters(DatasetManager *) {
-  return true;
 }

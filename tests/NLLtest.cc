@@ -16,4 +16,5 @@ TEST (GooFit, NLLTest) {
       EXPECT_NEAR(x.second.LL, references[i][x.first].LL,x.second.LL*5e-11);
     }
   }
+  EXPECT_NEAR(results_obj->get_finalLL(),reference_obj->get_finalLL(),reference_obj->get_finalLL()*5e-11);
 }

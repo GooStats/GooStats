@@ -1,7 +1,6 @@
 #include "NLLCheckFixture.h"
 #include "GooStatsException.h"
 #include "TFile.h"
-#include "TTree.h"
 
 #include "TSystem.h"
 NLLCheckFixture::NLLCheckFixture() {

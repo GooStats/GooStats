@@ -25,7 +25,7 @@ IDataManager *ParSyncManager::chooseManager(const std::string &name,IDataManager
   try {
     while(!daughter->isResponsibleFor(getStrategy(name))) {
       if(!daughter->parent()) {
-        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible manager."<<std::endl;
+        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible configset."<<std::endl;
         throw GooStatsException("Has no parent");
       }
       daughter = daughter->parent();
@@ -33,10 +33,10 @@ IDataManager *ParSyncManager::chooseManager(const std::string &name,IDataManager
     return daughter;
   } catch ( std::out_of_range &ex ) {
     std::cerr<<"Looping through the hierarchy and cannot find the suitable parent.."<<std::endl;
-    throw GooStatsException("Cannot find suitable manager");
+    throw GooStatsException("Cannot find suitable configset");
   } catch (...) {
     std::cerr<<"strange exception .. "<<std::endl;
-    throw GooStatsException("Cannot find suitable manager");
+    throw GooStatsException("Cannot find suitable configset");
   }
 }
 const IDataManager *ParSyncManager::chooseManager(const std::string &name,const IDataManager *daughter) const {
@@ -44,7 +44,7 @@ const IDataManager *ParSyncManager::chooseManager(const std::string &name,const 
   try {
     while(!daughter->isResponsibleFor(getStrategy(name))) {
       if(!daughter->parent()) {
-        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible manager."<<std::endl;
+        std::cerr<<"["<<daughter->name()<<"] has no parent. fail to find the responsible configset."<<std::endl;
         throw GooStatsException("Has no parent");
       }
       daughter = daughter->parent();
@@ -52,9 +52,9 @@ const IDataManager *ParSyncManager::chooseManager(const std::string &name,const 
     return daughter;
   } catch ( std::out_of_range &ex ) {
     std::cerr<<"Looping through the hierarchy and cannot find the suitable parent.."<<std::endl;
-    throw GooStatsException("Cannot find suitable manager");
+    throw GooStatsException("Cannot find suitable configset");
   } catch (...) {
     std::cerr<<"strange exception .. "<<std::endl;
-    throw GooStatsException("Cannot find suitable manager");
+    throw GooStatsException("Cannot find suitable configset");
   }
 }

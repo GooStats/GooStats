@@ -8,3 +8,5 @@ log*
 core.*
 *~
 .*.sw*
+.idea   
+cmake-build-*
