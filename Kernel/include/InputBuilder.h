@@ -18,10 +18,11 @@ class SumLikelihoodPdf;
 #include <string>
 #include <vector>
 #include <memory>
+#include "IOptionParser.h"
 class ConfigsetManager;
 class DatasetController;
 class DatasetManager;
-struct InputConfig;
+class IOptionParser;
 class ParSyncManager;
 class RawSpectrumProvider;
 class ISpectrumBuilder;
@@ -31,7 +32,8 @@ class InputBuilder {
     //! load the name of output file from command-line args.
     virtual std::string loadOutputFileNameFromCmdArgs(int,const char *[]) = 0;
     //! load number of configs / location of configuration files from command-line args.
-    virtual std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,const char *argv[]) = 0;
+    virtual std::vector<ConfigsetManager *>
+    buildConfigsetManagers(ParSyncManager *parManager, int argc, const char *argv[]) = 0;
     //! fill raw spectrum providers
     virtual void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) = 0;
     //! create list of vars, so DatasetManager can call ConfigManager::var(name)

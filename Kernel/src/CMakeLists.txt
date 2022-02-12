@@ -20,7 +20,7 @@ add_library(GooStatsKernel
   BasicManager.cc
   InputManager.cc
   SpectrumBuilder.cc
-  Utility.cc DatasetController.cpp)
+  Utility.cc DatasetController.cpp ../include/IOptionParser.h)
 target_include_directories(GooStatsKernel PUBLIC
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/Kernel/include;${PROJECT_SOURCE_DIR}/PDFs/include;${PROJECT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")

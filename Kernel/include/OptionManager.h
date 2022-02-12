@@ -15,10 +15,8 @@
 class OptionManager {
   public:
     // can be fileName or key=value sentence
-    bool parse(const std::string &fileName);
-    bool parse(int argc,const char *argv[]);
     template<typename T = std::string> T get(const std::string &,bool=true) const;
-    template<typename T = std::string> void set(const std::string &,const T &,bool = false);
+    void set(const std::string &,const std::string &,bool = false);
     bool has(const std::string &) const;
     //! yes(key): if user forgot to put key, program will throw
     bool yes(const std::string &key) const;
@@ -26,14 +24,9 @@ class OptionManager {
     bool hasAndYes(const std::string &key) const;
     void printAllOptions() const;
   private:
-    std::map<std::string,std::string> m_str;
-    std::map<std::string,double> m_double;
-    std::map<std::string,long> m_long;
+    std::map<std::string,std::string> m_data;
 };
-#define DECLARE_OptionManager(T) \
-template<> T OptionManager::get<T>(const std::string&,bool) const; \
-template<> void OptionManager::set<T>(const std::string&,const T&,bool); 
-DECLARE_OptionManager(std::string)
-DECLARE_OptionManager(double)
-DECLARE_OptionManager(long)
+
+
+
 #endif

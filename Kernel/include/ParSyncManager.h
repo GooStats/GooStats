@@ -12,16 +12,15 @@
 #include <string>
 #include <map>
 class IDataManager;
-// class controlling the parameter syncrhonization strategies
+// class controlling the parameter synchronization strategies
 #include "BasicManager.h"
-#include "InputConfig.h"
 
 class ParSyncManager {
   public:
     typedef IDataManager::strategy level;
   public:
     virtual ~ParSyncManager() {};
-    virtual BasicManager *createParSyncSet(const InputConfig&) { return new BasicManager("default"); }
+    virtual BasicManager *createParSyncSet() { return new BasicManager("default"); }
     virtual std::map<std::string, level> getStrategies() { return std::map<std::string,level>(); };
     void init() { strategies = getStrategies(); initialized = true; }
   private:

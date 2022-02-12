@@ -5,7 +5,7 @@ add_library(GooStatsSimpleObj OBJECT
   SimpleSpectrumBuilder.cc
   SimplePlotManager.cc
   PrepareData.cc
-  PullDatasetController.cc)
+  PullDatasetController.cc SimpleOptionParser.cc ../include/SimpleOptionParser.h)
 target_include_directories(GooStatsSimpleObj PUBLIC
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/SimplePackage/include>"
   "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/PDFs/include>"

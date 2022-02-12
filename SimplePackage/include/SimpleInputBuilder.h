@@ -26,7 +26,8 @@ class SimpleInputBuilder : public InputBuilder {
     std::string loadOutputFileNameFromCmdArgs(int ,const char *[]) override;
     //! load number of configs / location of configuration files from command-line args.
     //! here we use pointer to allow polymorphism. Better design would use template.
-    std::vector<InputConfig *> loadConfigsFromCmdArgs(int argc,const char *argv[]) override;
+    std::vector<ConfigsetManager *>
+    buildConfigsetManagers(ParSyncManager *parManager, int argc, const char *argv[]) override;
     //! fill raw spectrum providers
     void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) override;
     //! create list of vars, so DatasetManager can call ConfigManager::var(name)

@@ -8,7 +8,6 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "SimpleInputBuilder.h"
-#include "InputConfig.h"
 #include <iostream>
 #include "GooStatsException.h"
 #include "RawSpectrumProvider.h"
@@ -25,6 +24,7 @@
 #include "TH1.h"
 #include "HistogramPdf.h"
 #include "DatasetManager.h"
+#include "SimpleOptionParser.h"
 SimpleInputBuilder::SimpleInputBuilder() :
     folder(std::getenv("SimpleInputBuilderData")?std::getenv("SimpleInputBuilderData"):""),
     spcBuilder(std::make_shared<BasicSpectrumBuilder>())  { }
@@ -32,22 +32,24 @@ SimpleInputBuilder::SimpleInputBuilder() :
 std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,const char *argv[]) {
   if(argc<2) {
     std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
-    std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
+    std::cerr<<"SimpleInputBuilder::buildConfigsetManagers aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
   return argc>2?std::string(argv[2]):std::string("output");
 }
 
-std::vector<InputConfig*> SimpleInputBuilder::loadConfigsFromCmdArgs(int argc,const char *argv[]) {
+std::vector<ConfigsetManager *>
+SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc, const char *argv[]) {
   if(argc<2) {
     std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
-    std::cerr<<"SimpleInputBuilder::loadConfigsFromCmdArgs aborted."<<std::endl;
+    std::cerr<<"SimpleInputBuilder::buildConfigsetManagers aborted."<<std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
-  std::vector<InputConfig*> configs;
-  InputConfig *config = new InputConfig;
-  config->configFile = std::string(argv[1]);
-  configs.push_back(config);
+  std::vector<ConfigsetManager*> configs;
+  auto configset = new ConfigsetManager(*parManager->createParSyncSet(), new OptionManager());
+  auto parser = new SimpleOptionParser();
+  parser->parse(configset,argc, argv);
+  configs.push_back(configset);
   return configs;
 }
 

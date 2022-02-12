@@ -50,17 +50,10 @@ void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
 }
 
 void InputManager::initializeConfigsets() {
-  // step 1: load number of configs / location of configuration files from command-line args.
-  auto configs = builder->loadConfigsFromCmdArgs(argc,argv);
+  auto configs = builder->buildConfigsetManagers(parManager.get(), argc, argv);
   if(configs.empty()) throw GooStatsException("No configset found");
-  for(auto config : configs) {
-    // step 2: for each config set, construct (empty) config objects
-    auto configset = new ConfigsetManager(*parManager->createParSyncSet(*config)
-                                                  ,new OptionManager());
+  for(auto configset : configs) {
     registerConfigset(configset);
-    // step 3: populate options
-    configset->parse(config->configFile);
-    configset->parse(argc,argv);
     configset->printAllOptions();
     builder->createVariables(configset);
     configset->dump(configset->name()+">");
