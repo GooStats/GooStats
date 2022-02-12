@@ -5,6 +5,10 @@
 
 
 TEST (GooFit, NLLTest) {
+  char cwd[255];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("Current working dir: %s\n", cwd);
+  }
   TFile *results_f = TFile::Open("NLL_CHECK_gpu.root");
   auto results_obj = static_cast<GooStatsNLLCheck*>(results_f->Get("gpu"));
   auto results = (results_obj->get_results());
@@ -17,4 +21,19 @@ TEST (GooFit, NLLTest) {
     }
   }
   EXPECT_NEAR(results_obj->get_finalLL(),reference_obj->get_finalLL(),reference_obj->get_finalLL()*5e-11);
+}
+
+
+TEST (GooFit, NLLTestFail) {
+  char cwd[255];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    printf("Current working dir: %s\n", cwd);
+  }
+  TFile *results_f = TFile::Open("NLL_CHECK_gpu.root");
+  auto results_obj = static_cast<GooStatsNLLCheck*>(results_f->Get("gpu"));
+  auto results = (results_obj->get_results());
+  TFile *reference_f = TFile::Open("NLL_CHECK_reference.root");
+  auto reference_obj = static_cast<GooStatsNLLCheck*>(reference_f->Get("gpu"));
+  auto references = (reference_obj->get_results());
+  EXPECT_NEAR(results_obj->get_finalLL()*100+100,reference_obj->get_finalLL(),reference_obj->get_finalLL()*5e-11);
 }
