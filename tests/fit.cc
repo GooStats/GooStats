@@ -22,8 +22,8 @@ namespace GooStats {
   const OutputHelper *fit() {
     AnalysisManager *ana = new AnalysisManager();
 
-    const char *argv[2] = {"exe","toyMC.cfg"};
-    auto inputManager = new InputManager(2,argv);
+    const char *argv[4] = {"GooStats.exe","toyMC.cfg","test","dummyOption=ShouldDiscardIt"};
+    auto inputManager = new InputManager(4,argv);
     inputManager->setInputBuilder(new SimpleInputBuilder());
     auto outManager = new OutputManager();
     outManager->setOutputBuilder(new SimpleOutputBuilder());
