@@ -25,6 +25,8 @@
 #include "Utility.h"
 #include <fstream>
 #include <iostream>
+#include "goofit/Variable.h"
+
 SimpleInputBuilder::SimpleInputBuilder()
     : folder(std::getenv("SimpleInputBuilderData") ? std::getenv("SimpleInputBuilderData") : ""),
       spcBuilder(std::make_shared<BasicSpectrumBuilder>()) {}
@@ -160,10 +162,11 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
   ;
   for (const auto &component: components) {
     // warning: no error checking
-    configset->createVar(component, configset->get<double>("N" + component + "_init"),
+    auto var = configset->createVar(component, configset->get<double>("N" + component + "_init"),
                          configset->get<double>("N" + component + "_err"),
                          configset->get<double>("N" + component + "_min"),
                          configset->get<double>("N" + component + "_max"));
+    if(configset->hasAndYes("N"+component+"_fixed")) var->fixed = true;
   }
 }
 
