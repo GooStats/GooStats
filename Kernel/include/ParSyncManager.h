@@ -9,16 +9,17 @@
 /*****************************************************************************/
 #ifndef ParSyncManager_H
 #define ParSyncManager_H
-#include <string>
 #include <map>
+#include <string>
 
-using Level = int;
 class ParSyncManager {
   public:
-    virtual ~ParSyncManager() = default;;
-    virtual void init() {}
-    virtual std::map<std::string, Level> getStrategies() { return m_strategies; }
+  using Level = int;
+  virtual ~ParSyncManager() = default;
+  virtual void init() {}
+  virtual std::map<std::string, Level> getStrategies() { return m_strategies; }
+
   private:
-    std::map<std::string, Level> m_strategies;
+  std::map<std::string, Level> m_strategies;
 };
 #endif
