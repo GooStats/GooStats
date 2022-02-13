@@ -16,6 +16,8 @@ will be created automatically based on the `name` parameter of the leaf. For exa
 `PhaseI.MLPalpha.Top` and `PhaseI.MLPalpha.Bottom`, then two leaf node will be created, sharing the same parent node
 named as `PhaseI.MLPalpha` as well as grandparent node `PhaseI`.
 
+The tree is implemented simply using a map.
+
 All nodes, including parent nodes or leaf nodes, are represented by `BasicManager`. Parameters of each leaf will be
 stored in the leaf or its parent. If a parameter, say, `lightYield`, is stored in its parent node, say, `node A`, all
 descendant nodes of `node A` will share the same `lightYield`. In other words, this parameter is synchronized among all

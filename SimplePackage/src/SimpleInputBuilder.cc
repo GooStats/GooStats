@@ -46,7 +46,7 @@ SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
     throw GooStatsException("cmd argument format not understandable");
   }
   std::vector<ConfigsetManager*> configs;
-  auto configset = new ConfigsetManager(*parManager->createParSyncSet(), new OptionManager());
+  auto configset = new ConfigsetManager("default", new OptionManager());
   auto parser = new SimpleOptionParser();
   parser->parse(configset,argc, argv);
   configs.push_back(configset);

@@ -9,34 +9,31 @@
 /*****************************************************************************/
 #ifndef BasicManager_H
 #define BasicManager_H
-#include "IDataManager.h"
+#include <map>
 #include <string>
-struct Variable;
-#include "BasicManagerImpl.h"
-class ParSyncManager;
-class BasicManager : public IDataManager {
+#include <utility>
+#include <vector>
+using Level = int;
+class Variable;
+class BasicManager {
   public:
-    BasicManager(const std::string name_) : IDataManager(), m_name(name_), m_impl(name_) {};
-    const std::string &name() const { return m_name; }
-    virtual bool isResponsibleFor(strategy) const { return true; }
-    void adoptParent(IDataManager* parent_);
-    IDataManager* parent() const { return m_parent; }
-  public:
-    static void setStrategyManager(ParSyncManager *_s) { strategyManager = _s; }
-    Variable *createVar(const std::string &key,double val,double err,double min,double max);
-    Variable *linkVar(const std::string &key,const std::string &source);
-    bool hasVar(const std::string &key) const;
-    Variable *var(const std::string &key) const;
-    const std::string &varOwner(const std::string &key) const;
-    const std::string dump(std::string indent="") const;
+  explicit BasicManager(std::string name_);
+  const std::string &name() const { return m_name; }
+
+  static void setParSyncConfig(const std::map<std::string, int> &configs) { s_configs = configs; }
+  static void dump();
+
+  Variable *createVar(const std::string &key, double val, double err, double min, double max);
+  Variable *linkVar(const std::string &key, const std::string &source);
+  bool hasVar(const std::string &key) const;
+  Variable *var(const std::string &key) const;
 
   private:
-    BasicManager *chooseManager(const std::string &key);
-    const BasicManager *chooseManager(const std::string &key) const;
-  private:
-    static ParSyncManager* strategyManager;
-    const std::string m_name;
-    IDataManager *m_parent = nullptr;
-    BasicManagerImpl m_impl;
+  std::string getKey(const std::string &key) const;
+  const std::string m_name;
+  std::vector<std::string> m_parents;
+  static std::map<std::string, Level> s_configs;
+  static std::map<std::string, std::shared_ptr<Variable>> s_vars;
+  std::shared_ptr<Variable> getVariable(const std::string &key) const;
 };
 #endif

@@ -1,0 +1,3 @@
+add_executable(BasicManagerTest BasicManagerTest.cc)
+target_link_libraries(BasicManagerTest PRIVATE GooStatsLib gtest_main)
+add_test(NAME BasicManagerTest COMMAND BasicManagerTest)

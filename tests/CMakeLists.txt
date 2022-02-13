@@ -30,3 +30,5 @@ add_test(NAME test_GooStatsNLLFail
         "$<TARGET_FILE:runGooStatsTestFit_NLL>;
         $<TARGET_FILE:test_GooStatsNLL> --gtest_filter=GooFit.NLLTestFail")
 set_tests_properties(test_GooStatsNLLFail PROPERTIES WILL_FAIL TRUE)
+
+add_subdirectory(Kernel)

@@ -8,16 +8,14 @@ target_link_libraries(GooStatsLib_gpu PUBLIC ROOT::Core)
 
 add_library(GooStatsKernel
   RawSpectrumProvider.cc
-  ParSyncManager.cc
-  BasicSpectrumBuilder.cc
+        BasicSpectrumBuilder.cc
   TextOutputManager.cc
   OutputHelper.cc
   OptionManager.cc
   Module.cc
   AnalysisManager.cc
   DatasetManager.cc
-  BasicManagerImpl.cc
-  BasicManager.cc
+        BasicManager.cc
   InputManager.cc
   SpectrumBuilder.cc
   Utility.cc DatasetController.cpp ../include/IOptionParser.h)

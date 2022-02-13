@@ -166,7 +166,7 @@ TGraph *ContourManager::LLprofile(const std::string &parName) {
   std::vector<double> x,y;
   gMinuit->FixParameter(id-1);
   gMinuit->SetPrintLevel(-1);
-  int fI = gMinuit->fIstrat; // the strategy
+  int fI = gMinuit->fIstrat; // the EStrategy
   for(int i = 0;i<Npoint;++i) {
     //if(i==1) gMinuit->Command("SET STRategy 0");
     gMinuit->Command(Form("SET PARameter %d %lf",id,left+(right-left)/(Npoint-1)*i));

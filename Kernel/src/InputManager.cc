@@ -16,11 +16,12 @@
 #include "SumLikelihoodPdf.h"
 bool InputManager::init() {
   if(!parManager) {
-    std::cerr<<"Warning: ParSyncManager not set, default strategy are used."<<std::endl;
+    std::cerr<<"Warning: ParSyncManager not set, default EStrategy are used."<<std::endl;
     setParSyncManager(new ParSyncManager());
   }
+  BasicManager::setParSyncConfig(parManager->getStrategies());
   if(!provider) {
-    std::cerr<<"Warning: RawSpectrumProvider not set, default strategy are used."<<std::endl;
+    std::cerr<<"Warning: RawSpectrumProvider not set, default EStrategy are used."<<std::endl;
     setRawSpectrumProvider(new RawSpectrumProvider());
   }
   if(!builder) {
@@ -43,7 +44,7 @@ void InputManager::setInputBuilder(InputBuilder *input) {
 void InputManager::setParSyncManager(ParSyncManager *par) {
   parManager = std::shared_ptr<ParSyncManager>(par);
   parManager->init();
-  BasicManager::setStrategyManager(parManager.get());
+  BasicManager::setParSyncConfig(parManager->getStrategies());
 }
 void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
   provider = std::shared_ptr<RawSpectrumProvider>(p);
@@ -56,8 +57,8 @@ void InputManager::initializeConfigsets() {
     registerConfigset(configset);
     configset->printAllOptions();
     builder->createVariables(configset);
-    configset->dump(configset->name()+">");
   }
+  BasicManager::dump();
 }
 
 void InputManager::fillRawSpectrumProvider() {
