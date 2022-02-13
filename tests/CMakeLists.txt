@@ -32,3 +32,4 @@ add_test(NAME test_GooStatsNLLFail
 set_tests_properties(test_GooStatsNLLFail PROPERTIES WILL_FAIL TRUE)
 
 add_subdirectory(Kernel)
+add_subdirectory(SimplePackage)

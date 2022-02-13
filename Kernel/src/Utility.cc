@@ -9,17 +9,22 @@
 /*****************************************************************************/
 #include "Utility.h"
 #include <map>
-namespace GooStats {
-  namespace Utility {
+#include <regex>
+#include <iostream>
+namespace GooStats::Utility {
     // naive splitter
+    std::string strip(const std::string &k) {
+      const std::regex trim{"(^\\s+|\\s+$)"};
+      return std::regex_replace(k, trim, "");
+    }
     std::vector<std::string> splitter(std::string source, std::string flag) {
       std::vector<std::string> result;
       while(source.find(flag)!=std::string::npos) {
-        int position = source.find(flag);
-        result.push_back(source.substr(0,position));
+        auto position = source.find(flag);
+        result.push_back(strip(source.substr(0,position)));
         source = source.substr(position+1,source.size()-position-1);
       }
-      if(source.size()) result.push_back(source);
+      if(!source.empty()) result.push_back(strip(source));
       return result;
     }
     std::string escape(const std::string &str,std::string purge,std::string underscore,std::vector<std::string> full) {
@@ -41,4 +46,3 @@ namespace GooStats {
       return result;
     }
   }
-}

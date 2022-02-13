@@ -14,6 +14,7 @@
 namespace GooStats {
   namespace Utility {
     // naive splitter
+    extern std::string strip(const std::string &);
     extern std::vector<std::string> splitter(std::string source, std::string flag);
     extern std::string escape(const std::string &str,std::string purge=")",std::string underscore="(",std::vector<std::string> full = {"default.","global."});
   }

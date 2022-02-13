@@ -15,6 +15,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include "Utility.h"
+#include <regex>
 
 bool SimpleOptionParser::parse(OptionManager *optionManager, const std::string &filename) {
   if (filename.find("=") != std::string::npos) {
@@ -27,12 +29,17 @@ bool SimpleOptionParser::parse(OptionManager *optionManager, const std::string &
     throw GooStatsException("ERROR: Unable to open config file");
   std::string key, value, equals, line;
   while (getline(fin, line)) {
-    if (line[0] == '#' || line.substr(0, 2) == "//")
-      continue;
-    std::stringstream lstream(line);
-    lstream >> key >> equals >> value;
-    if (lstream.fail()) continue;
-    if (equals != "=") continue;
+    const std::regex comment("^\\s*(//|#)");
+    if(std::regex_search(line,comment)) continue;
+    const std::regex removeTail("(//|#).*$");
+    line = std::regex_replace(line,removeTail,"");
+    auto eq = line.find('=');
+    if(eq!=std::string::npos) {
+      key = GooStats::Utility::strip(line.substr(0,eq));
+      value = GooStats::Utility::strip(line.substr(eq+1));
+    } else {
+      std::cerr<<"Warning: cannot parse line ["<<line<<"], equal sign not found."<<std::endl;
+    }
     //std::cout<<"Parsing ["<<line<<"] -> ("<<key<<") ("<<equals<<") ("<<value<<")"<<std::endl;
     optionManager->set(key, value);
   }

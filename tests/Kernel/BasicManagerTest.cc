@@ -11,10 +11,10 @@
 #include "goofit/Variable.h"
 #include "gtest/gtest.h"
 
-TEST(GooFit, BasicManagerTest) {
-  BasicManager *manager = new BasicManager("PhaseI.TFCsub.MLPsub");
-  BasicManager *manager2 = new BasicManager("PhaseI.TFCcomp.MLPsub");
-  BasicManager *manager3 = new BasicManager("PhaseII");
+TEST(GooStats, BasicManagerTest) {
+  auto manager = std::make_shared<BasicManager>("PhaseI.TFCsub.MLPsub");
+  auto manager2 = std::make_shared<BasicManager>("PhaseI.TFCcomp.MLPsub");
+  auto manager3 = std::make_shared<BasicManager>("PhaseII");
   BasicManager::setParSyncConfig({{"global_var", 0}, {"phase", 1}, {"TFC", 2}, {"MLP", 3}, {"other", 99}});
 
   Variable *global = manager->createVar("global_var", 1, 2, 3, 4);
