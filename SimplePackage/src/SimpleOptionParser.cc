@@ -29,10 +29,7 @@ bool SimpleOptionParser::parse(OptionManager *optionManager, const std::string &
     throw GooStatsException("ERROR: Unable to open config file");
   std::string key, value, equals, line;
   while (getline(fin, line)) {
-    const std::regex comment("^\\s*(//|#)");
-    if(std::regex_search(line,comment)) continue;
-    const std::regex removeTail("(//|#).*$");
-    line = std::regex_replace(line,removeTail,"");
+    line = GooStats::Utility::strip(line);
     auto eq = line.find('=');
     if(eq!=std::string::npos) {
       key = GooStats::Utility::strip(line.substr(0,eq));

@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 using Level = int;
 class Variable;
 class BasicManager {
