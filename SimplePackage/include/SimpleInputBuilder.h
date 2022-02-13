@@ -23,7 +23,7 @@ class SimpleInputBuilder : public InputBuilder {
   public:
     SimpleInputBuilder();
     //! load the name of output file from command-line args.
-    std::string loadOutputFileNameFromCmdArgs(int ,const char *[]) override;
+    std::string loadOutputFileName(int argc, const char **argv, std::vector<ConfigsetManager *> configsets) override;
     //! load number of configs / location of configuration files from command-line args.
     //! here we use pointer to allow polymorphism. Better design would use template.
     std::vector<ConfigsetManager *>
@@ -47,5 +47,6 @@ class SimpleInputBuilder : public InputBuilder {
   private:
     std::string folder;
     std::shared_ptr<BasicSpectrumBuilder> spcBuilder;
+    void usage(const char *const *argv) const;
 };
 #endif

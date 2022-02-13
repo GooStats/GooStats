@@ -29,20 +29,32 @@ SimpleInputBuilder::SimpleInputBuilder()
     : folder(std::getenv("SimpleInputBuilderData") ? std::getenv("SimpleInputBuilderData") : ""),
       spcBuilder(std::make_shared<BasicSpectrumBuilder>()) {}
 
-std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc, const char *argv[]) {
+std::string SimpleInputBuilder::loadOutputFileName(int argc, const char **argv,
+                                                   std::vector<ConfigsetManager *> configsets) {
   if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
-    std::cerr << "SimpleInputBuilder::buildConfigsetManagers aborted." << std::endl;
+    usage(argv);
     throw GooStatsException("cmd argument format not understandable");
   }
-  return argc > 2 ? std::string(argv[2]) : std::string("output");
+  if (argc == 2) {
+    for (auto config: configsets) {
+      if (config->has("output")) { return config->get("output"); }
+    }
+    std::cerr << "Warning: output not set, <output> is used. Set output name as 3rd argument or set [output=."
+                 "..] in your config files."
+              << std::endl;
+    return "output";
+  } else {
+    return argv[2];
+  }
+}
+void SimpleInputBuilder::usage(const char *const *argv) const {
+  std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
 }
 
 std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
-                                                                           const char *argv[]) {
+                                                                           const char **argv) {
   if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
-    std::cerr << "SimpleInputBuilder::buildConfigsetManagers aborted." << std::endl;
+    usage(argv);
     throw GooStatsException("cmd argument format not understandable");
   }
   std::vector<ConfigsetManager *> configs;
@@ -62,14 +74,14 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
     std::string txt;
   };
   std::vector<txtSource> componentsTxt;
-  for (const auto& component: GooStats::Utility::splitter(configset->get("inputSpectra"), ":"))
+  for (const auto &component: GooStats::Utility::splitter(configset->get("inputSpectra"), ":"))
     if (configset->has(component + "_inputTxt"))
       componentsTxt.push_back({component, configset->get(component + "_inputTxt")});
     else
       componentsTH1.push_back(component);
 
   // load txt
-  for (const auto& txtPair: componentsTxt) {
+  for (const auto &txtPair: componentsTxt) {
     std::ifstream f;
     f.open(txtPair.txt);
     if (!f.is_open()) {
@@ -201,7 +213,7 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
   std::vector<PdfBase *> likelihoodTerms;
   for (auto dataset: datasets) {
     if (!dataset->getLikelihood()) {
-      std::cerr<<"Likelihood of dataset <"<<dataset->name()<<"> is empty."<<std::endl;
+      std::cerr << "Likelihood of dataset <" << dataset->name() << "> is empty." << std::endl;
       throw GooStatsException("Empty likelihood found");
     }
     std::cout << "Inserting <" << dataset->name() << ">" << std::endl;

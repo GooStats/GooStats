@@ -29,8 +29,8 @@ bool InputManager::init() {
               "InputManager::init"<<std::endl;
     throw GooStatsException("InputBuilder not set in InputManager");
   }
-  outName = builder->loadOutputFileNameFromCmdArgs(argc,argv);
   initializeConfigsets();
+  outName = builder->loadOutputFileName(argc, argv, Configsets());
   fillRawSpectrumProvider();
   initializeDatasets();
   totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
