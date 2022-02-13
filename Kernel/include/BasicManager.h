@@ -20,7 +20,7 @@ class BasicManager {
   explicit BasicManager(std::string name_);
   const std::string &name() const { return m_name; }
 
-  static void setParSyncConfig(const std::map<std::string, int> &configs) { s_configs = configs; }
+  static void setParSyncConfig(const std::map<std::string, int> &configs) { s_configs = configs; s_vars = {}; }
   static void dump();
 
   Variable *createVar(const std::string &key, double val, double err, double min, double max);
