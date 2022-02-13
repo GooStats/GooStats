@@ -60,7 +60,8 @@ std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSy
   std::vector<ConfigsetManager *> configs;
   auto configset = new ConfigsetManager("default", new OptionManager());
   auto parser = new SimpleOptionParser();
-  parser->parse(configset, argc, argv);
+  parser->parse(configset,argv[1]);
+  parser->parse(configset, argc-3, argv+3);
   configs.push_back(configset);
   return configs;
 }

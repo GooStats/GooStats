@@ -46,10 +46,7 @@ bool SimpleOptionParser::parse(OptionManager *optionManager, const std::string &
 }
 
 bool SimpleOptionParser::parse(OptionManager *optionManager, int argc, const char *argv[]) {
-  std::cout << "Config file <" << argv[1] << ">" << std::endl;
-  std::cout << "Output file <" << (argc > 2 ? argv[2] : "") << ">" << std::endl;
-  this->parse(optionManager, std::string(argv[1]));
-  for (int i = 3; i < argc; ++i) {
+  for (int i = 0; i < argc; ++i) {
     std::string item(argv[i]);
     auto eqPos = item.find("=");
     if (eqPos > 0 && eqPos != std::string::npos) {
