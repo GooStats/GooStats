@@ -21,10 +21,6 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
       dataset->set("exposure", configset->get<double>("exposure"));
       dataset->set("mean", configset->get<double>(varName+"_centroid"));
       dataset->set("sigma", configset->get<double>(varName+"_sigma"));
-    } else if(configset->get(varName+"_pullType")=="square") {
-      dataset->set("type", std::string("square"));
-      var->lowerlimit = configset->get<double>(varName+"_min");
-      var->upperlimit = configset->get<double>(varName+"_max");
     } else {
       throw GooStatsException("Unknown Pull type: ["+
                                 configset->get(varName+"_pullType")+"]");
@@ -47,6 +43,8 @@ bool PullDatasetController::buildLikelihood(DatasetManager *dataset) {
         dataset->get<double>("sigma"),
         dataset->get<double>("exposure"));
     dataset->setLikelihood(pdf);
+  } else {
+    throw GooStatsException("Unknown Pull type: ["+type+"]");
   }
   return true; 
 }

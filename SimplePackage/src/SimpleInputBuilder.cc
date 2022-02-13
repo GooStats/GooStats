@@ -8,175 +8,177 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "SimpleInputBuilder.h"
-#include <iostream>
-#include "GooStatsException.h"
-#include "RawSpectrumProvider.h"
-#include "ParSyncManager.h"
 #include "ConfigsetManager.h"
-#include "Utility.h"
-#include <fstream>
 #include "DatasetController.h"
-#include "SimpleSpectrumBuilder.h"
-#include "SimpleDatasetController.h"
+#include "DatasetManager.h"
+#include "GooStatsException.h"
+#include "HistogramPdf.h"
+#include "ParSyncManager.h"
 #include "PullDatasetController.h"
+#include "RawSpectrumProvider.h"
+#include "SimpleDatasetController.h"
+#include "SimpleOptionParser.h"
+#include "SimpleSpectrumBuilder.h"
 #include "SumLikelihoodPdf.h"
 #include "TFile.h"
 #include "TH1.h"
-#include "HistogramPdf.h"
-#include "DatasetManager.h"
-#include "SimpleOptionParser.h"
-SimpleInputBuilder::SimpleInputBuilder() :
-    folder(std::getenv("SimpleInputBuilderData")?std::getenv("SimpleInputBuilderData"):""),
-    spcBuilder(std::make_shared<BasicSpectrumBuilder>())  { }
+#include "Utility.h"
+#include <fstream>
+#include <iostream>
+SimpleInputBuilder::SimpleInputBuilder()
+    : folder(std::getenv("SimpleInputBuilderData") ? std::getenv("SimpleInputBuilderData") : ""),
+      spcBuilder(std::make_shared<BasicSpectrumBuilder>()) {}
 
-std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc,const char *argv[]) {
-  if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
-    std::cerr<<"SimpleInputBuilder::buildConfigsetManagers aborted."<<std::endl;
+std::string SimpleInputBuilder::loadOutputFileNameFromCmdArgs(int argc, const char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
+    std::cerr << "SimpleInputBuilder::buildConfigsetManagers aborted." << std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
-  return argc>2?std::string(argv[2]):std::string("output");
+  return argc > 2 ? std::string(argv[2]) : std::string("output");
 }
 
-std::vector<ConfigsetManager *>
-SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc, const char *argv[]) {
-  if(argc<2) {
-    std::cerr<<"Usage: "<<argv[0]<<" <configFile> [outputName] [key=value] [key2=value2] ..."<<std::endl;
-    std::cerr<<"SimpleInputBuilder::buildConfigsetManagers aborted."<<std::endl;
+std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
+                                                                           const char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
+    std::cerr << "SimpleInputBuilder::buildConfigsetManagers aborted." << std::endl;
     throw GooStatsException("cmd argument format not understandable");
   }
-  std::vector<ConfigsetManager*> configs;
+  std::vector<ConfigsetManager *> configs;
   auto configset = new ConfigsetManager("default", new OptionManager());
   auto parser = new SimpleOptionParser();
-  parser->parse(configset,argc, argv);
+  parser->parse(configset, argc, argv);
   configs.push_back(configset);
   return configs;
 }
 
-void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider,ConfigsetManager* configset) {
-  if(!configset->has("inputSpectra")) return;
+void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, ConfigsetManager *configset) {
+  if (!configset->has("inputSpectra")) return;
 
   std::vector<std::string> componentsTH1;
-  struct txtSource { std::string component; std::string txt; };
+  struct txtSource {
+    std::string component;
+    std::string txt;
+  };
   std::vector<txtSource> componentsTxt;
-  for(auto component : GooStats::Utility::splitter(configset->get("inputSpectra"),":"))
-    if(configset->has(component + "_inputTxt")) 
-      componentsTxt.push_back({component,configset->get(component + "_inputTxt")});
+  for (const auto& component: GooStats::Utility::splitter(configset->get("inputSpectra"), ":"))
+    if (configset->has(component + "_inputTxt"))
+      componentsTxt.push_back({component, configset->get(component + "_inputTxt")});
     else
       componentsTH1.push_back(component);
 
   // load txt
-  for(auto txtPair : componentsTxt) {
+  for (const auto& txtPair: componentsTxt) {
     std::ifstream f;
     f.open(txtPair.txt);
-    if(!f.is_open()) {
+    if (!f.is_open()) {
       f.open(folder + txtPair.txt);
-      if(!f.is_open())
-	throw GooStatsException("Cannot open <"+txtPair.txt+"> nor <"+
-	    folder+">/<"+txtPair.txt+">");
+      if (!f.is_open())
+        throw GooStatsException("Cannot open <" + txtPair.txt + "> nor <" + folder + ">/<" + txtPair.txt + ">");
     }
     int n;
-    double e0,de,*x;
+    double e0, de, *x;
     f >> n >> e0 >> de;
-    if(!f.good()) throw GooStatsException("Cannot read n/e0/de from <"+txtPair.txt+">");
-    x = new double [n]; // provider should delete it
-    for(int i = 0; i<n; ++i) {
-      f>> x[i];
-      if(!f.good()) {
-	std::cout<<"Cannot <"<<i<<">-th pdf value from <"<<txtPair.txt<<">"<<std::endl;;
-	throw GooStatsException("Cannot load pdf value from <"+txtPair.txt+">");
+    if (!f.good()) throw GooStatsException("Cannot read n/e0/de from <" + txtPair.txt + ">");
+    x = new double[n];// provider should delete it
+    for (int i = 0; i < n; ++i) {
+      f >> x[i];
+      if (!f.good()) {
+        std::cout << "Cannot <" << i << ">-th pdf value from <" << txtPair.txt << ">" << std::endl;
+        ;
+        throw GooStatsException("Cannot load pdf value from <" + txtPair.txt + ">");
       }
     }
-    provider->registerSpecies(txtPair.component,n,x,e0,de);
+    provider->registerSpecies(txtPair.component, n, x, e0, de);
     f.close();
   }
 
   // load TFile
-  if(componentsTH1.size() && configset->has("inputSpectraFiles")) {
-    std::vector<std::string> sourceTFilesName(
-	GooStats::Utility::splitter(configset->get("inputSpectraFiles"),":"));;
+  if (!componentsTH1.empty() && configset->has("inputSpectraFiles")) {
+    std::vector<std::string> sourceTFilesName(GooStats::Utility::splitter(configset->get("inputSpectraFiles"), ":"));
+    ;
     std::vector<TFile *> sourceTFiles;
-    for(auto fileName : sourceTFilesName) {
+    for (const auto &fileName: sourceTFilesName) {
       TFile *file = TFile::Open(fileName.c_str());
-      if(!file->IsOpen()) {
-	file = TFile::Open((folder + fileName).c_str());
-	if(!file->IsOpen()) {
-	  throw GooStatsException("Cannot open <"+fileName+"> nor <"+
-	      folder+">/<"+fileName+">");
-	}
+      if (!file->IsOpen()) {
+        file = TFile::Open((folder + fileName).c_str());
+        if (!file->IsOpen()) {
+          throw GooStatsException("Cannot open <" + fileName + "> nor <" + folder + ">/<" + fileName + ">");
+        }
       }
-      sourceTFiles.push_back(file); 
+      sourceTFiles.push_back(file);
     }
-    for(auto component : componentsTH1) {
-      std::string histName; TH1 *th1(nullptr);
-      if(configset->has(component+"_histName"))
-	histName = configset->get(component+"_histName");
-      for(auto file: sourceTFiles) {
-	th1 = static_cast<TH1*>(file->Get(histName.c_str()));
-	if(th1) break;
+    for (auto component: componentsTH1) {
+      std::string histName;
+      TH1 *th1(nullptr);
+      if (configset->has(component + "_histName")) histName = configset->get(component + "_histName");
+      for (auto file: sourceTFiles) {
+        th1 = static_cast<TH1 *>(file->Get(histName.c_str()));
+        if (th1) break;
       }
-      if(!th1) {
-	std::cout<<"Cannot find <"<<histName<<"> from TFiles"<<std::endl;
-	std::cout<<"List of TFiles ("<<sourceTFilesName.size()<<"): "<<std::endl;
-	for(size_t i = 0;i<sourceTFilesName.size();++i) {
-	  std::cout<<"["<<i<<"] <"<<sourceTFilesName.at(i)<<">"<<std::endl;
-	}
-	std::cout<<"List of histograms to be loaded: "<<std::endl;
-	for(auto component : componentsTH1) 
-	  std::cout<<"["<<component<<"] <"<<(configset->has(component+"_histName")?configset->get(component+"_histName"):"")<<">"<<std::endl;
-	throw GooStatsException("Cannot load pdf from TFiles");
+      if (!th1) {
+        std::cout << "Cannot find <" << histName << "> from TFiles" << std::endl;
+        std::cout << "List of TFiles (" << sourceTFilesName.size() << "): " << std::endl;
+        for (size_t i = 0; i < sourceTFilesName.size(); ++i) {
+          std::cout << "[" << i << "] <" << sourceTFilesName.at(i) << ">" << std::endl;
+        }
+        std::cout << "List of histograms to be loaded: " << std::endl;
+        for (auto component: componentsTH1)
+          std::cout << "[" << component << "] <"
+                    << (configset->has(component + "_histName") ? configset->get(component + "_histName") : "") << ">"
+                    << std::endl;
+        throw GooStatsException("Cannot load pdf from TFiles");
       }
       int n;
-      double e0,de,*x;
+      double e0, de, *x;
       n = th1->GetNbinsX();
       e0 = th1->GetBinCenter(1);
       de = th1->GetBinWidth(1);
-      x = new double [n]; // provider should delete it
-      for(int i = 0;i<n;++i) 
-	x[i] = th1->GetBinContent(i+1);
-      provider->registerSpecies(component,n,x,e0,de);
+      x = new double[n];// provider should delete it
+      for (int i = 0; i < n; ++i) x[i] = th1->GetBinContent(i + 1);
+      provider->registerSpecies(component, n, x, e0, de);
     }
-    for(auto file : sourceTFiles)
-      file->Close(); // don't delete, ROOT will delete them 
+    for (auto file: sourceTFiles) file->Close();// don't delete, ROOT will delete them
   }
 }
-void SimpleInputBuilder::createVariables(ConfigsetManager* configset) {
-  std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"),":"));;
-  for(auto component: components) {
+void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
+  std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"), ":"));
+  ;
+  for (const auto &component: components) {
     // warning: no error checking
-    configset->createVar(component,
-        configset->get<double>("N"+component+"_init"),
-        configset->get<double>("N"+component+"_err"),
-        configset->get<double>("N"+component+"_min"),
-        configset->get<double>("N"+component+"_max"));
-  } 
+    configset->createVar(component, configset->get<double>("N" + component + "_init"),
+                         configset->get<double>("N" + component + "_err"),
+                         configset->get<double>("N" + component + "_min"),
+                         configset->get<double>("N" + component + "_max"));
+  }
 }
 
-bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) {
+bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
-  for(auto component : dataset->get<std::vector<std::string>>("components")) {
-    if((dataset->get<std::string>(component+"_type")=="Ana")||
-	(dataset->get<std::string>(component+"_type")=="AnaShifted")) {
-      GooPdf *innerPdf = spcBuilder->buildSpectrum(component+"_inner",dataset);
-      if(!innerPdf) {
-	std::cout<<"No hanlder is found to build spectrum <"<<component<<"_inner> "
-	  <<"type <"<<dataset->get<std::string>(component+"_inner_type")<<">"<<std::endl;
-	throw GooStatsException("Cannot build spectrum");
+  for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
+    if ((dataset->get<std::string>(component + "_type") == "Ana") ||
+        (dataset->get<std::string>(component + "_type") == "AnaShifted")) {
+      GooPdf *innerPdf = spcBuilder->buildSpectrum(component + "_inner", dataset);
+      if (!innerPdf) {
+        std::cout << "No hanlder is found to build spectrum <" << component << "_inner> "
+                  << "type <" << dataset->get<std::string>(component + "_inner_type") << ">" << std::endl;
+        throw GooStatsException("Cannot build spectrum");
       }
-      dataset->set<PdfBase*>(component+"_innerPdf",innerPdf);
+      dataset->set<PdfBase *>(component + "_innerPdf", innerPdf);
     }
   }
   return true;
 }
-bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset,RawSpectrumProvider *) {
-  std::vector<PdfBase*> pdfs;
-  for(auto component : dataset->get<std::vector<std::string>>("components")) {
+bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumProvider *) {
+  std::vector<PdfBase *> pdfs;
+  for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
     // get Raw spec
-    GooPdf *pdf = spcBuilder->buildSpectrum(component,dataset);
-    if(!pdf) continue; // place holder
+    GooPdf *pdf = spcBuilder->buildSpectrum(component, dataset);
+    if (!pdf) continue;// place holder
     pdfs.push_back(pdf);
   }
-  dataset->set<std::vector<PdfBase*>>("pdfs",pdfs);
+  dataset->set<std::vector<PdfBase *>>("pdfs", pdfs);
   return true;
 }
 
@@ -185,22 +187,26 @@ bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
   return true;
 }
 
-std::vector<std::shared_ptr<DatasetController>> SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
+std::vector<std::shared_ptr<DatasetController>>
+SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
-  if(configset->has("pullPars"))
-  for(auto par : GooStats::Utility::splitter(configset->get("pullPars"),":")) {
-      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(configset,par+"_pull")));
-  }
+  if (configset->has("pullPars"))
+    for (const auto &par: GooStats::Utility::splitter(configset->get("pullPars"), ":")) {
+      controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(configset, par + "_pull")));
+    }
   return controllers;
 }
-SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetManager*> &datasets) {
-  std::vector<PdfBase*> likelihoodTerms;
-  for(auto dataset : datasets) {
-    if(!dataset->getLikelihood()) continue;
-    std::cout<<"Inserting <"<<dataset->name()<<">"<<std::endl;
-    likelihoodTerms.push_back(static_cast<PdfBase*>(dataset->getLikelihood()));
+SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetManager *> &datasets) {
+  std::vector<PdfBase *> likelihoodTerms;
+  for (auto dataset: datasets) {
+    if (!dataset->getLikelihood()) {
+      std::cerr<<"Likelihood of dataset <"<<dataset->name()<<"> is empty."<<std::endl;
+      throw GooStatsException("Empty likelihood found");
+    }
+    std::cout << "Inserting <" << dataset->name() << ">" << std::endl;
+    likelihoodTerms.push_back(static_cast<PdfBase *>(dataset->getLikelihood()));
   }
-  SumLikelihoodPdf *sumpdf = new SumLikelihoodPdf("full_likelihood",likelihoodTerms);
+  auto sumpdf = new SumLikelihoodPdf("full_likelihood", likelihoodTerms);
   return sumpdf;
 }

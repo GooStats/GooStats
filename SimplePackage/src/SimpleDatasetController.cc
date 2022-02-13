@@ -35,7 +35,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     dataset->set("components", components);
 
     std::vector<Variable*> Ns;
-    for(auto component: components) {
+    for(const auto& component: components) {
       // warning: no error checking
       Variable *N = configset->var(component);
       N->numbins = -1; // dirty hack: identify them as rates
@@ -45,7 +45,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 
     bool useAna = false;
     bool useNL = false;
-    for(auto component: components) {
+    for(const auto& component: components) {
       std::string type = configset->get(component+"_type");
       dataset->set(component+"_type",type);
       dataset->set(component+"_E",dataset->get<Variable*>("Evis"));
