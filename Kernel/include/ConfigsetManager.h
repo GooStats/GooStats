@@ -28,5 +28,6 @@ class ConfigsetManager : public BasicManager, public OptionManager {
   public:
     ConfigsetManager(const std::string& name_,OptionManager *op) : BasicManager(name_),OptionManager(*op) {};
     ConfigsetManager(BasicManager &manager,OptionManager *op) : BasicManager(manager),OptionManager(*op) {};
+    virtual ~ConfigsetManager() = default;
 };
 #endif

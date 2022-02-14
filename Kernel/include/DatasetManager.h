@@ -38,6 +38,7 @@ class DatasetController;
 class DatasetManager {
   public:
     DatasetManager(const std::string &name_) : m_name(name_) {};
+    virtual ~DatasetManager() = default;
     const std::string &name() const { return m_name; }
     void setController(DatasetController *_d) { controller = _d; }
     void setLikelihood(GooPdf*);

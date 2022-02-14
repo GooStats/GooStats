@@ -21,10 +21,10 @@
  */
 #include "DatasetController.h"
 class SimpleDatasetController : public DatasetController {
-public:
-  explicit SimpleDatasetController(ConfigsetManager *_c,
-                                   const std::string &n = "main")
-      : DatasetController(_c, n){};
+  public:
+  /// @param _c ConfigsetManger storing options
+  /// @param n name of the controller, also name of the DatasetManger to be created
+  explicit SimpleDatasetController(ConfigsetManager *_c, const std::string &n = "main") : DatasetController(_c, n){};
   bool collectInputs(DatasetManager *) override;
   bool buildLikelihood(DatasetManager *) override;
 };
