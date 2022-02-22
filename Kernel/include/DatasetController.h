@@ -27,7 +27,7 @@ public:
       : configset(_c), name(n){ };
   DatasetController() = delete;
   virtual ~DatasetController() = default;
-  DatasetManager *createDataset();
+  virtual DatasetManager *createDataset();
   virtual bool collectInputs(DatasetManager *) = 0;
   virtual bool buildLikelihood(DatasetManager *) = 0;
 

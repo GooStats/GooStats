@@ -41,6 +41,7 @@ class DatasetManager {
     virtual ~DatasetManager() = default;
     const std::string &name() const { return m_name; }
     void setController(DatasetController *_d) { controller = _d; }
+    DatasetController *getController() { return controller; }
     void setLikelihood(GooPdf*);
     GooPdf *getLikelihood() { return likelihood.get(); }
     template<typename T> void set(const std::string &,T);
