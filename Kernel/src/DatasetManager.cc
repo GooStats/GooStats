@@ -54,7 +54,7 @@ DEFINE_DatasetManager(std::vector<std::string>,m_components,std::vector<std::str
 DEFINE_DatasetManager(std::vector<double>,m_coeff,std::vector<double>())
 DEFINE_DatasetManager(std::vector<Variable*>,m_vars,std::vector<Variable*>())
 DEFINE_DatasetManager(std::vector<PdfBase*>,m_pdfs,std::vector<PdfBase*>())
-DEFINE_DatasetManager(BinnedDataset*,m_bindata,nullptr)
+DEFINE_DatasetManager(BinnedDataSet*,m_bindata,nullptr)
 
 void DatasetManager::setLikelihood(GooPdf *pdf) {
   likelihood = std::shared_ptr<GooPdf>(pdf);

@@ -226,3 +226,11 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
   auto sumpdf = new SumLikelihoodPdf("full_likelihood", likelihoodTerms);
   return sumpdf;
 }
+bool SimpleInputBuilder::fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) {
+  Variable *Evis = dataset->get<Variable*>("Evis");
+  auto binned_data = new BinnedDataSet(Evis,dataset->name()+"_"+Evis->name);
+  for(int i = 0;i<Evis->numbins;++i)
+    binned_data->setBinContent(i,provider->pdf(dataset->name())[i]);
+  dataset->set("data",binned_data);
+  return true;
+}

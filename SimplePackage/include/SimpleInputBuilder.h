@@ -37,7 +37,7 @@ class SimpleInputBuilder : public InputBuilder {
     //! build sets of datasetcontroller. each controller correspond to a spectrum
     std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
     //! fill data spectra
-    bool fillDataSpectra(DatasetManager *,RawSpectrumProvider *) override { return true; }
+    bool fillDataSpectra(DatasetManager *,RawSpectrumProvider *) override;
     //! build the raw spectra used for convolution
     bool buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) override;
     //! build the components of datasetmanager

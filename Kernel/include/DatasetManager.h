@@ -33,7 +33,7 @@ class PdfBase;
 #include <string>
 struct Variable;
 class GooPdf;
-class BinnedDataset;
+class BinnedDataSet;
 class DatasetController;
 class DatasetManager {
   public:
@@ -62,7 +62,7 @@ class DatasetManager {
     std::map<std::string,std::vector<double>> m_coeff;
     std::map<std::string,std::vector<Variable*>> m_vars;
     std::map<std::string,std::vector<PdfBase*>> m_pdfs;
-    std::map<std::string,BinnedDataset*> m_bindata;
+    std::map<std::string,BinnedDataSet*> m_bindata;
 };
 #define DECLARE_DatasetManager(T) \
 template<> void DatasetManager::set<T>(const std::string&,T); \
@@ -79,5 +79,5 @@ DECLARE_DatasetManager(std::vector<std::string>)
 DECLARE_DatasetManager(std::vector<double>)
 DECLARE_DatasetManager(std::vector<Variable*>)
 DECLARE_DatasetManager(std::vector<PdfBase*>)
-DECLARE_DatasetManager(BinnedDataset*)
+DECLARE_DatasetManager(BinnedDataSet*)
 #endif

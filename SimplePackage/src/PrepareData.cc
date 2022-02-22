@@ -42,9 +42,7 @@ bool PrepareData::run(int ev) {
     for(auto dataset: getInputManager()->Datasets()) {
       SumPdf *sumpdf = dynamic_cast<SumPdf*>(dataset->getLikelihood());
       if(!sumpdf) continue;
-      Variable *Evis = dataset->get<Variable*>("Evis");
-      BinnedDataSet *data = spcb.loadRawSpectrum(Evis,dataset->name());
-      sumpdf->setData(data);
+      sumpdf->setData(dataset->get<BinnedDataSet*>("data"));
     }
   }
   return true;
