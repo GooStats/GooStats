@@ -10,8 +10,8 @@
 #include "Utility.h"
 #include "RawSpectrumProvider.h"
 #include "goofit/BinnedDataSet.h"
-#include <map>
 #include <TH1.h>
+#include <map>
 namespace GooStats {
   namespace Utility {
     // naive splitter
@@ -53,15 +53,16 @@ namespace GooStats {
     }
     BinnedDataSet *toDataSet(RawSpectrumProvider *provider, Variable *var, const std::string &name) {
       auto de = provider->de(name);
-      int shift = static_cast<int>(floor(var->lowerlimit + de*0.5 - provider->e0(name)) / de);
-      auto data = new BinnedDataSet(var,name);
-      for (auto i = 0; i < provider->n(name); ++i) data->setBinContent(i, provider->pdf(name)[i+shift]);
+      int shift = static_cast<int>(floor(var->lowerlimit + de * 0.5 - provider->e0(name)) / de);
+      auto data = new BinnedDataSet(var, name);
+      for (auto i = 0; i + shift < provider->n(name) && i < var->numbins; ++i)
+        data->setBinContent(i, provider->pdf(name).at(i + shift));
       return data;
     }
     void save(RawSpectrumProvider *provider, const std::string &name, TH1 *h) {
-      double *pdf = new double[h->GetNbinsX()];
-      for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf[i - 1] = h->GetBinContent(i);
-      provider->registerSpecies(name, h->GetNbinsX(), pdf, h->GetBinCenter(1), h->GetBinWidth(1));
+      std::vector<double> pdf {};
+      for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf.push_back(h->GetBinContent(i));
+      provider->registerSpecies(name, h->GetNbinsX(), &pdf[0], h->GetBinCenter(1), h->GetBinWidth(1));
     }
   }// namespace Utility
 }// namespace GooStats

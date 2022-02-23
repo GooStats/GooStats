@@ -47,7 +47,7 @@ class InputBuilder {
   //! build the raw spectra used for convolution
   virtual bool buildRawSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) = 0;
   //! build the components of datasetmanager
-  virtual bool buildComponenets(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) = 0;
+  virtual bool buildComponenets(DatasetManager *, ISpectrumBuilder *) = 0;
   //! build the total pdf from the datasets
   virtual SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager *> &) = 0;
 };

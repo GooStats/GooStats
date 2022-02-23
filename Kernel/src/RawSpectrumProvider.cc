@@ -10,7 +10,7 @@
 #include "RawSpectrumProvider.h"
 #include "GooStatsException.h"
 #include <iostream>
-bool RawSpectrumProvider::registerSpecies(const std::string &name,int n_,const double *real_,double e0_,double de_) {
+bool RawSpectrumProvider::registerSpecies(const std::string &name,int n_, const double *real_,double e0_,double de_) {
   if(n_map.find(name)!=n_map.end()) {
     std::cerr<<"Try to add ["<<name<<"] which already exists"<<std::endl;
     //throw GooStatsException("RawSpectrumProvider::registerSpecies Duplicate entries");
@@ -18,7 +18,10 @@ bool RawSpectrumProvider::registerSpecies(const std::string &name,int n_,const d
   }
   std::cout<<"RawSpectrumProvider::registerSpecies Register ["<<name<<"]"<<std::endl;
   n_map.insert(make_pair(name,n_));
-  real_map.insert(make_pair(name,real_));
+  std::vector<double> real {};
+  for(auto i = 0;i<n_;++i)
+    real.push_back(real_[i]);
+  real_map.insert(make_pair(name,real));
   e0_map.insert(make_pair(name,e0_));
   de_map.insert(make_pair(name,de_));
   return true;
@@ -46,15 +49,15 @@ bool RawSpectrumProvider::registerComplexSpecies(const std::string &name,const s
 std::map<std::string, std::map<std::string, double> > RawSpectrumProvider::get_br_map() {
   return br_map;
 }
-int RawSpectrumProvider::n(const std::string &name) const { 
-  if(n_map.find(name)!=n_map.end())
-    return n_map.at(name); 
+size_t RawSpectrumProvider::n(const std::string &name) const {
+  if(real_map.find(name)!=real_map.end())
+    return real_map.at(name).size();
   else {
     std::cerr<<"trying to fetch ["<<name<<"] while RawSpectrumProvider does not have it"<<std::endl;
     throw GooStatsException("Raw array not ready");
   }
 }
-double const* RawSpectrumProvider::pdf(const std::string &name) const { 
+const std::vector<double> &RawSpectrumProvider::pdf(const std::string &name) const {
   if(real_map.find(name)!=real_map.end())
     return real_map.at(name); 
   else {
@@ -85,4 +88,8 @@ double RawSpectrumProvider::peakE(const std::string &name) const {
     std::cerr<<"trying to fetch ["<<name<<"] while RawSpectrumProvider does not have it"<<std::endl;
     throw GooStatsException("Raw array not ready");
   }
+}
+bool RawSpectrumProvider::linkSpecies(const std::string &target, const std::string &source) {
+  registerSpecies(target,n(source),&pdf(source)[0],e0(source),de(source));
+  return true;
 }

@@ -15,7 +15,7 @@
 #define DEFINE_DatasetManager(T,var,ZERO) \
 template <> void DatasetManager::set<T>(const std::string &_name,T x) { \
   if(var.find(_name)==var.end()) { \
-    var.insert(std::make_pair(_name,x)); \
+    var[_name] = x; \
   } else  { \
     std::cout<<name()<<" Warning: duplicate request to insert terms <"\
 	<<_name<<">"<<std::endl; \

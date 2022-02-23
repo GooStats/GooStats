@@ -22,18 +22,17 @@
 #include "DatasetManager.h"
 class ConfigsetManager;
 class DatasetController {
-public:
-  DatasetController(ConfigsetManager *_c, const std::string &n = "LL")
-      : configset(_c), name(n){ };
+  public:
+  DatasetController(ConfigsetManager *_c, const std::string &n = "LL") : configset(_c), name(n){};
   DatasetController() = delete;
   virtual ~DatasetController() = default;
   virtual DatasetManager *createDataset();
   virtual bool collectInputs(DatasetManager *) = 0;
   virtual bool buildLikelihood(DatasetManager *) = 0;
+  ConfigsetManager *getConfigset() { return configset; }
 
-protected:
+  protected:
   ConfigsetManager *configset;
   const std::string name;
-
 };
 #endif

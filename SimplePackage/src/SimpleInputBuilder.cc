@@ -67,7 +67,7 @@ std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSy
 
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, ConfigsetManager *configset) {
   if (!configset->has("inputSpectra")) return;
-  auto folder{std::getenv("SimpleInputBuilderData")};
+  std::string folder{std::getenv("SimpleInputBuilderData") ? std::getenv("SimpleInputBuilderData") : ""};
   std::vector<std::string> componentsTH1;
   struct txtSource {
     std::string component;
@@ -184,8 +184,7 @@ bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumPro
   }
   return true;
 }
-bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumProvider *provider,
-                                          ISpectrumBuilder *spcBuilder) {
+bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, ISpectrumBuilder *spcBuilder) {
   std::vector<PdfBase *> pdfs;
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
     // get Raw spec

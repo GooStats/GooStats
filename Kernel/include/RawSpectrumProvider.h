@@ -14,11 +14,12 @@
 // Protocol for raw spectrum provider
 class RawSpectrumProvider {
   public:
-    bool registerSpecies(const std::string &name,int n_,const double *real_,double e0_,double de_);
+    bool registerSpecies(const std::string &name,int n_, const double *real_,double e0_,double de_);
+    bool linkSpecies(const std::string &target,const std::string &source);
     bool registerPeak(const std::string &name,double peakE_);
     bool registerComplexSpecies(const std::string &name,const std::map<std::string,double> &br_);
-    int n(const std::string &name) const;
-    double const* pdf(const std::string &name) const;
+    size_t n(const std::string &name) const;
+    const std::vector<double> &pdf(const std::string &name) const;
     double e0(const std::string &name) const; // in keV
     double de(const std::string &name) const; // in keV
     double peakE(const std::string &name) const; // in keV
@@ -26,7 +27,7 @@ class RawSpectrumProvider {
     std::map<std::string, std::map<std::string, double> > get_br_map();
    private:
     std::map<std::string, int> n_map;
-    std::map<std::string, double const*> real_map;
+    std::map<std::string, std::vector<double>> real_map;
     std::map<std::string, double> e0_map;
     std::map<std::string, double> de_map;
     std::map<std::string, double> peakE_map;
