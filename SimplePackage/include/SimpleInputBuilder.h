@@ -21,32 +21,30 @@ struct InputConfig;
 class BasicSpectrumBuilder;
 class SimpleInputBuilder : public InputBuilder {
   public:
-    SimpleInputBuilder();
-    //! load the name of output file from command-line args.
-    std::string loadOutputFileName(int argc, const char **argv, std::vector<ConfigsetManager *> configsets) override;
-    //! load number of configs / location of configuration files from command-line args.
-    //! here we use pointer to allow polymorphism. Better design would use template.
-    std::vector<ConfigsetManager *>
-    buildConfigsetManagers(ParSyncManager *parManager, int argc, const char **argv) override;
-    //! fill raw spectrum providers
-    void fillRawSpectrumProvider(RawSpectrumProvider *,ConfigsetManager*) override;
-    //! create list of vars, so DatasetManager can call ConfigManager::var(name)
-    void createVariables(ConfigsetManager*) override;
-    //! install spectrum type hanlder
-    bool installSpectrumBuilder(ISpectrumBuilder *) override;
-    //! build sets of datasetcontroller. each controller correspond to a spectrum
-    std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
-    //! fill data spectra
-    bool fillDataSpectra(DatasetManager *,RawSpectrumProvider *) override;
-    //! build the raw spectra used for convolution
-    bool buildRawSpectra(DatasetManager *dataset,RawSpectrumProvider *provider) override;
-    //! build the components of datasetmanager
-    bool buildComponenets(DatasetManager *,RawSpectrumProvider *provider) override;
-    //! build the total pdf from the datasets
-    SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager*> &) override;
+  //! load the name of output file from command-line args.
+  std::string loadOutputFileName(int argc, const char **argv, std::vector<ConfigsetManager *> configsets) override;
+  //! load number of configs / location of configuration files from command-line args.
+  //! here we use pointer to allow polymorphism. Better design would use template.
+  std::vector<ConfigsetManager *> buildConfigsetManagers(ParSyncManager *parManager, int argc,
+                                                         const char **argv) override;
+  //! fill raw spectrum providers
+  void fillRawSpectrumProvider(RawSpectrumProvider *, ConfigsetManager *) override;
+  //! create list of vars, so DatasetManager can call ConfigManager::var(name)
+  void createVariables(ConfigsetManager *) override;
+  //! install spectrum type hanlder
+  bool buildSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) override;
+  //! build sets of datasetcontroller. each controller correspond to a spectrum
+  std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
+  //! fill data spectra
+  bool fillDataSpectra(DatasetManager *, RawSpectrumProvider *) override;
+  //! build the raw spectra used for convolution
+  bool buildRawSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) override;
+  //! build the components of datasetmanager
+  bool buildComponenets(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) override;
+  //! build the total pdf from the datasets
+  SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager *> &) override;
+
   private:
-    std::string folder;
-    std::shared_ptr<BasicSpectrumBuilder> spcBuilder;
-    void usage(const char *const *argv) const;
+  void usage(const char *const *argv) const;
 };
 #endif

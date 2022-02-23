@@ -22,6 +22,7 @@ class RawSpectrumProvider;
 #include "DatasetManager.h"
 #include <vector>
 #include <memory>
+#include "ISpectrumBuilder.h"
 class SumLikelihoodPdf;
 #include "Module.h"
 class InputManager : public Module {
@@ -60,6 +61,7 @@ class InputManager : public Module {
     std::shared_ptr<ParSyncManager> parManager;
     std::shared_ptr<SumLikelihoodPdf> totalPdf;
     std::shared_ptr<RawSpectrumProvider> provider;
+    std::shared_ptr<ISpectrumBuilder> spcBuilder;
     std::string outName;
   private:
     std::vector<double> cachedParsInit;

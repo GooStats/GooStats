@@ -38,7 +38,7 @@ bool PrepareData::run(int ev) {
     }
   } else { // fitdata
     if(ev>0) throw GooStatsException("Why you want to fit same dataset several times?");
-    SimpleSpectrumBuilder spcb(getInputManager()->getProvider());
+//    SimpleSpectrumBuilder spcb(getInputManager()->getProvider());
     for(auto dataset: getInputManager()->Datasets()) {
       SumPdf *sumpdf = dynamic_cast<SumPdf*>(dataset->getLikelihood());
       if(!sumpdf) continue;

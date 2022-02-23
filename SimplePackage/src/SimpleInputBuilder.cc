@@ -23,13 +23,10 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "Utility.h"
+#include "goofit/Variable.h"
 #include <fstream>
 #include <iostream>
-#include "goofit/Variable.h"
 
-SimpleInputBuilder::SimpleInputBuilder()
-    : folder(std::getenv("SimpleInputBuilderData") ? std::getenv("SimpleInputBuilderData") : ""),
-      spcBuilder(std::make_shared<BasicSpectrumBuilder>()) {}
 
 std::string SimpleInputBuilder::loadOutputFileName(int argc, const char **argv,
                                                    std::vector<ConfigsetManager *> configsets) {
@@ -62,15 +59,15 @@ std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSy
   std::vector<ConfigsetManager *> configs;
   auto configset = new ConfigsetManager("default", new OptionManager());
   auto parser = new SimpleOptionParser();
-  parser->parse(configset,argv[1]);
-  parser->parse(configset, argc-3, argv+3);
+  parser->parse(configset, argv[1]);
+  parser->parse(configset, argc - 3, argv + 3);
   configs.push_back(configset);
   return configs;
 }
 
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, ConfigsetManager *configset) {
   if (!configset->has("inputSpectra")) return;
-
+  auto folder{std::getenv("SimpleInputBuilderData")};
   std::vector<std::string> componentsTH1;
   struct txtSource {
     std::string component;
@@ -163,14 +160,15 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
   for (const auto &component: components) {
     // warning: no error checking
     auto var = configset->createVar(component, configset->get<double>("N" + component + "_init"),
-                         configset->get<double>("N" + component + "_err"),
-                         configset->get<double>("N" + component + "_min"),
-                         configset->get<double>("N" + component + "_max"));
-    if(configset->hasAndYes("N"+component+"_fixed")) var->fixed = true;
+                                    configset->get<double>("N" + component + "_err"),
+                                    configset->get<double>("N" + component + "_min"),
+                                    configset->get<double>("N" + component + "_max"));
+    if (configset->hasAndYes("N" + component + "_fixed")) var->fixed = true;
   }
 }
 
-bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) {
+bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumProvider *provider,
+                                         ISpectrumBuilder *spcBuilder) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
     if ((dataset->get<std::string>(component + "_type") == "Ana") ||
@@ -186,7 +184,8 @@ bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumPro
   }
   return true;
 }
-bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumProvider *) {
+bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumProvider *provider,
+                                          ISpectrumBuilder *spcBuilder) {
   std::vector<PdfBase *> pdfs;
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
     // get Raw spec
@@ -198,8 +197,8 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumPr
   return true;
 }
 
-bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder) {
-  spcBuilder->AddSiblings(builder);
+bool SimpleInputBuilder::buildSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) {
+  builder->AddSiblings(new SimpleSpectrumBuilder(provider));
   return true;
 }
 
@@ -227,10 +226,9 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
   return sumpdf;
 }
 bool SimpleInputBuilder::fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) {
-  Variable *Evis = dataset->get<Variable*>("Evis");
-  auto binned_data = new BinnedDataSet(Evis,dataset->name()+"_"+Evis->name);
-  for(int i = 0;i<Evis->numbins;++i)
-    binned_data->setBinContent(i,provider->pdf(dataset->name())[i]);
-  dataset->set("data",binned_data);
+  Variable *Evis = dataset->get<Variable *>("Evis");
+  auto binned_data = new BinnedDataSet(Evis, dataset->name() + "_" + Evis->name);
+  for (int i = 0; i < Evis->numbins; ++i) binned_data->setBinContent(i, provider->pdf(dataset->name())[i]);
+  dataset->set("data", binned_data);
   return true;
 }

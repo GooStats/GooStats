@@ -8,18 +8,21 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "Utility.h"
+#include "RawSpectrumProvider.h"
+#include "goofit/BinnedDataSet.h"
 #include <map>
+#include <TH1.h>
 namespace GooStats {
   namespace Utility {
     // naive splitter
     std::string strip(const std::string &k) {
       auto pool = k;
       auto pComment = pool.find("//");
-      if(pComment==std::string::npos) pComment = pool.find("#");
-      if(pComment!=std::string::npos) pool = pool.substr(0,pComment);
+      if (pComment == std::string::npos) pComment = pool.find("#");
+      if (pComment != std::string::npos) pool = pool.substr(0, pComment);
       auto i0 = pool.find_first_not_of("\t ");
       auto in = pool.find_last_not_of("\t ");
-      return i0!=std::string::npos ? pool.substr(i0,in-i0+1) : std::string();
+      return i0 != std::string::npos ? pool.substr(i0, in - i0 + 1) : std::string();
     }
     std::vector<std::string> splitter(std::string source, std::string flag) {
       std::vector<std::string> result;
@@ -47,6 +50,18 @@ namespace GooStats {
         }
       }
       return result;
+    }
+    BinnedDataSet *toDataSet(RawSpectrumProvider *provider, Variable *var, const std::string &name) {
+      auto de = provider->de(name);
+      int shift = static_cast<int>(floor(var->lowerlimit + de*0.5 - provider->e0(name)) / de);
+      auto data = new BinnedDataSet(var,name);
+      for (auto i = 0; i < provider->n(name); ++i) data->setBinContent(i, provider->pdf(name)[i+shift]);
+      return data;
+    }
+    void save(RawSpectrumProvider *provider, const std::string &name, TH1 *h) {
+      double *pdf = new double[h->GetNbinsX()];
+      for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf[i - 1] = h->GetBinContent(i);
+      provider->registerSpecies(name, h->GetNbinsX(), pdf, h->GetBinCenter(1), h->GetBinWidth(1));
     }
   }// namespace Utility
 }// namespace GooStats
