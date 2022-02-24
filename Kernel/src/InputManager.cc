@@ -33,7 +33,7 @@ bool InputManager::init() {
   }
   spcBuilder = std::make_shared<SpectrumBuilder>();
   initializeConfigsets();
-  builder->buildSpectrumBuilder(spcBuilder.get(), provider.get());
+  builder->installSpectrumBuilder(spcBuilder.get(), provider.get());
   outName = builder->loadOutputFileName(argc, argv, Configsets());
   fillRawSpectrumProvider();
   initializeDatasets();
@@ -76,7 +76,7 @@ void InputManager::initializeDatasets() {
       controller->collectInputs(dataset);
       if (dataset->has<std::vector<std::string>>("components")) {
         builder->fillDataSpectra(dataset, provider.get());
-        builder->buildRawSpectra(dataset, provider.get(), spcBuilder.get());
+        builder->buildInternalSpectra(dataset, provider.get(), spcBuilder.get());
         builder->buildComponenets(dataset, spcBuilder.get());
       }
       controller->buildLikelihood(dataset);

@@ -39,13 +39,13 @@ class InputBuilder {
   //! create list of vars, so DatasetManager can call ConfigManager::var(name)
   virtual void createVariables(ConfigsetManager *) = 0;
   //! install spectrum type hanlder
-  virtual bool buildSpectrumBuilder(ISpectrumBuilder *, RawSpectrumProvider *provider) = 0;
+  virtual bool installSpectrumBuilder(ISpectrumBuilder *, RawSpectrumProvider *provider) = 0;
   //! build sets of datasetcontroller. each controller correspond to a spectrum
   virtual std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) = 0;
   //! fill data spectra
   virtual bool fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) = 0;
   //! build the raw spectra used for convolution
-  virtual bool buildRawSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) = 0;
+  virtual bool buildInternalSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) = 0;
   //! build the components of datasetmanager
   virtual bool buildComponenets(DatasetManager *, ISpectrumBuilder *) = 0;
   //! build the total pdf from the datasets

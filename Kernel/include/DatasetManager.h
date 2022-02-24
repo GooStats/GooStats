@@ -9,8 +9,8 @@
 /*****************************************************************************/
 #ifndef DatasetManagers_H
 #define DatasetManagers_H
-#include <map>
 #include <iostream>
+#include <map>
 /*! \class DatasetDelegate
  *  \brief Delegate protocol for DatasetManager class. A controller of
  *  DatasetManager will be called when initialize its components
@@ -29,55 +29,67 @@ class PdfBase;
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 struct Variable;
 class GooPdf;
 class BinnedDataSet;
 class DatasetController;
 class DatasetManager {
   public:
-    DatasetManager(const std::string &name_) : m_name(name_) {};
-    virtual ~DatasetManager() = default;
-    const std::string &name() const { return m_name; }
-    void setController(DatasetController *_d) { controller = _d; }
-    DatasetController *getController() { return controller; }
-    void setLikelihood(GooPdf*);
-    GooPdf *getLikelihood() { return likelihood.get(); }
-    template<typename T> void set(const std::string &,T);
-    template<typename T> T get(const std::string &) const;
-    template<typename T> T get(const std::string &);
-    template<typename T> bool has(const std::string &) const;
+  DatasetManager(const std::string &name_, const std::string &configName_) : m_configName(configName_), m_name(name_){};
+  virtual ~DatasetManager() = default;
+  std::string name() const { return m_configName + "." + m_name; }
+  const std::string &configName() const { return m_configName; }
+  void setController(DatasetController *_d) { controller = _d; }
+  DatasetController *getController() { return controller; }
+  void setLikelihood(GooPdf *);
+  GooPdf *getLikelihood() { return likelihood.get(); }
+  template<typename T>
+  void set(const std::string &, T);
+  template<typename T>
+  T get(const std::string &, bool = true) const;
+  template<typename T>
+  T get(const std::string &, bool = true);
+  template<typename T>
+  bool has(const std::string &) const;
+
   private:
-    std::shared_ptr<GooPdf> likelihood;
-    DatasetController *controller;
-    std::string m_name;
-    std::map<std::string,std::string> m_str;
-    std::map<std::string,int> m_int;
-    std::map<std::string,bool> m_bool;
-    std::map<std::string,double> m_double;
-    std::map<std::string,Variable*> m_var;
-    std::map<std::string,PdfBase*> m_pdf;
-    std::map<std::string,std::vector<std::string>> m_components;
-    std::map<std::string,std::vector<double>> m_coeff;
-    std::map<std::string,std::vector<Variable*>> m_vars;
-    std::map<std::string,std::vector<PdfBase*>> m_pdfs;
-    std::map<std::string,BinnedDataSet*> m_bindata;
+  std::shared_ptr<GooPdf> likelihood;
+  DatasetController *controller;
+  std::string m_configName;
+  std::string m_name;
+  std::map<std::string, std::string> m_str;
+  std::map<std::string, int> m_int;
+  std::map<std::string, bool> m_bool;
+  std::map<std::string, double> m_double;
+  std::map<std::string, Variable *> m_var;
+  std::map<std::string, PdfBase *> m_pdf;
+  std::map<std::string, std::vector<std::string>> m_components;
+  std::map<std::string, std::vector<double>> m_coeff;
+  std::map<std::string, std::vector<Variable *>> m_vars;
+  std::map<std::string, std::vector<PdfBase *>> m_pdfs;
+  std::map<std::string, BinnedDataSet *> m_bindata;
 };
-#define DECLARE_DatasetManager(T) \
-template<> void DatasetManager::set<T>(const std::string&,T); \
-template<> T DatasetManager::get<T>(const std::string& ) const; \
-template<> T DatasetManager::get<T>(const std::string& ) ; \
-template<> bool DatasetManager::has<T>(const std::string& ) const;
-DECLARE_DatasetManager(std::string)
-DECLARE_DatasetManager(int)
-DECLARE_DatasetManager(bool)
-DECLARE_DatasetManager(double)
-DECLARE_DatasetManager(Variable*)
-DECLARE_DatasetManager(PdfBase*)
-DECLARE_DatasetManager(std::vector<std::string>)
-DECLARE_DatasetManager(std::vector<double>)
-DECLARE_DatasetManager(std::vector<Variable*>)
-DECLARE_DatasetManager(std::vector<PdfBase*>)
-DECLARE_DatasetManager(BinnedDataSet*)
+#define DECLARE_DatasetManager(T)                                                                                      \
+  template<>                                                                                                           \
+  void DatasetManager::set<T>(const std::string &, T);                                                                 \
+  template<>                                                                                                           \
+  T DatasetManager::get<T>(const std::string &, bool) const;                                                           \
+  template<>                                                                                                           \
+  T DatasetManager::get<T>(const std::string &, bool);                                                                 \
+  template<>                                                                                                           \
+  bool DatasetManager::has<T>(const std::string &) const;
+
+DECLARE_DatasetManager(std::string);
+DECLARE_DatasetManager(int);
+DECLARE_DatasetManager(bool);
+DECLARE_DatasetManager(double);
+DECLARE_DatasetManager(Variable *);
+DECLARE_DatasetManager(PdfBase *);
+DECLARE_DatasetManager(std::vector<std::string>);
+DECLARE_DatasetManager(std::vector<double>);
+DECLARE_DatasetManager(std::vector<Variable *>);
+DECLARE_DatasetManager(std::vector<PdfBase *>);
+DECLARE_DatasetManager(BinnedDataSet *);
 #endif

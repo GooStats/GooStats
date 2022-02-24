@@ -167,7 +167,7 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
   }
 }
 
-bool SimpleInputBuilder::buildRawSpectra(DatasetManager *dataset, RawSpectrumProvider *provider,
+bool SimpleInputBuilder::buildInternalSpectra(DatasetManager *dataset, RawSpectrumProvider *provider,
                                          ISpectrumBuilder *spcBuilder) {
   spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
@@ -196,7 +196,7 @@ bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, ISpectrumBuil
   return true;
 }
 
-bool SimpleInputBuilder::buildSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) {
+bool SimpleInputBuilder::installSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) {
   builder->AddSiblings(new SimpleSpectrumBuilder(provider));
   return true;
 }

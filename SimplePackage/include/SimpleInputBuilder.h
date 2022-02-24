@@ -32,13 +32,13 @@ class SimpleInputBuilder : public InputBuilder {
   //! create list of vars, so DatasetManager can call ConfigManager::var(name)
   void createVariables(ConfigsetManager *) override;
   //! install spectrum type hanlder
-  bool buildSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) override;
+  bool installSpectrumBuilder(ISpectrumBuilder *builder, RawSpectrumProvider *provider) override;
   //! build sets of datasetcontroller. each controller correspond to a spectrum
   std::vector<std::shared_ptr<DatasetController>> buildDatasetsControllers(ConfigsetManager *configset) override;
   //! fill data spectra
   bool fillDataSpectra(DatasetManager *, RawSpectrumProvider *) override;
   //! build the raw spectra used for convolution
-  bool buildRawSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) override;
+  bool buildInternalSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) override;
   //! build the components of datasetmanager
   bool buildComponenets(DatasetManager *dataset, ISpectrumBuilder *spcBuilder) override;
   //! build the total pdf from the datasets

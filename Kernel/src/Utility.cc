@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "Utility.h"
+#include "GooStatsException.h"
 #include "RawSpectrumProvider.h"
 #include "goofit/BinnedDataSet.h"
 #include <TH1.h>
@@ -53,6 +54,8 @@ namespace GooStats {
     }
     BinnedDataSet *toDataSet(RawSpectrumProvider *provider, Variable *var, const std::string &name) {
       auto de = provider->de(name);
+      if (de != (var->upperlimit - var->lowerlimit) / var->numbins)
+        throw GooStatsException("Unmatched variable definition");
       int shift = static_cast<int>(floor(var->lowerlimit + de * 0.5 - provider->e0(name)) / de);
       auto data = new BinnedDataSet(var, name);
       for (auto i = 0; i + shift < provider->n(name) && i < var->numbins; ++i)
@@ -60,7 +63,7 @@ namespace GooStats {
       return data;
     }
     void save(RawSpectrumProvider *provider, const std::string &name, TH1 *h) {
-      std::vector<double> pdf {};
+      std::vector<double> pdf{};
       for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf.push_back(h->GetBinContent(i));
       provider->registerSpecies(name, h->GetNbinsX(), &pdf[0], h->GetBinCenter(1), h->GetBinWidth(1));
     }

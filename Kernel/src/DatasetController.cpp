@@ -3,8 +3,9 @@
 //
 
 #include "DatasetController.h"
+#include "ConfigsetManager.h"
 DatasetManager *DatasetController::createDataset() {
-  auto dataset = new DatasetManager(name);
+  auto dataset = new DatasetManager(name, configset->name());
   dataset->setController(this);
   return dataset;
 }
