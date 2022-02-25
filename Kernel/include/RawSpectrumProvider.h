@@ -11,6 +11,7 @@
 #define RawSpectrumProvider_H
 #include <map>
 #include <string>
+#include <vector>
 // Protocol for raw spectrum provider
 class RawSpectrumProvider {
   public:

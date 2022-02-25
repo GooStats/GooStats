@@ -16,7 +16,7 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
   try {
     const auto &varName = dataset->name().substr(0, dataset->name().size() - 5);// remove _pull
     auto var = configset->var(varName);
-    if (!configset->has(varName + "_pullType")) {// default: gaus
+    if (!configset->has(varName + "_pullType") || configset->get(varName + "_pullType") == "gaus") {// default: gaus
       dataset->set("type", std::string("gaus"));
       dataset->set("exposure", configset->get<double>("exposure"));
       dataset->set("mean", configset->get<double>(varName + "_centroid"));
