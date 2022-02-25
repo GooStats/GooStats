@@ -76,8 +76,8 @@ void InputManager::initializeDatasets() {
       controller->collectInputs(dataset);
       if (dataset->has<std::vector<std::string>>("components")) {
         builder->fillDataSpectra(dataset, provider.get());
-        builder->buildInternalSpectra(dataset, provider.get(), spcBuilder.get());
-        builder->buildComponenets(dataset, spcBuilder.get());
+//        builder->recursiveBuild(<#initializer #>, dataset, provider.get(), spcBuilder.get());
+        builder->buildComponenets(dataset, provider.get(), spcBuilder.get());
       }
       controller->buildLikelihood(dataset);
     }

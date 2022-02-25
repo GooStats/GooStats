@@ -27,8 +27,8 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cout << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
-        gSystem->StackTrace();                                                                                         \
+        std::cerr << fullName() << " Error: request non-existed terms <" << _name << ">" << std::endl;                 \
+        throw GooStatsException("Item not found");                                                                     \
       }                                                                                                                \
       return ZERO;                                                                                                     \
     }                                                                                                                  \
@@ -39,8 +39,8 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cout << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
-        gSystem->StackTrace();                                                                                         \
+        std::cerr << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
+        throw GooStatsException("Item not found");                                                                     \
       }                                                                                                                \
       return ZERO;                                                                                                     \
     }                                                                                                                  \

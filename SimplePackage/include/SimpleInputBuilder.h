@@ -38,9 +38,10 @@ class SimpleInputBuilder : public InputBuilder {
   //! fill data spectra
   bool fillDataSpectra(DatasetManager *, RawSpectrumProvider *) override;
   //! build the raw spectra used for convolution
-  bool buildInternalSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) override;
+  PdfBase *recursiveBuild(const std::string &name, DatasetManager *dataset, RawSpectrumProvider *provider,
+                      ISpectrumBuilder *spcBuilder) override;
   //! build the components of datasetmanager
-  bool buildComponenets(DatasetManager *dataset, ISpectrumBuilder *spcBuilder) override;
+  bool buildComponenets(DatasetManager *dataset, RawSpectrumProvider *provider, ISpectrumBuilder *spcBuilder) override;
   //! build the total pdf from the datasets
   SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager *> &) override;
 

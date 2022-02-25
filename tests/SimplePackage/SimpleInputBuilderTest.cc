@@ -65,9 +65,7 @@ TEST(GooStats, SimpleInputBuilder) {
   auto data = majorData->get<BinnedDataSet*>("data");
   ASSERT_EQ(data->getBinContent(20),226);
 
-  builder->buildInternalSpectra(majorData,&provider,&spcBuilder); // no effect. peak does not have internals.
-
-  builder->buildComponenets(majorData,&spcBuilder);
+  builder->buildComponenets(majorData, &provider, &spcBuilder);
   auto pdfs = majorData->get<std::vector<PdfBase*>>("pdfs");
   auto gaus = static_cast<GooPdf*>(pdfs.at(0));
   auto eVis = majorData->get<Variable*>("Evis");

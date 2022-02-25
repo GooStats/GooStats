@@ -24,8 +24,7 @@ class RawSpectrumProvider {
     double e0(const std::string &name) const; // in keV
     double de(const std::string &name) const; // in keV
     double peakE(const std::string &name) const; // in keV
-    double br(const std::string &name,std::string &subName) const; // branching ratio
-    std::map<std::string, std::map<std::string, double> > get_br_map();
+    const std::map<std::string, std::map<std::string, double>> &get_br_map() const;
    private:
     std::map<std::string, int> n_map;
     std::map<std::string, std::vector<double>> real_map;

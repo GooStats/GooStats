@@ -26,6 +26,7 @@ class IOptionParser;
 class ParSyncManager;
 class RawSpectrumProvider;
 class ISpectrumBuilder;
+class PdfBase;
 class InputBuilder {
   public:
   virtual ~InputBuilder(){};
@@ -45,9 +46,10 @@ class InputBuilder {
   //! fill data spectra
   virtual bool fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) = 0;
   //! build the raw spectra used for convolution
-  virtual bool buildInternalSpectra(DatasetManager *, RawSpectrumProvider *, ISpectrumBuilder *) = 0;
+  virtual PdfBase *recursiveBuild(const std::string &name, DatasetManager *, RawSpectrumProvider *,
+                              ISpectrumBuilder *) = 0;
   //! build the components of datasetmanager
-  virtual bool buildComponenets(DatasetManager *, ISpectrumBuilder *) = 0;
+  virtual bool buildComponenets(DatasetManager *, RawSpectrumProvider *provider, ISpectrumBuilder *) = 0;
   //! build the total pdf from the datasets
   virtual SumLikelihoodPdf *buildTotalPdf(const std::vector<DatasetManager *> &) = 0;
 };

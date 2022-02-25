@@ -167,30 +167,31 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
     if (configset->hasAndYes("N" + component + "_fixed")) var->fixed = true;
   }
 }
-
-bool SimpleInputBuilder::buildInternalSpectra(DatasetManager *dataset, RawSpectrumProvider *provider,
-                                         ISpectrumBuilder *spcBuilder) {
-  for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
-    if ((dataset->get<std::string>(component + "_type") == "Ana") ||
-        (dataset->get<std::string>(component + "_type") == "AnaShifted")) {
-      GooPdf *innerPdf = spcBuilder->buildSpectrum(component + "_inner", dataset);
+#include "goofit/Variable.h"
+PdfBase *SimpleInputBuilder::recursiveBuild(const std::string &name, DatasetManager *dataset,
+                                            RawSpectrumProvider *provider, ISpectrumBuilder *spcBuilder) {
+  auto type = dataset->get<std::string>(name + "_type");
+  if (dataset->has<std::string>(name + ".inner")) {
+    for(auto comp : GooStats::Utility::splitter(dataset->get<std::string>(name + ".inner"),":")) {
+      auto innerPdf = this->recursiveBuild(comp, dataset, provider, spcBuilder);
       if (!innerPdf) {
-        std::cout << "No hanlder is found to build spectrum <" << component << "_inner> "
-                  << "type <" << dataset->get<std::string>(component + "_inner_type") << ">" << std::endl;
+        std::cout << "Failed to build the inner pdf <" << name << "_inner> "
+                  << "type <" << dataset->get<std::string>(name + "_inner_type") << ">" << std::endl;
         throw GooStatsException("Cannot build spectrum");
       }
-      dataset->set<PdfBase *>(component + "_innerPdf", innerPdf);
+      dataset->set<PdfBase *>(name, innerPdf);
     }
   }
-  return true;
+  auto pdf = spcBuilder->buildSpectrum(name, dataset);
+  if (!pdf) throw GooStatsException("Empty pdf");
+  dataset->set(name, static_cast<PdfBase *>(pdf));
+  return dataset->get<PdfBase *>(name);
 }
-bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, ISpectrumBuilder *spcBuilder) {
+bool SimpleInputBuilder::buildComponenets(DatasetManager *dataset, RawSpectrumProvider *provider,
+                                          ISpectrumBuilder *spcBuilder) {
   std::vector<PdfBase *> pdfs;
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
-    // get Raw spec
-    GooPdf *pdf = spcBuilder->buildSpectrum(component, dataset);
-    if (!pdf) continue;// place holder
-    pdfs.push_back(pdf);
+    pdfs.push_back(recursiveBuild(component, dataset, provider, spcBuilder));
   }
   dataset->set<std::vector<PdfBase *>>("pdfs", pdfs);
   return true;
