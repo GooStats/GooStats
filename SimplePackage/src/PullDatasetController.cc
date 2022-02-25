@@ -18,7 +18,14 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
     auto var = configset->var(varName);
     if (!configset->has(varName + "_pullType") || configset->get(varName + "_pullType") == "gaus") {// default: gaus
       dataset->set("type", std::string("gaus"));
-      dataset->set("exposure", configset->get<double>("exposure"));
+      auto expoName = "exposure." + varName + "_pull";
+      if (configset->has(expoName)) {
+        dataset->set("exposure", configset->get<double>(expoName));
+      } else {
+        std::cerr << "Warning: for compatibility, use total exposure in Configset [" << configset->name()
+                  << "]("<<configset->get("histograms")<<") for pull [" << varName << "]" << std::endl;
+        dataset->set("exposure", configset->get<double>("exposure"));
+      }
       dataset->set("mean", configset->get<double>(varName + "_centroid"));
       dataset->set("sigma", configset->get<double>(varName + "_sigma"));
       dataset->set("half", configset->hasAndYes(varName + "_half"));
