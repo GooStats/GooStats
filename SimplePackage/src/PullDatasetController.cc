@@ -23,7 +23,7 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
         dataset->set("exposure", configset->get<double>(expoName));
       } else {
         std::cerr << "Warning: for compatibility, use total exposure in Configset [" << configset->name()
-                  << "]("<<configset->get("histograms")<<") for pull [" << varName << "]" << std::endl;
+                  << "] for pull [" << varName << "]" << std::endl;
         dataset->set("exposure", configset->get<double>("exposure"));
       }
       dataset->set("mean", configset->get<double>(varName + "_centroid"));
