@@ -21,6 +21,7 @@
  */
 #include "DatasetManager.h"
 class ConfigsetManager;
+class RawSpectrumProvider;
 class DatasetController {
   public:
   DatasetController(ConfigsetManager *_c, const std::string &n = "LL") : configset(_c), name(n){};

@@ -171,12 +171,12 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
 PdfBase *SimpleInputBuilder::recursiveBuild(const std::string &name, DatasetManager *dataset,
                                             RawSpectrumProvider *provider, ISpectrumBuilder *spcBuilder) {
   auto type = dataset->get<std::string>(name + "_type");
-  if (dataset->has<std::string>(name + ".inner")) {
-    for(auto comp : GooStats::Utility::splitter(dataset->get<std::string>(name + ".inner"),":")) {
+  if (dataset->has<std::string>(name + ".deps")) {
+    for(auto comp : GooStats::Utility::splitter(dataset->get<std::string>(name + ".deps"),":")) {
       auto innerPdf = this->recursiveBuild(comp, dataset, provider, spcBuilder);
       if (!innerPdf) {
-        std::cout << "Failed to build the inner pdf <" << name << "_inner> "
-                  << "type <" << dataset->get<std::string>(name + "_inner_type") << ">" << std::endl;
+        std::cout << "Failed to build the dependence of <" << comp << "> "
+                  << "type <" << dataset->get<std::string>(comp + "_type") << ">" << std::endl;
         throw GooStatsException("Cannot build spectrum");
       }
       dataset->set<PdfBase *>(name, innerPdf);

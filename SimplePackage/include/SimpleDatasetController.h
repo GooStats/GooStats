@@ -20,6 +20,7 @@
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
 #include "DatasetController.h"
+#include "RawSpectrumProvider.h"
 class SimpleDatasetController : public DatasetController {
   public:
   /// @param _c ConfigsetManger storing options

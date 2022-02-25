@@ -47,7 +47,7 @@ void recursiveSet(const std::string comp, ConfigsetManager *configset, DatasetMa
       }
 
       auto newName = comp + "_inner";
-      dataset->set(comp + ".inner", newName);
+      dataset->set(comp + ".deps", newName);
       recursiveSet(newName, configset, dataset, useAna, useNL);
     }
   }

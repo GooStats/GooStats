@@ -20,6 +20,7 @@
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
 #include "DatasetController.h"
+#include "RawSpectrumProvider.h"
 class PullDatasetController : public DatasetController {
   public:
     PullDatasetController(ConfigsetManager *_c,const std::string &n="pull") : DatasetController(_c,n) { }
