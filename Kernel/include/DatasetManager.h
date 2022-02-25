@@ -39,7 +39,8 @@ class DatasetManager {
   public:
   DatasetManager(const std::string &name_, const std::string &configName_) : m_configName(configName_), m_name(name_){};
   virtual ~DatasetManager() = default;
-  std::string name() const { return m_configName + "." + m_name; }
+  std::string fullName() const { return m_configName + "." + m_name; }
+  const std::string &name() const { return m_name; }
   const std::string &configName() const { return m_configName; }
   void setController(DatasetController *_d) { controller = _d; }
   DatasetController *getController() { return controller; }

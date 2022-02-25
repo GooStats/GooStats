@@ -154,6 +154,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
     for (auto file: sourceTFiles) file->Close();// don't delete, ROOT will delete them
   }
 }
+
 void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
   std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"), ":"));
   ;
@@ -169,7 +170,6 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
 
 bool SimpleInputBuilder::buildInternalSpectra(DatasetManager *dataset, RawSpectrumProvider *provider,
                                          ISpectrumBuilder *spcBuilder) {
-  spcBuilder->AddSiblings(new SimpleSpectrumBuilder(provider));
   for (const auto &component: dataset->get<std::vector<std::string>>("components")) {
     if ((dataset->get<std::string>(component + "_type") == "Ana") ||
         (dataset->get<std::string>(component + "_type") == "AnaShifted")) {
@@ -215,10 +215,10 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
   std::vector<PdfBase *> likelihoodTerms;
   for (auto dataset: datasets) {
     if (!dataset->getLikelihood()) {
-      std::cerr << "Likelihood of dataset <" << dataset->name() << "> is empty." << std::endl;
+      std::cerr << "Likelihood of dataset <" << dataset->fullName() << "> is empty." << std::endl;
       throw GooStatsException("Empty likelihood found");
     }
-    std::cout << "Inserting <" << dataset->name() << ">" << std::endl;
+    std::cout << "Inserting <" << dataset->fullName() << ">" << std::endl;
     likelihoodTerms.push_back(static_cast<PdfBase *>(dataset->getLikelihood()));
   }
   auto sumpdf = new SumLikelihoodPdf("full_likelihood", likelihoodTerms);
@@ -226,8 +226,8 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
 }
 bool SimpleInputBuilder::fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) {
   Variable *Evis = dataset->get<Variable *>("Evis");
-  auto binned_data = new BinnedDataSet(Evis, dataset->name() + "_" + Evis->name);
-  for (int i = 0; i < Evis->numbins; ++i) binned_data->setBinContent(i, provider->pdf(dataset->name())[i]);
+  auto binned_data = new BinnedDataSet(Evis, dataset->fullName() + "_" + Evis->name);
+  for (int i = 0; i < Evis->numbins; ++i) binned_data->setBinContent(i, provider->pdf(dataset->fullName())[i]);
   dataset->set("data", binned_data);
   return true;
 }

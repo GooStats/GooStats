@@ -20,7 +20,7 @@
 void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *inputManager,GSFitManager *gsFitManager) {
   for(auto dataset : inputManager->Datasets()) {
     double exposure = dataset->get<double>("exposure");
-    outHelper->registerTerm(dataset->name()+".exposure", [=]() -> double {
+    outHelper->registerTerm(dataset->fullName()+".exposure", [=]() -> double {
       return exposure;
     });
   }

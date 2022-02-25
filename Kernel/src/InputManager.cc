@@ -140,6 +140,6 @@ void InputManager::registerConfigset(ConfigsetManager *configset) {
   configsets.push_back(std::shared_ptr<ConfigsetManager>(configset));
 }
 void InputManager::registerDataset(DatasetManager *dataset) {
-  std::cout << "InputManager::registerDataset(" << dataset->name() << ")" << std::endl;
+  std::cout << "InputManager::registerDataset(" << dataset->fullName() << ")" << std::endl;
   datasets.push_back(std::shared_ptr<DatasetManager>(dataset));
 }

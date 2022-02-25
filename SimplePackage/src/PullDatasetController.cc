@@ -42,7 +42,7 @@ bool PullDatasetController::buildLikelihood(DatasetManager *dataset) {
   auto type = dataset->get<std::string>("type");
   if (type == "gaus") {
     GooPdf *pdf =
-            new PullPdf(dataset->name(), dataset->get<Variable *>("var"), dataset->get<double>("mean"),
+            new PullPdf(dataset->fullName(), dataset->get<Variable *>("var"), dataset->get<double>("mean"),
                         dataset->get<double>("sigma"), dataset->get<double>("exposure"), dataset->get<bool>("half"));
     dataset->setLikelihood(pdf);
   } else {

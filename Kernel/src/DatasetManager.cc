@@ -18,7 +18,7 @@
     if (var.find(_name) == var.end()) {                                                                                \
       var[_name] = x;                                                                                                  \
     } else {                                                                                                           \
-      std::cout << name() << " Warning: duplicate request to insert terms <" << _name << ">" << std::endl;             \
+      std::cout << fullName() << " Warning: duplicate request to insert terms <" << _name << ">" << std::endl;         \
     }                                                                                                                  \
   }                                                                                                                    \
   template<>                                                                                                           \
@@ -27,7 +27,7 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cout << name() << " Warning: request non-existed terms <" << _name << ">" << std::endl;                   \
+        std::cout << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
         gSystem->StackTrace();                                                                                         \
       }                                                                                                                \
       return ZERO;                                                                                                     \
@@ -39,7 +39,7 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cout << name() << " Warning: request non-existed terms <" << _name << ">" << std::endl;                   \
+        std::cout << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
         gSystem->StackTrace();                                                                                         \
       }                                                                                                                \
       return ZERO;                                                                                                     \

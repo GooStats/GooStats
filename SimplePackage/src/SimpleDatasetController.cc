@@ -172,7 +172,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
 }
 #include "goofit/PDFs/SumPdf.h"
 bool SimpleDatasetController::buildLikelihood(DatasetManager *dataset) {
-  GooPdf *pdf = new SumPdf(dataset->name(),
+  GooPdf *pdf = new SumPdf(dataset->fullName(),
       dataset->get<double>(std::string("exposure")),
       dataset->get<std::vector<Variable*>>(std::string("Ns")),
       dataset->get<std::vector<PdfBase*>>(std::string("pdfs")),

@@ -36,7 +36,7 @@ SimplePlotManager::groupByName(const std::vector<DatasetManager*>& datasets) {
   std::map<std::string,std::vector<DatasetManager*>> groups;
   for(auto dataset : datasets) {
     if(!dynamic_cast<SumPdf*>(dataset->getLikelihood())) continue;
-    const std::string &name(dataset->name());
+    const std::string &name(dataset->fullName());
     const std::string &groupName(name.substr(0,name.find(".")));
     groups[groupName].push_back(dataset);
     std::cout<<"SimplePlotManager::groupByName <"<<name<<"> appedned to <"<<groupName<<">"<<std::endl;
