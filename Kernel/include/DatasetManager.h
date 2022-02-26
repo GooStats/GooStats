@@ -47,7 +47,7 @@ class DatasetManager {
   void setLikelihood(GooPdf *);
   GooPdf *getLikelihood() { return likelihood.get(); }
   template<typename T>
-  void set(const std::string &, T);
+  void set(const std::string &, T,bool = true);
   template<typename T>
   T get(const std::string &, bool = true) const;
   template<typename T>
@@ -74,7 +74,7 @@ class DatasetManager {
 };
 #define DECLARE_DatasetManager(T)                                                                                      \
   template<>                                                                                                           \
-  void DatasetManager::set<T>(const std::string &, T);                                                                 \
+  void DatasetManager::set<T>(const std::string &, T, bool);                                                           \
   template<>                                                                                                           \
   T DatasetManager::get<T>(const std::string &, bool) const;                                                           \
   template<>                                                                                                           \

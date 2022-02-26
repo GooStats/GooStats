@@ -14,11 +14,12 @@
 
 #define DEFINE_DatasetManager(T, var, ZERO)                                                                            \
   template<>                                                                                                           \
-  void DatasetManager::set<T>(const std::string &_name, T x) {                                                         \
-    if (var.find(_name) == var.end()) {                                                                                \
+  void DatasetManager::set<T>(const std::string &_name, T x, bool checkDuplicate) {                                    \
+    if (var.find(_name) == var.end() || !checkDuplicate) {                                                             \
       var[_name] = x;                                                                                                  \
     } else {                                                                                                           \
-      std::cout << fullName() << " Warning: duplicate request to insert terms <" << _name << ">" << std::endl;         \
+      std::cerr << fullName() << " Error: duplicate request to insert terms <" << _name << ">" << std::endl;           \
+      throw GooStatsException("Duplicate terms");                                                                      \
     }                                                                                                                  \
   }                                                                                                                    \
   template<>                                                                                                           \
