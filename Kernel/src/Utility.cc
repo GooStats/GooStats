@@ -52,11 +52,18 @@ namespace GooStats {
       }
       return result;
     }
-    BinnedDataSet *toDataSet(RawSpectrumProvider *provider, Variable *var, const std::string &name) {
+    BinnedDataSet *toDataSet(RawSpectrumProvider *provider, Variable *var, const std::string &name, bool check_e0) {
       auto de = provider->de(name);
-      if (de != (var->upperlimit - var->lowerlimit) / var->numbins)
+      auto e0 = provider->e0(name);
+      if (fabs(de - (var->upperlimit - var->lowerlimit) / var->numbins) > 1e-10 ||
+          check_e0 && (var->lowerlimit + de * 0.5 - e0) > 1e-10) {
+        auto de_2 = (var->upperlimit - var->lowerlimit) / var->numbins;
+        auto e0_2 = var->lowerlimit + de_2 * 0.5;
+        std::cerr << "e0, de expected: (" << e0 << "," << de << "); actual: (" << e0_2 << "," << de_2 << ")"
+                  << std::endl;
         throw GooStatsException("Unmatched variable definition");
-      int shift = static_cast<int>(floor(var->lowerlimit + de * 0.5 - provider->e0(name)) / de);
+      }
+      int shift = static_cast<int>(floor(var->lowerlimit + de * 0.5 - e0) / de);
       auto data = new BinnedDataSet(var, name);
       for (auto i = 0; i + shift < provider->n(name) && i < var->numbins; ++i)
         data->setBinContent(i, provider->pdf(name).at(i + shift));

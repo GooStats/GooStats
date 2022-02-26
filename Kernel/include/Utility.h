@@ -22,7 +22,7 @@ namespace GooStats {
     extern std::string strip(const std::string &);
     extern std::vector<std::string> splitter(std::string source, std::string flag);
     extern std::string escape(const std::string &str,std::string purge=")",std::string underscore="(",std::vector<std::string> full = {"default.","global."});
-    extern BinnedDataSet *toDataSet(RawSpectrumProvider *, Variable *, const std::string &);
+    extern BinnedDataSet *toDataSet(RawSpectrumProvider *, Variable *, const std::string &, bool check_e0 = true);
     extern void save(RawSpectrumProvider *, const std::string &name, TH1 *);
   }
 }
