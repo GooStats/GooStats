@@ -21,45 +21,57 @@ public:
     static_assert(!std::is_same<T, const char *>::value, "const char* type explicitly deleted due to high probability "
                                                          "of wrong usage. use std::string() to "
                                                          "wrap your values!");
-    auto &data = store<T>::data;
+    auto &data = list<T>();
     if (data.find(key) == data.end() || !check) {
       data[key] = val;
     } else {
-      throw GooStatsException("Duplicate key <"+key+"> insertion");
+      throw GooStatsException("Duplicate key <" + key + "> insertion");
     }
   }
 
   template<class T = std::string>
-  bool has(std::string key) const {
-    const auto &data = store<T>::data;
+  [[nodiscard]] bool has(std::string key) const {
+    const auto &data = list<T>();
     return data.find(key) != data.end();
   }
 
   template<class T = std::string>
   T get(std::string key, bool check = true) const {
-    const auto &data = store<T>::data;
+    const auto &data = list<T>();
     if (data.find(key) != data.end()) {
       return data.at(key);
     } else {
-      if (check) throw GooStatsException("Key <"+key+"> not found");
+      if (check) throw GooStatsException("Key <" + key + "> not found");
       else
         return {};
     }
   }
 
   template<class T = std::string>
-  std::map<std::string, T> list() const {
-    return store<T>::data;
-  };
+  [[nodiscard]] const std::map<std::string, T> &list() const = delete;
 
-private:
-  template<class T>
-  struct store {
-    static std::map<std::string, T> data;
-  };
+  template<class T = std::string>
+  [[nodiscard]] std::map<std::string, T> &list() = delete;
+
+#define DECLARE_TYPE(T, VAR)                                                                                           \
+public:                                                                                                                \
+  template<>                                                                                                           \
+  [[nodiscard]] const std::map<std::string, T> &list<T>() const {                                                      \
+    return VAR;                                                                                                        \
+  };                                                                                                                   \
+                                                                                                                       \
+private:                                                                                                               \
+  template<>                                                                                                           \
+  [[nodiscard]] std::map<std::string, T> &list<T>() {                                                                  \
+    return VAR;                                                                                                        \
+  };                                                                                                                   \
+                                                                                                                       \
+private:                                                                                                               \
+  std::map<std::string, T> (VAR);
+
+  DECLARE_TYPE(double, m_double);
+  DECLARE_TYPE(int, m_int);
+  DECLARE_TYPE(std::string, m_str);
 };
-
-template<typename T>
-std::map<std::string, T> Database::store<T>::data = {};
 
 #endif//BX_GOOSTATS_DATABASE_H
