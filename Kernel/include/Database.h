@@ -11,9 +11,9 @@
 #ifndef BX_GOOSTATS_DATABASE_H
 #define BX_GOOSTATS_DATABASE_H
 #include "GooStatsException.h"
+#include <iostream>
 #include <map>
 #include <string>
-#include <iostream>
 
 class Database {
 public:
@@ -24,8 +24,9 @@ public:
                                                          "wrap your values!");
     auto &data = list<T>();
     if (data.find(key) == data.end() || !check) {
-      if(has(key)) {
-        std::cerr<<"Warning: duplicate key ["<<key<<"] found. old ["<<get<T>(key)<<"] new ["<<val<<"]"<<std::endl;
+      if (has(key)) {
+        std::cerr << "Warning: duplicate key [" << key << "] found. old [" << get<T>(key) << "] new [" << val << "]"
+                  << std::endl;
       }
       data[key] = val;
     } else {
@@ -54,28 +55,26 @@ public:
   template<class T = std::string>
   [[nodiscard]] const std::map<std::string, T> &list() const = delete;
 
+private:
   template<class T = std::string>
   [[nodiscard]] std::map<std::string, T> &list() = delete;
 
-#define DECLARE_TYPE(T, VAR)                                                                                           \
-public:                                                                                                                \
-  template<>                                                                                                           \
-  [[nodiscard]] const std::map<std::string, T> &list<T>() const {                                                      \
-    return VAR;                                                                                                        \
-  };                                                                                                                   \
-                                                                                                                       \
-private:                                                                                                               \
-  template<>                                                                                                           \
-  [[nodiscard]] std::map<std::string, T> &list<T>() {                                                                  \
-    return VAR;                                                                                                        \
-  };                                                                                                                   \
-                                                                                                                       \
-private:                                                                                                               \
-  std::map<std::string, T> (VAR);
+#define EXPAND_MACRO(MACRO)                                                                                            \
+  MACRO(double, m_double);                                                                                             \
+  MACRO(int, m_int);                                                                                                   \
+  MACRO(std::string, m_str);
 
-  DECLARE_TYPE(double, m_double);
-  DECLARE_TYPE(int, m_int);
-  DECLARE_TYPE(std::string, m_str);
+#define DECLARE_TYPE(T, VAR) std::map<std::string, T>(VAR);
+
+  EXPAND_MACRO(DECLARE_TYPE);
 };
+
+#define DECLARE_METHOD(T, VAR)                                                                                         \
+  template<>                                                                                                           \
+  [[nodiscard]] const std::map<std::string, T> &Database::list<T>() const;                                             \
+  template<>                                                                                                           \
+  [[nodiscard]] std::map<std::string, T> &Database::list<T>();
+
+EXPAND_MACRO(DECLARE_METHOD);
 
 #endif//BX_GOOSTATS_DATABASE_H
