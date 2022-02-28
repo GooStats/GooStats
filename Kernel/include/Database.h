@@ -13,6 +13,7 @@
 #include "GooStatsException.h"
 #include <map>
 #include <string>
+#include <iostream>
 
 class Database {
 public:
@@ -23,6 +24,9 @@ public:
                                                          "wrap your values!");
     auto &data = list<T>();
     if (data.find(key) == data.end() || !check) {
+      if(has(key)) {
+        std::cerr<<"Warning: duplicate key ["<<key<<"] found. old ["<<get<T>(key)<<"] new ["<<val<<"]"<<std::endl;
+      }
       data[key] = val;
     } else {
       throw GooStatsException("Duplicate key <" + key + "> insertion");

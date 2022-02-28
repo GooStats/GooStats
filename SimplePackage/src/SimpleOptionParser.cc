@@ -34,7 +34,7 @@ bool SimpleOptionParser::parse(OptionManager *optionManager, const std::string &
     if(eq!=std::string::npos) {
       key = GooStats::Utility::strip(line.substr(0,eq));
       value = GooStats::Utility::strip(line.substr(eq+1));
-      optionManager->set(key, value);
+      optionManager->set(key, value,false);
     }
     //std::cout<<"Parsing ["<<line<<"] -> ("<<key<<") ("<<equals<<") ("<<value<<")"<<std::endl;
   }
@@ -50,7 +50,7 @@ bool SimpleOptionParser::parse(OptionManager *optionManager, int argc, const cha
       const std::string key = item.substr(0, eqPos);
       const std::string value = item.substr(eqPos + 1);
       std::cout << "ARG[" << i << "] <" << key << "> = [" << value << "]" << std::endl;
-      optionManager->set(key, value);
+      optionManager->set(key, value,false);
     } else {
       throw GooStatsException("Illegal format of command line options: [" + item + "]");
     }
