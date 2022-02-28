@@ -24,6 +24,9 @@ namespace GooStats {
     extern std::string escape(const std::string &str,std::string purge=")",std::string underscore="(",std::vector<std::string> full = {"default.","global."});
     extern BinnedDataSet *toDataSet(RawSpectrumProvider *, Variable *, const std::string &, bool check_e0 = true);
     extern void save(RawSpectrumProvider *, const std::string &name, TH1 *);
+    template<typename T> T convert(const std::string &) = delete;
+    template<> double convert<double>(const std::string &v);
+    template<> int convert<int>(const std::string &v);
   }
 }
 #endif

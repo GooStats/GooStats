@@ -17,12 +17,12 @@ void recursiveSet(const std::string comp, ConfigsetManager *configset, DatasetMa
   auto type = configset->get(comp + "_type");
   dataset->set(comp + "_type", type);
   if (!configset->hasVar(comp + "_E")) {
-    if(configset->has(comp+"_E_nbins")) {
-      auto inner_E = configset->createVar(comp + "_E", 0, 0, configset->get<double>(comp + "_E_min"),
-                                          configset->get<double>(comp + "_E_max"));
-      inner_E->numbins = configset->get<double>(comp + "_E_nbins");
+    if (configset->has(comp + "_E_nbins")) {
+      auto inner_E = configset->createVar(comp + "_E", 0, 0, configset->getOrConvert(comp + "_E_min"),
+                                          configset->getOrConvert(comp + "_E_max"));
+      inner_E->numbins = configset->getOrConvert(comp + "_E_nbins");
     } else {
-      configset->linkVar(comp+"_E",configset->get("EvisVariable"));
+      configset->linkVar(comp + "_E", configset->get("EvisVariable"));
     }
   }
   dataset->set(comp + "_E", configset->var(comp + "_E"));// energy
@@ -32,18 +32,19 @@ void recursiveSet(const std::string comp, ConfigsetManager *configset, DatasetMa
   } else if (type.substr(0, 3) == "Ana") {
     useAna = true;// NL, res, feq
     if (type == "AnaPeak") {
-      dataset->set(comp + "_Epeak", configset->createVar(comp + "_Epeak", configset->get<double>(comp + "_Evis_init"),
-                                                         configset->get<double>(comp + "_Evis_err"),
-                                                         configset->get<double>(comp + "_Evis_min"),
-                                                         configset->get<double>(comp + "_Evis_max")));
+      dataset->set(comp + "_Epeak",
+                   configset->createVar(comp + "_Epeak", configset->getOrConvert(comp + "_Evis_init"),
+                                        configset->getOrConvert(comp + "_Evis_err"),
+                                        configset->getOrConvert(comp + "_Evis_min"),
+                                        configset->getOrConvert(comp + "_Evis_max")));
     } else {
       useNL = true;
       if (type == "AnaShifted") {
         dataset->set(comp + "_dEvis",
-                     configset->createVar(comp + "_dEvis", configset->get<double>(comp + "_dEvis_init"),
-                                          configset->get<double>(comp + "_dEvis_err"),
-                                          configset->get<double>(comp + "_dEvis_min"),
-                                          configset->get<double>(comp + "_dEvis_max")));
+                     configset->createVar(comp + "_dEvis", configset->getOrConvert(comp + "_dEvis_init"),
+                                          configset->getOrConvert(comp + "_dEvis_err"),
+                                          configset->getOrConvert(comp + "_dEvis_min"),
+                                          configset->getOrConvert(comp + "_dEvis_max")));
       }
 
       auto newName = comp + "_inner";
@@ -55,16 +56,17 @@ void recursiveSet(const std::string comp, ConfigsetManager *configset, DatasetMa
 
 bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   try {
-    dataset->set("exposure", configset->get<double>("exposure"));
-    Variable *Evis = configset->createVar(configset->get("EvisVariable"), 0, 0, configset->get<double>("Evis_min"),
-                                          configset->get<double>("Evis_max"));
-    Evis->numbins = configset->get<double>("Evis_nbins");
+    dataset->set("exposure", configset->getOrConvert("exposure"));
+    Variable *Evis =
+            configset->createVar(configset->get("EvisVariable"), 0, 0, configset->getOrConvert("Evis_min"),
+                                          configset->getOrConvert("Evis_max"));
+    Evis->numbins = configset->getOrConvert("Evis_nbins");
     dataset->set("Evis", Evis);
 
     if (configset->has("anaScaling")) {
       Variable *EvisFine =
               configset->createVar(configset->get("EvisVariable") + "_fine", 0, 0, Evis->lowerlimit, Evis->upperlimit);
-      int scale = configset->get<double>("anaScaling");
+      int scale = configset->getOrConvert("anaScaling");
       EvisFine->numbins = Evis->numbins * scale;
       dataset->set("EvisFine", EvisFine);
       dataset->set("anaScaling", scale);
@@ -90,57 +92,60 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
     if (useAna) {
       dataset->set("RPFtype", configset->get("RPFtype"));
       dataset->set("NLtype", configset->get("NLtype"));
-      if (configset->has("feq")) dataset->set("feq", configset->get<double>("feq"));
+      if (configset->has("feq")) dataset->set("feq", configset->getOrConvert("feq"));
       else
         dataset->set("feq", 1.0);
       if (useNL) {
         std::vector<Variable *> NL;
-        Variable *LY = configset->createVar("LY", configset->get<double>("LY_init"), configset->get<double>("LY_err"),
-                                            configset->get<double>("LY_min"), configset->get<double>("LY_max"));
+        Variable *LY = configset->createVar(
+                "LY", configset->getOrConvert("LY_init"), configset->getOrConvert("LY_err"), configset->getOrConvert("LY_min"), configset->getOrConvert("LY_max"));
         NL.push_back(LY);
         if (configset->has("NLtype") && configset->get("NLtype") == "expPar") {
-          Variable *NL_b =
-                  configset->createVar("NL_b", configset->get<double>("NL_b_init"), configset->get<double>("NL_b_err"),
-                                       configset->get<double>("NL_b_min"), configset->get<double>("NL_b_max"));
+          Variable *NL_b = configset->createVar(
+                  "NL_b", configset->getOrConvert("NL_b_init"), configset->getOrConvert("NL_b_err"),
+                  configset->getOrConvert("NL_b_min"), configset->getOrConvert("NL_b_max"));
           NL.push_back(NL_b);
-          Variable *NL_c =
-                  configset->createVar("NL_c", configset->get<double>("NL_c_init"), configset->get<double>("NL_c_err"),
-                                       configset->get<double>("NL_c_min"), configset->get<double>("NL_c_max"));
+          Variable *NL_c = configset->createVar(
+                  "NL_c", configset->getOrConvert("NL_c_init"), configset->getOrConvert("NL_c_err"),
+                  configset->getOrConvert("NL_c_min"), configset->getOrConvert("NL_c_max"));
           NL.push_back(NL_c);
-          Variable *NL_e =
-                  configset->createVar("NL_e", configset->get<double>("NL_e_init"), configset->get<double>("NL_e_err"),
-                                       configset->get<double>("NL_e_min"), configset->get<double>("NL_e_max"));
+          Variable *NL_e = configset->createVar(
+                  "NL_e", configset->getOrConvert("NL_e_init"), configset->getOrConvert("NL_e_err"),
+                  configset->getOrConvert("NL_e_min"), configset->getOrConvert("NL_e_max"));
           NL.push_back(NL_e);
-          Variable *NL_f =
-                  configset->createVar("NL_f", configset->get<double>("NL_f_init"), configset->get<double>("NL_f_err"),
-                                       configset->get<double>("NL_f_min"), configset->get<double>("NL_f_max"));
+          Variable *NL_f = configset->createVar(
+                  "NL_f", configset->getOrConvert("NL_f_init"), configset->getOrConvert("NL_f_err"),
+                  configset->getOrConvert("NL_f_min"), configset->getOrConvert("NL_f_max"));
           NL.push_back(NL_f);
         } else {
-          Variable *qc1 =
-                  configset->createVar("qc1", configset->get<double>("qc1_init"), configset->get<double>("qc1_err"),
-                                       configset->get<double>("qc1_min"), configset->get<double>("qc1_max"));
+          Variable *qc1 = configset->createVar(
+                  "qc1", configset->getOrConvert("qc1_init"),
+                                               configset->getOrConvert("qc1_err"),
+                                               configset->getOrConvert("qc1_min"), configset->getOrConvert("qc1_max"));
           NL.push_back(qc1);
-          Variable *qc2 =
-                  configset->createVar("qc2", configset->get<double>("qc2_init"), configset->get<double>("qc2_err"),
-                                       configset->get<double>("qc2_min"), configset->get<double>("qc2_max"));
+          Variable *qc2 = configset->createVar(
+                  "qc2", configset->getOrConvert("qc2_init"),
+                                               configset->getOrConvert("qc2_err"),
+                                               configset->getOrConvert("qc2_min"), configset->getOrConvert("qc2_max"));
           NL.push_back(qc2);
         }
         dataset->set("NL", NL);
       }
       std::vector<Variable *> res;
-      Variable *sdn = configset->createVar("sdn", configset->get<double>("sdn_init"), configset->get<double>("sdn_err"),
-                                           configset->get<double>("sdn_min"), configset->get<double>("sdn_max"));
+      Variable *sdn = configset->createVar(
+              "sdn", configset->getOrConvert("sdn_init"), configset->getOrConvert("sdn_err"), configset->getOrConvert("sdn_min"), configset->getOrConvert("sdn_max"));
       res.push_back(sdn);
-      Variable *v1 = configset->createVar("v1", configset->get<double>("v1_init"), configset->get<double>("v1_err"),
-                                          configset->get<double>("v1_min"), configset->get<double>("v1_max"));
+      Variable *v1 = configset->createVar(
+              "v1", configset->getOrConvert("v1_init"), configset->getOrConvert("v1_err"),
+                                   configset->getOrConvert("v1_min"), configset->getOrConvert("v1_max"));
       res.push_back(v1);
       Variable *sigmaT = configset->createVar(
-              "sigmaT", configset->get<double>("sigmaT_init"), configset->get<double>("sigmaT_err"),
-              configset->get<double>("sigmaT_min"), configset->get<double>("sigmaT_max"));
+              "sigmaT", configset->getOrConvert("sigmaT_init"), configset->getOrConvert("sigmaT_err"),
+              configset->getOrConvert("sigmaT_min"), configset->getOrConvert("sigmaT_max"));
       res.push_back(sigmaT);
       if (configset->get("RPFtype") == "MG") {
-        Variable *g2 = configset->createVar("g2", configset->get<double>("g2_init"), configset->get<double>("g2_err"),
-                                            configset->get<double>("g2_min"), configset->get<double>("g2_max"));
+        Variable *g2 = configset->createVar(
+                "g2", configset->getOrConvert("g2_init"), configset->getOrConvert("g2_err"), configset->getOrConvert("g2_min"), configset->getOrConvert("g2_max"));
         res.push_back(g2);
       }
       dataset->set("res", res);

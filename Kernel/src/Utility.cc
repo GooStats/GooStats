@@ -74,5 +74,7 @@ namespace GooStats {
       for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf.push_back(h->GetBinContent(i));
       provider->registerSpecies(name, h->GetNbinsX(), &pdf[0], h->GetBinCenter(1), h->GetBinWidth(1));
     }
+    template<> double convert<double>(const std::string &v) { return std::stod(v); }
+    template<> int convert<int>(const std::string &v) { return std::stoi(v); }
   }// namespace Utility
 }// namespace GooStats

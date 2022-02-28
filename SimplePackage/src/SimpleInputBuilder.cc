@@ -160,10 +160,10 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
   ;
   for (const auto &component: components) {
     // warning: no error checking
-    auto var = configset->createVar(component, configset->get<double>("N" + component + "_init"),
-                                    configset->get<double>("N" + component + "_err"),
-                                    configset->get<double>("N" + component + "_min"),
-                                    configset->get<double>("N" + component + "_max"));
+    auto var = configset->createVar(component, configset->getOrConvert("N" + component + "_init"),
+                                    configset->getOrConvert("N" + component + "_err"),
+                                    configset->getOrConvert("N" + component + "_min"),
+                                    configset->getOrConvert("N" + component + "_max"));
     if (configset->hasAndYes("N" + component + "_fixed")) var->fixed = true;
   }
 }

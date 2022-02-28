@@ -17,7 +17,7 @@
 #include "OutputManager.h"
 bool PrepareData::init() {
   if(GlobalOption()->has("seed"))
-    seed = GlobalOption()->get<double>("seed");
+    seed = GlobalOption()->getOrConvert<int>("seed");
   else
     seed = time(nullptr);
   gRandom->SetSeed(seed);

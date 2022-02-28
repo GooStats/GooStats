@@ -21,14 +21,14 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
       dataset->set("type", std::string("gaus"));
       auto expoName = "exposure." + varName + "_pull";
       if (configset->has(expoName)) {
-        dataset->set("exposure", configset->get<double>(expoName));
+        dataset->set("exposure", configset->getOrConvert(expoName));
       } else {
         std::cerr << "Warning: for compatibility, use total exposure in Configset [" << configset->name()
                   << "] for pull [" << varName << "]" << std::endl;
-        dataset->set("exposure", configset->get<double>("exposure"));
+        dataset->set("exposure", configset->getOrConvert("exposure"));
       }
-      dataset->set("mean", configset->get<double>(varName + "_centroid"));
-      dataset->set("sigma", configset->get<double>(varName + "_sigma"));
+      dataset->set("mean", configset->getOrConvert(varName + "_centroid"));
+      dataset->set("sigma", configset->getOrConvert(varName + "_sigma"));
       dataset->set("half", configset->hasAndYes(varName + "_half"));
     } else {
       throw GooStatsException("Unknown Pull type: [" + configset->get(varName + "_pullType") + "]");

@@ -5,3 +5,7 @@ add_test(NAME BasicManagerTest COMMAND BasicManagerTest)
 add_executable(UtilityTest UtilityTest.cc)
 target_link_libraries(UtilityTest PRIVATE GooStatsLib gtest_main)
 add_test(NAME UtilityTest COMMAND UtilityTest)
+
+add_executable(DatabaseTest DatabaseTest.cc)
+target_link_libraries(DatabaseTest PRIVATE GooStatsLib gtest_main)
+add_test(NAME DatabaseTest COMMAND DatabaseTest)
