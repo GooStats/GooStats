@@ -46,9 +46,9 @@ class InputManager : public Module {
     void fillAsimovData();
     std::vector<ConfigsetManager*> Configsets();
     std::vector<DatasetManager*> Datasets();
-    const std::vector<ConfigsetManager*> Configsets() const;
-    const std::vector<DatasetManager*> Datasets() const;
-    const OptionManager *GlobalOption() const;
+    std::vector<ConfigsetManager*> Configsets() const;
+    std::vector<DatasetManager*> Datasets() const;
+    const OptionManager *GlobalOption() const { return globalConfigset.get(); }
     void setOutputFileName(const std::string &out) { outName = out; }
     const std::string &getOutputFileName() const { return outName; }
     SumLikelihoodPdf *getTotalPdf() { return totalPdf.get(); };
@@ -80,7 +80,8 @@ class InputManager : public Module {
     //! Config-set is the minimul data-set unit in GooStats.       
     //! One config-set can contain multiple spectrum, but they    
     //! In GooFit there is a even smaller unit
-    std::vector<std::shared_ptr<ConfigsetManager>> configsets; 
+    std::vector<std::shared_ptr<ConfigsetManager>> configsets;
+    std::shared_ptr<ConfigsetManager> globalConfigset;
     /**@}*/
 
     /**

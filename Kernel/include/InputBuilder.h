@@ -33,7 +33,8 @@ class InputBuilder {
   //! load the name of output file from command-line args.
   virtual std::string loadOutputFileName(int, const char **, std::vector<ConfigsetManager *> configsets = {}) = 0;
   //! load number of configs / location of configuration files from command-line args.
-  virtual std::vector<ConfigsetManager *> buildConfigsetManagers(ParSyncManager *parManager, int argc,
+  virtual std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>>
+  buildConfigsetManagers(ParSyncManager *parManager, int argc,
                                                                  const char **argv) = 0;
   //! fill raw spectrum providers
   virtual void fillRawSpectrumProvider(RawSpectrumProvider *, ConfigsetManager *) = 0;

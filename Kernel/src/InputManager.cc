@@ -37,7 +37,8 @@ bool InputManager::init() {
   outName = builder->loadOutputFileName(argc, argv, Configsets());
   fillRawSpectrumProvider();
   initializeDatasets();
-  totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
+  totalPdf =
+          std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(const_cast<const InputManager *>(this)->Datasets()));
   cachePars();
   return true;
 }
@@ -53,7 +54,9 @@ void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
 }
 
 void InputManager::initializeConfigsets() {
-  auto configs = builder->buildConfigsetManagers(parManager.get(), argc, argv);
+  auto configs_pair = builder->buildConfigsetManagers(parManager.get(), argc, argv);
+  globalConfigset = std::shared_ptr<ConfigsetManager>(configs_pair.first);
+  auto configs = configs_pair.second;
   if (configs.empty()) throw GooStatsException("No configset found");
   for (auto configset: configs) {
     registerConfigset(configset);
@@ -94,18 +97,15 @@ std::vector<DatasetManager *> InputManager::Datasets() {
   for (auto dataset: datasets) { datasets_.push_back(dataset.get()); }
   return datasets_;
 }
-const std::vector<ConfigsetManager *> InputManager::Configsets() const {
+std::vector<ConfigsetManager *> InputManager::Configsets() const {
   std::vector<ConfigsetManager *> configsets_;
   for (auto configset: configsets) { configsets_.push_back(configset.get()); }
   return configsets_;
 }
-const std::vector<DatasetManager *> InputManager::Datasets() const {
+std::vector<DatasetManager *> InputManager::Datasets() const {
   std::vector<DatasetManager *> datasets_;
   for (auto dataset: datasets) { datasets_.push_back(dataset.get()); }
   return datasets_;
-}
-const OptionManager *InputManager::GlobalOption() const {
-  return static_cast<OptionManager *>(configsets.front().get());
 }
 void InputManager::cachePars() {
   std::vector<Variable *> pars;

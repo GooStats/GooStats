@@ -50,7 +50,8 @@ void SimpleInputBuilder::usage(const char *const *argv) const {
   std::cerr << "Usage: " << argv[0] << " <configFile> [outputName] [key=value] [key2=value2] ..." << std::endl;
 }
 
-std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
+std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>>
+SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
                                                                            const char **argv) {
   if (argc < 2) {
     usage(argv);
@@ -62,7 +63,7 @@ std::vector<ConfigsetManager *> SimpleInputBuilder::buildConfigsetManagers(ParSy
   parser->parse(configset, argv[1]);
   parser->parse(configset, argc - 3, argv + 3);
   configs.push_back(configset);
-  return configs;
+  return std::make_pair(configs.at(0),configs);
 }
 
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, ConfigsetManager *configset) {

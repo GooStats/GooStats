@@ -16,12 +16,13 @@
 bool PullDatasetController::collectInputs(DatasetManager *dataset) {
   try {
     const auto &varName = dataset->name().substr(0, dataset->name().size() - 5);// remove _pull
+    dataset->set("varName", varName);
     auto var = configset->var(varName);
     dataset->set("var", var);
     std::string type = configset->has(varName + "_pullType") ? configset->get(varName + "_pullType") : "gaus";
     dataset->set("type", type);
     auto expoName = "exposure." + varName + "_pull";
-    if (configset->has(expoName)) {
+    if (configset->has(expoName) || configset->has<double>(expoName)) {
       dataset->set("exposure", configset->getOrConvert(expoName));
     } else {
       std::cerr << "Warning: for compatibility, use total exposure in Configset [" << configset->name()
@@ -55,11 +56,18 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
 bool PullDatasetController::buildLikelihood(DatasetManager *dataset) {
   auto type = dataset->get<std::string>("type");
   if (type == "gaus") {
+    std::cout << "Creating gauss pull [" << dataset->get<std::string>("varName") << "] with exposure ["
+              << dataset->get<double>("exposure") << "] and par (" << dataset->get<double>("mean") << ") ± ("
+              << dataset->get<double>("sigma") << ") " << std::endl;
     GooPdf *pdf =
             new PullPdf(dataset->fullName(), dataset->get<Variable *>("var"), dataset->get<double>("mean"),
                         dataset->get<double>("sigma"), dataset->get<double>("exposure"), dataset->get<bool>("half"));
     dataset->setLikelihood(pdf);
   } else if (type == "poisson") {
+    std::cout << "Creating poisson pull [" << dataset->get<std::string>("varName") << "] with exposure ["
+              << dataset->get<double>("exposure") << "] and par S (" << dataset->get<double>("mu_sig") << ") B ("
+              << dataset->get<double>("mu_bkg") << ") eff (" << dataset->get<Variable *>("eff")->value << ")"
+              << std::endl;
     GooPdf *pdf = new PoissonPullPdf(dataset->fullName(), dataset->get<Variable *>("var"),
                                      dataset->get<Variable *>("eff"), dataset->get<double>("exposure"),
                                      dataset->get<double>("mu_sig"), dataset->get<double>("mu_bkg"));

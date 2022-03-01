@@ -47,14 +47,14 @@ class DatasetManager {
   void setLikelihood(GooPdf *);
   GooPdf *getLikelihood() { return likelihood.get(); }
   template<typename T>
-  void set(const std::string &, T,bool = true);
+  void set(const std::string &, T,bool = true) = delete;
   template<typename T>
-  T get(const std::string &, bool = true) const;
+  T get(const std::string &, bool = true) const = delete;
   template<typename T>
-  T get(const std::string &, bool = true);
+  T get(const std::string &, bool = true) = delete;
   template<typename T>
-  bool has(const std::string &) const;
-
+  bool has(const std::string &) const = delete;
+  bool hasAndYes(const std::string &key) const;
   private:
   std::shared_ptr<GooPdf> likelihood;
   DatasetController *controller;

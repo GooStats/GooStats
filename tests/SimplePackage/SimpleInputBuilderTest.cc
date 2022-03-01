@@ -26,7 +26,8 @@ TEST(GooStats, SimpleInputBuilder) {
 
   /// initializeConfigset
   ParSyncManager parSyncManager;
-  auto configs = builder->buildConfigsetManagers(&parSyncManager,argc,argv);
+  auto configs_pair  = builder->buildConfigsetManagers(&parSyncManager,argc,argv);
+  auto configs = configs_pair.second;
   ASSERT_EQ(configs.size(),1);
   auto config = configs.at(0);
   ASSERT_EQ(config->get("pullPars"),"gaus_Epeak");

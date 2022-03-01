@@ -18,7 +18,8 @@
     if (var.find(_name) == var.end() || !checkDuplicate) {                                                             \
       var[_name] = x;                                                                                                  \
     } else {                                                                                                           \
-      std::cerr << fullName() << " Error: duplicate request to insert terms <" << _name << ">" << std::endl;           \
+      std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) duplicate request to insert terms <" << _name   \
+                << ">" << std::endl;                                                                                   \
       throw GooStatsException("Duplicate terms");                                                                      \
     }                                                                                                                  \
   }                                                                                                                    \
@@ -28,7 +29,8 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cerr << fullName() << " Error: request non-existed terms <" << _name << ">" << std::endl;                 \
+        std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) request non-existed terms <" << _name << ">"  \
+                  << std::endl;                                                                                        \
         throw GooStatsException("Item not found");                                                                     \
       }                                                                                                                \
       return ZERO;                                                                                                     \
@@ -40,7 +42,8 @@
       return var.at(_name);                                                                                            \
     } else {                                                                                                           \
       if (checkEmpty) {                                                                                                \
-        std::cerr << fullName() << " Warning: request non-existed terms <" << _name << ">" << std::endl;               \
+        std::cerr << fullName() << " Warning: (" << __func__ << "<" #T ">) request non-existed terms <" << _name       \
+                  << ">" << std::endl;                                                                                 \
         throw GooStatsException("Item not found");                                                                     \
       }                                                                                                                \
       return ZERO;                                                                                                     \
@@ -64,3 +67,4 @@ DEFINE_DatasetManager(std::vector<PdfBase *>, m_pdfs, std::vector<PdfBase *>());
 DEFINE_DatasetManager(BinnedDataSet *, m_bindata, nullptr);
 
 void DatasetManager::setLikelihood(GooPdf *pdf) { likelihood = std::shared_ptr<GooPdf>(pdf); }
+bool DatasetManager::hasAndYes(const std::string &key) const { return has<bool>(key) && get<bool>(key); }
