@@ -74,7 +74,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
     std::string txt;
   };
   std::vector<txtSource> componentsTxt;
-  for (const auto &component: GooStats::Utility::splitter(configset->get("inputSpectra"), ":"))
+  for (const auto &component: GooStats::Utility::split(configset->get("inputSpectra"), ":"))
     if (configset->has(component + "_inputTxt"))
       componentsTxt.push_back({component, configset->get(component + "_inputTxt")});
     else
@@ -108,7 +108,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
 
   // load TFile
   if (!componentsTH1.empty() && configset->has("inputSpectraFiles")) {
-    std::vector<std::string> sourceTFilesName(GooStats::Utility::splitter(configset->get("inputSpectraFiles"), ":"));
+    std::vector<std::string> sourceTFilesName(GooStats::Utility::split(configset->get("inputSpectraFiles"), ":"));
     ;
     std::vector<TFile *> sourceTFiles;
     for (const auto &fileName: sourceTFilesName) {
@@ -156,15 +156,24 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
 }
 
 void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
-  std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"), ":"));
-  ;
-  for (const auto &component: components) {
-    // warning: no error checking
-    auto var = configset->createVar(component, configset->getOrConvert("N" + component + "_init"),
-                                    configset->getOrConvert("N" + component + "_err"),
-                                    configset->getOrConvert("N" + component + "_min"),
-                                    configset->getOrConvert("N" + component + "_max"));
-    if (configset->hasAndYes("N" + component + "_fixed")) var->fixed = true;
+  if (configset->has("components")) {
+    std::vector<std::string> pars(GooStats::Utility::split(configset->get("components"), ":"));
+    for (const auto &par: pars) {
+      // warning: no error checking
+      auto var =
+              configset->createVar(par, configset->getOrConvert(par + "_init"), configset->getOrConvert(par + "_err"),
+                                   configset->getOrConvert(par + "_min"), configset->getOrConvert(par + "_max"));
+      if (configset->hasAndYes(par + "_fixed")) var->fixed = true;
+    }
+  }
+  if (configset->has("nuisance")) {
+    std::vector<std::string> pars(GooStats::Utility::split(configset->get("nuisance"), ":"));
+    for (const auto &par: pars) {
+      auto var =
+              configset->createVar(par, configset->getOrConvert(par + "_init"), configset->getOrConvert(par + "_err"),
+                                   configset->getOrConvert(par + "_min"), configset->getOrConvert(par + "_max"));
+      if (configset->hasAndYes(par + "_fixed")) var->fixed = true;
+    }
   }
 }
 #include "goofit/Variable.h"
@@ -172,7 +181,7 @@ PdfBase *SimpleInputBuilder::recursiveBuild(const std::string &name, DatasetMana
                                             RawSpectrumProvider *provider, ISpectrumBuilder *spcBuilder) {
   auto type = dataset->get<std::string>(name + "_type");
   if (dataset->has<std::string>(name + ".deps")) {
-    for(auto comp : GooStats::Utility::splitter(dataset->get<std::string>(name + ".deps"),":")) {
+    for (auto comp: GooStats::Utility::split(dataset->get<std::string>(name + ".deps"), ":")) {
       auto innerPdf = this->recursiveBuild(comp, dataset, provider, spcBuilder);
       if (!innerPdf) {
         std::cout << "Failed to build the dependence of <" << comp << "> "
@@ -207,7 +216,7 @@ SimpleInputBuilder::buildDatasetsControllers(ConfigsetManager *configset) {
   std::vector<std::shared_ptr<DatasetController>> controllers;
   controllers.push_back(std::shared_ptr<DatasetController>(new SimpleDatasetController(configset)));
   if (configset->has("pullPars"))
-    for (const auto &par: GooStats::Utility::splitter(configset->get("pullPars"), ":")) {
+    for (const auto &par: GooStats::Utility::split(configset->get("pullPars"), ":")) {
       controllers.push_back(std::shared_ptr<DatasetController>(new PullDatasetController(configset, par + "_pull")));
     }
   return controllers;
@@ -219,9 +228,12 @@ SumLikelihoodPdf *SimpleInputBuilder::buildTotalPdf(const std::vector<DatasetMan
       std::cerr << "Likelihood of dataset <" << dataset->fullName() << "> is empty." << std::endl;
       throw GooStatsException("Empty likelihood found");
     }
-    std::cout << "Inserting <" << dataset->fullName() << ">" << std::endl;
+    std::cout << "Inserting (Datasets:" << dataset->fullName() << ")<" << dataset->getLikelihood()->getName() << ">"
+              << std::endl;
     likelihoodTerms.push_back(static_cast<PdfBase *>(dataset->getLikelihood()));
   }
+  std::cout << "Debug: LL size " << likelihoodTerms.size() << std::endl;
+
   auto sumpdf = new SumLikelihoodPdf("full_likelihood", likelihoodTerms);
   return sumpdf;
 }

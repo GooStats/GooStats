@@ -72,7 +72,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
       dataset->set("anaScaling", scale);
     }
 
-    std::vector<std::string> components(GooStats::Utility::splitter(configset->get("components"), ":"));
+    std::vector<std::string> components(GooStats::Utility::split(configset->get("components"), ":"));
     ;
     dataset->set("components", components);
 

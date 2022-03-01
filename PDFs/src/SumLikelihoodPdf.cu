@@ -34,7 +34,8 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
   GooStatsNLLCheck::get()->init("NLL_CHECK_gpu.root","gpu");
 #endif
   for(unsigned int i = 0;i<components.size();++i) {
-    ret += dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
+    auto nll = dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
+    ret += nll;
 #if defined(NLL_CHECK)
     GooStatsNLLCheck::get()->new_LL(ret);
 #endif

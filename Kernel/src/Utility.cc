@@ -15,7 +15,7 @@
 #include <map>
 namespace GooStats {
   namespace Utility {
-    // naive splitter
+    // naive split
     std::string strip(const std::string &k) {
       auto pool = k;
       auto pComment = pool.find("//");
@@ -25,10 +25,11 @@ namespace GooStats {
       auto in = pool.find_last_not_of("\t ");
       return i0 != std::string::npos ? pool.substr(i0, in - i0 + 1) : std::string();
     }
-    std::vector<std::string> splitter(std::string source, std::string flag) {
+    std::vector<std::string> split(std::string source, std::string flag) {
       std::vector<std::string> result;
       while (source.find(flag) != std::string::npos) {
         auto position = source.find(flag);
+        if(position==0) throw GooStatsException("Empty section found by split");
         result.push_back(strip(source.substr(0, position)));
         source = source.substr(position + 1, source.size() - position - 1);
       }

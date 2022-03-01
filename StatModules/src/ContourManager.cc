@@ -255,13 +255,13 @@ void ContourManager::get_par_range(const std::string &parName,double &left,doubl
 
 void ContourManager::register_vars() {
   if(GlobalOption()->has("plot_profiles")) {
-    profiles_vars = GooStats::Utility::splitter(GlobalOption()->get("plot_profiles"),":");
+    profiles_vars = GooStats::Utility::split(GlobalOption()->get("plot_profiles"), ":");
     for(auto var : profiles_vars)
       std::cout<<"plot profile ["<<var<<"]"<<std::endl;
   }
   if(GlobalOption()->has("plot_contours"))
-    for(auto var : GooStats::Utility::splitter(GlobalOption()->get("plot_contours"),";")) {
-      auto var_pairs = GooStats::Utility::splitter(var,":");
+    for(auto var : GooStats::Utility::split(GlobalOption()->get("plot_contours"), ";")) {
+      auto var_pairs = GooStats::Utility::split(var, ":");
       contours_vars.push_back(std::make_pair(var_pairs.at(0),var_pairs.at(1)));
       std::cout<<"plot contour ["<<var_pairs.at(0)<<"-"<<var_pairs.at(1)<<"]"<<std::endl;
     }
