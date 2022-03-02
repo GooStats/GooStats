@@ -51,7 +51,8 @@ std::shared_ptr<Variable> BasicManager::getVariable(const std::string &key) cons
 void BasicManager::dump() {
   for (const auto &pair: s_vars) {
     std::cout << pair.first << " " << pair.second << " " << pair.second->value << " ± " << pair.second->error << " ["
-              << pair.second->lowerlimit << "," << pair.second->upperlimit << "]" << std::endl;
+              << pair.second->lowerlimit << "," << pair.second->upperlimit << "] fixed? "
+              << (pair.second->fixed ? "yes" : "no") << std::endl;
   }
 }
 std::string BasicManager::getKey(const std::string &key) const {

@@ -38,8 +38,7 @@ bool InputManager::init() {
   outName = builder->loadOutputFileName(argc, argv, Configsets());
   fillRawSpectrumProvider();
   initializeDatasets();
-  totalPdf =
-          std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(const_cast<const InputManager *>(this)->Datasets()));
+  totalPdf = std::shared_ptr<SumLikelihoodPdf>(builder->buildTotalPdf(Datasets()));
   cachePars();
   return true;
 }
@@ -72,11 +71,11 @@ void InputManager::fillRawSpectrumProvider() {
 }
 
 void InputManager::initializeDatasets() {
-  for (auto config: configsets) {
-    auto controllers = builder->buildDatasetsControllers(config.get());
-    for (auto controller: controllers) {
+  for (const auto &config: configsets) {
+    auto _controllers = builder->buildDatasetsControllers(config.get());
+    for (const auto &controller: _controllers) {
+      this->registerController(controller);
       auto dataset = controller->createDataset();
-      this->registerDataset(dataset);
       controller->collectInputs(dataset);
       auto multi = dynamic_cast<MultiComponentDatasetController *>(controller.get());
       if (multi != nullptr) {
@@ -91,23 +90,13 @@ void InputManager::fillRandomData() { getTotalPdf()->fill_random(); }
 void InputManager::fillAsimovData() { getTotalPdf()->fill_Asimov(); }
 std::vector<ConfigsetManager *> InputManager::Configsets() {
   std::vector<ConfigsetManager *> configsets_;
-  for (auto configset: configsets) { configsets_.push_back(configset.get()); }
+  for (const auto &configset: configsets) { configsets_.push_back(configset.get()); }
   return configsets_;
-}
-std::vector<DatasetManager *> InputManager::Datasets() {
-  std::vector<DatasetManager *> datasets_;
-  for (auto dataset: datasets) { datasets_.push_back(dataset.get()); }
-  return datasets_;
 }
 std::vector<ConfigsetManager *> InputManager::Configsets() const {
   std::vector<ConfigsetManager *> configsets_;
   for (auto configset: configsets) { configsets_.push_back(configset.get()); }
   return configsets_;
-}
-std::vector<DatasetManager *> InputManager::Datasets() const {
-  std::vector<DatasetManager *> datasets_;
-  for (auto dataset: datasets) { datasets_.push_back(dataset.get()); }
-  return datasets_;
 }
 void InputManager::cachePars() {
   std::vector<Variable *> pars;
@@ -140,7 +129,17 @@ void InputManager::registerConfigset(ConfigsetManager *configset) {
   std::cout << "InputManager::registerConfigset(" << configset->name() << ")" << std::endl;
   configsets.push_back(std::shared_ptr<ConfigsetManager>(configset));
 }
-void InputManager::registerDataset(DatasetManager *dataset) {
-  std::cout << "InputManager::registerDataset(" << dataset->fullName() << ")" << std::endl;
-  datasets.push_back(std::shared_ptr<DatasetManager>(dataset));
+void InputManager::registerController(std::shared_ptr<DatasetController> controller) {
+  std::cout << "InputManager::registerController(" << controller->getName() << ")" << std::endl;
+  controllers.push_back(controller);
+}
+std::vector<DatasetController *> InputManager::Controllers() {
+  std::vector<DatasetController *> _controllers;
+  for (const auto &controller: controllers) { _controllers.push_back(controller.get()); }
+  return _controllers;
+}
+std::vector<DatasetManager *> InputManager::Datasets() {
+  std::vector<DatasetManager *> datasets;
+  for (auto controller: controllers) { datasets.push_back(controller->getDataset()); }
+  return datasets;
 }

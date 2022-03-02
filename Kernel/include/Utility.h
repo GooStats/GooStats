@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include "goofit/Variable.h"
+
 class BinnedDataSet;
 class RawSpectrumProvider;
 class Variable;
@@ -27,6 +28,18 @@ namespace GooStats {
     template<typename T> T convert(const std::string &) = delete;
     template<> double convert<double>(const std::string &v);
     template<> int convert<int>(const std::string &v);
+
+    /// original source: https://stackoverflow.com/a/26221725/8732904
+    /// by iFreilicht@StackOverflow under CC0 1.0
+    template<typename ... Args>
+    std::string string_format( const std::string& format, Args ... args ) {
+      int size_s = std::snprintf(nullptr, 0, format.c_str(), args...) + 1;// Extra space for '\0'
+      if (size_s <= 0) { throw std::runtime_error("Error during formatting."); }
+      auto size = static_cast<size_t>(size_s);
+      auto buf = std::make_unique<char[]>(size);
+      std::snprintf(buf.get(), size, format.c_str(), args...);
+      return {buf.get(), buf.get() + size - 1};// We don't want the '\0' inside
+    }
   }
 }
 #endif

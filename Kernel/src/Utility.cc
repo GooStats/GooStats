@@ -13,6 +13,9 @@
 #include "goofit/BinnedDataSet.h"
 #include <TH1.h>
 #include <map>
+#include <memory>
+#include <stdexcept>
+
 namespace GooStats {
   namespace Utility {
     // naive split
@@ -29,7 +32,7 @@ namespace GooStats {
       std::vector<std::string> result;
       while (source.find(flag) != std::string::npos) {
         auto position = source.find(flag);
-        if(position==0) throw GooStatsException("Empty section found by split");
+        if (position == 0) throw GooStatsException("Empty section found by split");
         result.push_back(strip(source.substr(0, position)));
         source = source.substr(position + 1, source.size() - position - 1);
       }
@@ -75,7 +78,13 @@ namespace GooStats {
       for (auto i = 1; i <= h->GetNbinsX(); ++i) pdf.push_back(h->GetBinContent(i));
       provider->registerSpecies(name, h->GetNbinsX(), &pdf[0], h->GetBinCenter(1), h->GetBinWidth(1));
     }
-    template<> double convert<double>(const std::string &v) { return std::stod(v); }
-    template<> int convert<int>(const std::string &v) { return std::stoi(v); }
+    template<>
+    double convert<double>(const std::string &v) {
+      return std::stod(v);
+    }
+    template<>
+    int convert<int>(const std::string &v) {
+      return std::stoi(v);
+    }
   }// namespace Utility
 }// namespace GooStats

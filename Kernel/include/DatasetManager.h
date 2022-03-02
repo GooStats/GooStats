@@ -30,24 +30,27 @@ class PdfBase;
  */
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 struct Variable;
 class GooPdf;
 class BinnedDataSet;
 class DatasetController;
 class DatasetManager {
-  public:
-  DatasetManager(const std::string &name_, const std::string &configName_) : m_configName(configName_), m_name(name_){};
+public:
+  DatasetManager(std::string name_, std::string configName_)
+      : controller(nullptr), m_configName(std::move(configName_)), m_name(std::move(name_)){};
   virtual ~DatasetManager() = default;
-  std::string fullName() const { return m_configName + "." + m_name; }
-  const std::string &name() const { return m_name; }
-  const std::string &configName() const { return m_configName; }
+  [[nodiscard]] std::string fullName() const { return m_configName + "." + m_name; }
+  [[nodiscard]] const std::string &name() const { return m_name; }
+  [[nodiscard]] const std::string &configName() const { return m_configName; }
   void setController(DatasetController *_d) { controller = _d; }
   DatasetController *getController() { return controller; }
   void setLikelihood(GooPdf *);
+  [[nodiscard]] const GooPdf *getLikelihood() const { return likelihood.get(); }
   GooPdf *getLikelihood() { return likelihood.get(); }
   template<typename T>
-  void set(const std::string &, T,bool = true) = delete;
+  void set(const std::string &, T, bool = true) = delete;
   template<typename T>
   T get(const std::string &, bool = true) const = delete;
   template<typename T>
@@ -55,11 +58,12 @@ class DatasetManager {
   template<typename T>
   bool has(const std::string &) const = delete;
   bool hasAndYes(const std::string &key) const;
-  private:
+
+private:
   std::shared_ptr<GooPdf> likelihood;
-  DatasetController *controller;
-  std::string m_configName;
-  std::string m_name;
+  DatasetController *controller{};
+  const std::string m_configName;
+  const std::string m_name;
   std::map<std::string, std::string> m_str;
   std::map<std::string, int> m_int;
   std::map<std::string, bool> m_bool;

@@ -15,6 +15,7 @@
 #include "TRandom.h"
 #include "GSFitManager.h"
 #include "OutputManager.h"
+#include "MultiComponentDatasetController.h"
 bool PrepareData::init() {
   if(GlobalOption()->has("seed"))
     seed = GlobalOption()->getOrConvert<int>("seed");
@@ -39,10 +40,12 @@ bool PrepareData::run(int ev) {
   } else { // fitdata
     if(ev>0) throw GooStatsException("Why you want to fit same dataset several times?");
 //    SimpleSpectrumBuilder spcb(getInputManager()->getProvider());
-    for(auto dataset: getInputManager()->Datasets()) {
-      SumPdf *sumpdf = dynamic_cast<SumPdf*>(dataset->getLikelihood());
-      if(!sumpdf) continue;
-      sumpdf->setData(dataset->get<BinnedDataSet*>("data"));
+    for(auto controller: getInputManager()->Controllers()) {
+      if(dynamic_cast<MultiComponentDatasetController*>(controller)!=nullptr) {
+        auto dataset = controller->getDataset();
+        auto sumpdf = dataset->getLikelihood();
+        sumpdf->setData(dataset->get<BinnedDataSet*>("data"));
+      }
     }
   }
   return true;
