@@ -12,6 +12,6 @@
 class OutputHelper;
 
 namespace GooStats {
-  const OutputHelper *fit();
+  const OutputHelper *fit(int argc, const char *argv[]);
 }
 #endif

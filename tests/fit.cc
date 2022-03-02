@@ -19,11 +19,10 @@
 #include "SimpleFit.h"
 #include "OutputHelper.h"
 namespace GooStats {
-  const OutputHelper *fit() {
+  const OutputHelper *fit(int argc, const char *argv[]) {
     AnalysisManager *ana = new AnalysisManager();
 
-    const char *argv[4] = {"GooStats.exe","toyMC.cfg","test","dummyOption=ShouldDiscardIt"};
-    auto inputManager = new InputManager(4,argv);
+    auto inputManager = new InputManager(argc,argv);
     inputManager->setInputBuilder(new SimpleInputBuilder());
     auto outManager = new OutputManager();
     outManager->setOutputBuilder(new SimpleOutputBuilder());

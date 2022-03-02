@@ -15,20 +15,12 @@ add_library(GooStatsTestFit_NLL fit.cc)
 target_link_libraries(GooStatsTestFit_NLL PUBLIC GooStatsLib_NLL)
 target_include_directories(GooStatsTestFit_NLL PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(runGooStatsTestFit_NLL run.cc)
-target_link_libraries(runGooStatsTestFit_NLL PRIVATE GooStatsTestFit_NLL)
-
 add_executable(test_GooStatsNLL NLLtest.cc)
-target_link_libraries(test_GooStatsNLL PRIVATE GooStatsLib_NLL gtest_main ROOT::RIO)
+target_link_libraries(test_GooStatsNLL PRIVATE GooStatsTestFit_NLL GooStatsLib_NLL gtest_main ROOT::RIO)
 
-add_test(NAME test_GooStatsNLL
-        COMMAND bash -c "$<TARGET_FILE:runGooStatsTestFit_NLL>;
-        $<TARGET_FILE:test_GooStatsNLL> --gtest_filter=GooFit.NLLTest")
+add_test(NAME test_GooStatsNLL COMMAND $<TARGET_FILE:test_GooStatsNLL> --gtest_filter=GooFit.NLLTest)
+add_test(NAME test_GooStatsNLLFail COMMAND $<TARGET_FILE:test_GooStatsNLL> --gtest_filter=GooFit.NLLTestFail)
 
-add_test(NAME test_GooStatsNLLFail
-        COMMAND bash -c
-        "$<TARGET_FILE:runGooStatsTestFit_NLL>;
-        $<TARGET_FILE:test_GooStatsNLL> --gtest_filter=GooFit.NLLTestFail")
 set_tests_properties(test_GooStatsNLLFail PROPERTIES WILL_FAIL TRUE)
 
 add_subdirectory(Kernel)

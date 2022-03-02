@@ -87,7 +87,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
     if (!f.is_open()) {
       f.open(folder + txtPair.txt);
       if (!f.is_open())
-        throw GooStatsException("Cannot open <" + txtPair.txt + "> nor <" + folder + ">/<" + txtPair.txt + ">");
+        throw GooStatsException("Cannot open <" + txtPair.txt + "> nor <" + folder + "/" + txtPair.txt + ">");
     }
     int n;
     double e0, de, *x;

@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "GooStatsException.h"
 #include "InputBuilder.h"
+#include "MultiComponentDatasetController.h"
 #include "ParSyncManager.h"
 #include "RawSpectrumProvider.h"
 #include "SpectrumBuilder.h"
@@ -77,7 +78,8 @@ void InputManager::initializeDatasets() {
       auto dataset = controller->createDataset();
       this->registerDataset(dataset);
       controller->collectInputs(dataset);
-      if (dataset->has<std::vector<std::string>>("components")) {
+      auto multi = dynamic_cast<MultiComponentDatasetController *>(controller.get());
+      if (multi != nullptr) {
         builder->fillDataSpectra(dataset, provider.get());
         builder->buildComponenets(dataset, provider.get(), spcBuilder.get());
       }

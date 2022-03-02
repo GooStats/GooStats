@@ -45,12 +45,12 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
   GooStatsNLLCheck::get()->save();
   GooStatsNLLCheck::get()->print();
   std::cerr<<"Debug abort."<<std::endl;
-  std::exit(0);
+  throw std::exception();
 #endif
 #if defined(RPF_CHECK) || defined(convolution_CHECK) || defined(NL_CHECK) || defined(spectrum_CHECK) || defined(Quenching_CHECK) || defined(Mask_CHECK)
   printf("final log(L) %.12le\n",ret);
   std::cerr<<"Debug abort."<<std::endl;
-  std::exit(0);
+  throw std::exception();
 #endif
   return ret; 
 }
