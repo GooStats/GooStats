@@ -51,8 +51,7 @@ void SimpleInputBuilder::usage(const char *const *argv) const {
 }
 
 std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>>
-SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
-                                                                           const char **argv) {
+SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc, const char **argv) {
   if (argc < 2) {
     usage(argv);
     throw GooStatsException("cmd argument format not understandable");
@@ -63,7 +62,7 @@ SimpleInputBuilder::buildConfigsetManagers(ParSyncManager *parManager, int argc,
   parser->parse(configset, argv[1]);
   parser->parse(configset, argc - 3, argv + 3);
   configs.push_back(configset);
-  return std::make_pair(configs.at(0),configs);
+  return std::make_pair(configs.at(0), configs);
 }
 
 void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, ConfigsetManager *configset) {
@@ -164,7 +163,7 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
       auto var =
               configset->createVar(par, configset->getOrConvert(par + "_init"), configset->getOrConvert(par + "_err"),
                                    configset->getOrConvert(par + "_min"), configset->getOrConvert(par + "_max"));
-      if (configset->hasAndYes(par + "_fixed")) var->fixed = true;
+      var->fixed = configset->hasAndYes(par + "_fixed");
     }
   }
   if (configset->has("nuisance")) {
@@ -173,7 +172,7 @@ void SimpleInputBuilder::createVariables(ConfigsetManager *configset) {
       auto var =
               configset->createVar(par, configset->getOrConvert(par + "_init"), configset->getOrConvert(par + "_err"),
                                    configset->getOrConvert(par + "_min"), configset->getOrConvert(par + "_max"));
-      if (configset->hasAndYes(par + "_fixed")) var->fixed = true;
+      var->fixed = configset->hasAndYes(par + "_fixed");
     }
   }
 }
