@@ -1,3 +1,5 @@
+include(GoogleTest)
+
 add_library(GooStatsTestFit fit.cc)
 target_link_libraries(GooStatsTestFit PUBLIC GooStatsLib)
 target_include_directories(GooStatsTestFit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -8,8 +10,7 @@ file(COPY NLL_CHECK_reference.root DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(test_GooStats simpleFit.cc)
 target_link_libraries(test_GooStats PRIVATE GooStatsTestFit gtest_main)
-add_test(NAME test_GooStats
-        COMMAND $<TARGET_FILE:test_GooStats>)
+gtest_discover_tests(test_GooStats)
 
 add_library(GooStatsTestFit_NLL fit.cc)
 target_link_libraries(GooStatsTestFit_NLL PUBLIC GooStatsLib_NLL)
