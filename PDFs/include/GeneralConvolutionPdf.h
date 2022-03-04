@@ -27,8 +27,8 @@ protected:
   fptype* dev_iConsts; 
   DEVICE_VECTOR<fptype>* modelWorkSpace;
   DEVICE_VECTOR<fptype>* resolWorkSpace; 
-  int workSpaceIndex; 
-
+  int modelWorkSpaceIndex;
+  int resolWorkSpaceIndex;
 };
 
 

@@ -19,13 +19,16 @@
  *  The datasetmanager is desgined to take observer pattern, and usually
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
-#include "DatasetController.h"
-class SimpleDatasetController : public DatasetController {
+#include "MultiComponentDatasetController.h"
+#include "RawSpectrumProvider.h"
+class SimpleDatasetController : public MultiComponentDatasetController {
 public:
-  explicit SimpleDatasetController(ConfigsetManager *_c,
-                                   const std::string &n = "main")
-      : DatasetController(_c, n){};
-  bool collectInputs(DatasetManager *) override;
-  bool buildLikelihood(DatasetManager *) override;
+  /// @param _c ConfigsetManger storing options
+  /// @param n name of the controller, also name of the DatasetManger to be created
+  explicit SimpleDatasetController(ConfigsetManager *_c, const std::string &n = "main")
+      : MultiComponentDatasetController(_c, n){};
+  bool collectInputs() override;
+  bool buildLikelihood() override;
 };
 #endif
+

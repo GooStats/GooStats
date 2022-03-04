@@ -9,31 +9,27 @@
 /*****************************************************************************/
 #ifndef OptionManager_H
 #define OptionManager_H
-#include <string>
 #include <map>
+#include <string>
+#include "Database.h"
+#include "Utility.h"
 // protocol for option configset class
-class OptionManager {
-  public:
-    // can be fileName or key=value sentence
-    bool parse(const std::string &fileName);
-    bool parse(int argc,const char *argv[]);
-    template<typename T = std::string> T get(const std::string &,bool=true) const;
-    template<typename T = std::string> void set(const std::string &,const T &,bool = false);
-    bool has(const std::string &) const;
-    //! yes(key): if user forgot to put key, program will throw
-    bool yes(const std::string &key) const;
-    //! hasAndYes(key): if user forgot to put key, program return false
-    bool hasAndYes(const std::string &key) const;
-    void printAllOptions() const;
-  private:
-    std::map<std::string,std::string> m_str;
-    std::map<std::string,double> m_double;
-    std::map<std::string,long> m_long;
+class OptionManager : public Database {
+public:
+  // can be fileName or key=value sentence
+  template<class T = double>
+  T getOrConvert(const std::string &key) const {
+      if(has(key)) {
+        auto v = GooStats::Utility::convert<T>(get(key));
+        if(has<double>(key) && get<double>(key)!=v) throw GooStatsException("Inconsistent status!");
+        return v;
+      }
+      return get<double>(key);
+    }
+  //! yes(key): if user forgot to put key, program will throw
+  bool yes(const std::string &key) const;
+  //! hasAndYes(key): if user forgot to put key, program return false
+  bool hasAndYes(const std::string &key) const;
+  void printAllOptions() const;
 };
-#define DECLARE_OptionManager(T) \
-template<> T OptionManager::get<T>(const std::string&,bool) const; \
-template<> void OptionManager::set<T>(const std::string&,const T&,bool); 
-DECLARE_OptionManager(std::string)
-DECLARE_OptionManager(double)
-DECLARE_OptionManager(long)
 #endif

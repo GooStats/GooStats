@@ -19,21 +19,27 @@
  *  The datasetmanager is desgined to take observer pattern, and usually
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
+#include <utility>
+
 #include "DatasetManager.h"
 class ConfigsetManager;
+class RawSpectrumProvider;
 class DatasetController {
 public:
-  DatasetController(ConfigsetManager *_c, const std::string &n = "LL")
-      : configset(_c), name(n){ };
+  DatasetController(ConfigsetManager *_c, std::string n = "LL") : configset(_c), name(std::move(n)){};
   DatasetController() = delete;
   virtual ~DatasetController() = default;
-  DatasetManager *createDataset();
-  virtual bool collectInputs(DatasetManager *) = 0;
-  virtual bool buildLikelihood(DatasetManager *) = 0;
+  virtual DatasetManager *createDataset();
+  virtual bool collectInputs() = 0;
+  virtual bool buildLikelihood() = 0;
+  ConfigsetManager *getConfigset() { return configset; }
+  [[nodiscard]] const DatasetManager *getDataset() const { return dataset.get(); }
+  DatasetManager *getDataset() { return dataset.get(); }
+  [[nodiscard]] const std::string &getName() const { return name; }
 
 protected:
-  ConfigsetManager *configset;
+  ConfigsetManager *const configset;
+  std::shared_ptr<DatasetManager> dataset;
   const std::string name;
-
 };
 #endif

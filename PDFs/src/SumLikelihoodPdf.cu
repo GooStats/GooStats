@@ -34,7 +34,8 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
   GooStatsNLLCheck::get()->init("NLL_CHECK_gpu.root","gpu");
 #endif
   for(unsigned int i = 0;i<components.size();++i) {
-    ret += dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
+    auto nll = dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
+    ret += nll;
 #if defined(NLL_CHECK)
     GooStatsNLLCheck::get()->new_LL(ret);
 #endif
@@ -44,12 +45,12 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
   GooStatsNLLCheck::get()->save();
   GooStatsNLLCheck::get()->print();
   std::cerr<<"Debug abort."<<std::endl;
-  std::exit(0);
+  throw std::exception();
 #endif
 #if defined(RPF_CHECK) || defined(convolution_CHECK) || defined(NL_CHECK) || defined(spectrum_CHECK) || defined(Quenching_CHECK) || defined(Mask_CHECK)
   printf("final log(L) %.12le\n",ret);
   std::cerr<<"Debug abort."<<std::endl;
-  std::exit(0);
+  throw std::exception();
 #endif
   return ret; 
 }

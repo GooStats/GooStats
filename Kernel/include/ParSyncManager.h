@@ -9,28 +9,17 @@
 /*****************************************************************************/
 #ifndef ParSyncManager_H
 #define ParSyncManager_H
-#include <string>
 #include <map>
-class IDataManager;
-// class controlling the parameter syncrhonization strategies
-#include "BasicManager.h"
-#include "InputConfig.h"
+#include <string>
 
 class ParSyncManager {
   public:
-    typedef IDataManager::strategy level;
-  public:
-    virtual ~ParSyncManager() {};
-    virtual BasicManager *createParSyncSet(const InputConfig&) { return new BasicManager("default"); }
-    virtual std::map<std::string, level> getStrategies() { return std::map<std::string,level>(); };
-    void init() { strategies = getStrategies(); initialized = true; }
+  using Level = int;
+  virtual ~ParSyncManager() = default;
+  virtual void init() {}
+  virtual std::map<std::string, Level> getStrategies() { return m_strategies; }
+
   private:
-    friend class BasicManager;
-    const IDataManager *chooseManager(const std::string &key,const IDataManager *daughter) const;
-    IDataManager *chooseManager(const std::string &key,IDataManager *daughter) const;
-  private:
-    IDataManager::strategy getStrategy(const std::string &name) const;
-    std::map<std::string, level> strategies;
-    bool initialized = false;
+  std::map<std::string, Level> m_strategies;
 };
 #endif

@@ -41,7 +41,7 @@ bool CorrelationManager::finish() {
 
 void CorrelationManager::register_vars() {
   if(GlobalOption()->has("corr_variables")) {
-    corr_vars = GooStats::Utility::splitter(GlobalOption()->get("corr_variables"),":");
+    corr_vars = GooStats::Utility::split(GlobalOption()->get("corr_variables"), ":");
     for(auto var : corr_vars)
       std::cout<<"analyzing corr. for ["<<var<<"]"<<std::endl;
   }

@@ -20,12 +20,14 @@
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
 #include "DatasetController.h"
+#include "RawSpectrumProvider.h"
 class PullDatasetController : public DatasetController {
-  public:
-    PullDatasetController(ConfigsetManager *_c,const std::string &n="pull") : DatasetController(_c,n) { }
-    bool collectInputs(DatasetManager *) override;
-    bool buildLikelihood(DatasetManager *) override;
-  private:
-    std::string name;
+public:
+  PullDatasetController(ConfigsetManager *_c, const std::string &n = "pull") : DatasetController(_c, n) {}
+  bool collectInputs() override;
+  bool buildLikelihood() override;
+
+private:
+  std::string name;
 };
 #endif

@@ -37,7 +37,7 @@ GooPdf *SimpleSpectrumBuilder::buildSpectrum(const std::string &name,DatasetMana
 }
 GooPdf *SimpleSpectrumBuilder::buildMC(const std::string &name,
     DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   Variable *E = dataset->get<Variable*>(name+"_E"); // inner
   BinnedDataSet *binned_data = loadRawSpectrum(E,name);
   bool freeScale = dataset->get<bool>(name+"_freeMCscale");
@@ -51,7 +51,7 @@ GooPdf *SimpleSpectrumBuilder::buildMC(const std::string &name,
   }
 }
 GooPdf *SimpleSpectrumBuilder::buildAna(const std::string &name,DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>(name+"_E"), // Evis
       dataset->get<Variable*>(name+"_inner_E"), // inner
@@ -64,7 +64,7 @@ GooPdf *SimpleSpectrumBuilder::buildAna(const std::string &name,DatasetManager *
   return buildAnaBasic(name,dataset);
 }
 GooPdf *SimpleSpectrumBuilder::buildAnaShifted(const std::string &name,DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName+"_RPF",
       dataset->get<Variable*>(name+"_E"), // Evis
       dataset->get<Variable*>(name+"_inner_E"), // inner
@@ -78,7 +78,7 @@ GooPdf *SimpleSpectrumBuilder::buildAnaShifted(const std::string &name,DatasetMa
   return buildAnaBasic(name,dataset);
 }
 GooPdf *SimpleSpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   GooPdf *resolutionPdf = new ResponseFunctionPdf(pdfName,
       dataset->get<Variable*>(name+"_E"), // Evis
       nullptr, // inner
@@ -90,7 +90,7 @@ GooPdf *SimpleSpectrumBuilder::buildAnaPeak(const std::string &name,DatasetManag
   return resolutionPdf;
 }
 GooPdf *SimpleSpectrumBuilder::buildTODO(const std::string &name,DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   std::cerr<<"Species ["<<pdfName<<"] not implemented!"<<std::endl;
   throw GooStatsException("Species not implemented");
 }
@@ -104,7 +104,7 @@ BinnedDataSet *SimpleSpectrumBuilder::loadRawSpectrum(Variable *x,const std::str
   return binned_data;
 }
 GooPdf *SimpleSpectrumBuilder::buildAnaBasic(const std::string &name,DatasetManager *dataset) {
-  std::string pdfName = dataset->name()+"."+name;
+  std::string pdfName = dataset->fullName()+"."+name;
   if(dataset->has<int>("anaScaling")) {
     GooPdf *anaFinePdf = new GeneralConvolutionPdf(pdfName+"_fine",
 	dataset->get<Variable*>("EvisFine"),

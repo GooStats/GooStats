@@ -166,7 +166,7 @@ TGraph *ContourManager::LLprofile(const std::string &parName) {
   std::vector<double> x,y;
   gMinuit->FixParameter(id-1);
   gMinuit->SetPrintLevel(-1);
-  int fI = gMinuit->fIstrat; // the strategy
+  int fI = gMinuit->fIstrat; // the EStrategy
   for(int i = 0;i<Npoint;++i) {
     //if(i==1) gMinuit->Command("SET STRategy 0");
     gMinuit->Command(Form("SET PARameter %d %lf",id,left+(right-left)/(Npoint-1)*i));
@@ -255,13 +255,13 @@ void ContourManager::get_par_range(const std::string &parName,double &left,doubl
 
 void ContourManager::register_vars() {
   if(GlobalOption()->has("plot_profiles")) {
-    profiles_vars = GooStats::Utility::splitter(GlobalOption()->get("plot_profiles"),":");
+    profiles_vars = GooStats::Utility::split(GlobalOption()->get("plot_profiles"), ":");
     for(auto var : profiles_vars)
       std::cout<<"plot profile ["<<var<<"]"<<std::endl;
   }
   if(GlobalOption()->has("plot_contours"))
-    for(auto var : GooStats::Utility::splitter(GlobalOption()->get("plot_contours"),";")) {
-      auto var_pairs = GooStats::Utility::splitter(var,":");
+    for(auto var : GooStats::Utility::split(GlobalOption()->get("plot_contours"), ";")) {
+      auto var_pairs = GooStats::Utility::split(var, ":");
       contours_vars.push_back(std::make_pair(var_pairs.at(0),var_pairs.at(1)));
       std::cout<<"plot contour ["<<var_pairs.at(0)<<"-"<<var_pairs.at(1)<<"]"<<std::endl;
     }
