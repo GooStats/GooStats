@@ -22,12 +22,13 @@
 #include "MultiComponentDatasetController.h"
 #include "RawSpectrumProvider.h"
 class SimpleDatasetController : public MultiComponentDatasetController {
-  public:
+public:
   /// @param _c ConfigsetManger storing options
   /// @param n name of the controller, also name of the DatasetManger to be created
-  explicit SimpleDatasetController(ConfigsetManager *_c, const std::string &n = "main") : MultiComponentDatasetController(_c, n){};
-  bool collectInputs(DatasetManager *) override;
-  bool buildLikelihood(DatasetManager *) override;
+  explicit SimpleDatasetController(ConfigsetManager *_c, const std::string &n = "main")
+      : MultiComponentDatasetController(_c, n){};
+  bool collectInputs() override;
+  bool buildLikelihood() override;
 };
 #endif
 

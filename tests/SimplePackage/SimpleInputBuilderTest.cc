@@ -59,7 +59,7 @@ TEST(GooStats, SimpleInputBuilder) {
   auto majorData = major->createDataset();
   ASSERT_NE(majorData,nullptr);
 
-  major->collectInputs(majorData);
+  major->collectInputs();
   ASSERT_EQ(majorData->get<std::vector<std::string>>("components"), std::vector<std::string> ({"gaus","fbkg"}));
 
   builder->fillDataSpectra(majorData,&provider);
@@ -77,7 +77,7 @@ TEST(GooStats, SimpleInputBuilder) {
     ASSERT_DOUBLE_EQ(points.at(50), 0.0020345763350996088);
   }
 
-  major->buildLikelihood(majorData);
+  major->buildLikelihood();
   auto majorSumPdf = majorData->getLikelihood();
   {
     majorSumPdf->setData(data);

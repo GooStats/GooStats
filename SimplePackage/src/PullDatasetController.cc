@@ -13,7 +13,7 @@
 #include "GooStatsException.h"
 #include "RawSpectrumProvider.h"
 #include "goofit/Variable.h"
-bool PullDatasetController::collectInputs(DatasetManager *dataset) {
+bool PullDatasetController::collectInputs() {
   try {
     const auto &varName = dataset->name().substr(0, dataset->name().size() - 5);// remove _pull
     dataset->set("varName", varName);
@@ -53,7 +53,7 @@ bool PullDatasetController::collectInputs(DatasetManager *dataset) {
 }
 #include "PoissonPullPdf.h"
 #include "PullPdf.h"
-bool PullDatasetController::buildLikelihood(DatasetManager *dataset) {
+bool PullDatasetController::buildLikelihood() {
   auto type = dataset->get<std::string>("type");
   if (type == "gaus") {
     std::cout << "Creating gauss pull [" << dataset->get<std::string>("varName") << "] with exposure ["

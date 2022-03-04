@@ -30,8 +30,8 @@ public:
   DatasetController() = delete;
   virtual ~DatasetController() = default;
   virtual DatasetManager *createDataset();
-  virtual bool collectInputs(DatasetManager *) = 0;
-  virtual bool buildLikelihood(DatasetManager *) = 0;
+  virtual bool collectInputs() = 0;
+  virtual bool buildLikelihood() = 0;
   ConfigsetManager *getConfigset() { return configset; }
   [[nodiscard]] const DatasetManager *getDataset() const { return dataset.get(); }
   DatasetManager *getDataset() { return dataset.get(); }

@@ -76,13 +76,13 @@ void InputManager::initializeDatasets() {
     for (const auto &controller: _controllers) {
       this->registerController(controller);
       auto dataset = controller->createDataset();
-      controller->collectInputs(dataset);
+      controller->collectInputs();
       auto multi = dynamic_cast<MultiComponentDatasetController *>(controller.get());
       if (multi != nullptr) {
         builder->fillDataSpectra(dataset, provider.get());
         builder->buildComponenets(dataset, provider.get(), spcBuilder.get());
       }
-      controller->buildLikelihood(dataset);
+      controller->buildLikelihood();
     }
   }
 }

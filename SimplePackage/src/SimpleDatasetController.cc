@@ -54,11 +54,10 @@ void recursiveSet(const std::string comp, ConfigsetManager *configset, DatasetMa
   }
 };
 
-bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
+bool SimpleDatasetController::collectInputs() {
   try {
     dataset->set("exposure", configset->getOrConvert("exposure"));
-    Variable *Evis =
-            configset->createVar(configset->get("EvisVariable"), 0, 0, configset->getOrConvert("Evis_min"),
+    Variable *Evis = configset->createVar(configset->get("EvisVariable"), 0, 0, configset->getOrConvert("Evis_min"),
                                           configset->getOrConvert("Evis_max"));
     Evis->numbins = configset->getOrConvert("Evis_nbins");
     dataset->set("Evis", Evis);
@@ -162,7 +161,7 @@ bool SimpleDatasetController::collectInputs(DatasetManager *dataset) {
   return true;
 }
 #include "goofit/PDFs/SumPdf.h"
-bool SimpleDatasetController::buildLikelihood(DatasetManager *dataset) {
+bool SimpleDatasetController::buildLikelihood() {
   GooPdf *pdf = new SumPdf(dataset->fullName(), dataset->get<double>(std::string("exposure")),
                            dataset->get<std::vector<Variable *>>(std::string("Ns")),
                            dataset->get<std::vector<PdfBase *>>(std::string("pdfs")),
