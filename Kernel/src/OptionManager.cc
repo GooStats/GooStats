@@ -18,6 +18,9 @@ void OptionManager::printAllOptions() const {
   std::cout << "-------------------------------------------------------------" << std::endl;
   for (const auto &pair: list<double>())
     std::cout << "" << (pair.first) << " => double <" << (pair.second) << ">" << std::endl;
+  std::cout << "-------------------------------------------------------------" << std::endl;
+  for (const auto &pair: list<int>())
+    std::cout << "" << (pair.first) << " => int <" << (pair.second) << ">" << std::endl;
   std::cout << "*************************************************************" << std::endl;
 }
 

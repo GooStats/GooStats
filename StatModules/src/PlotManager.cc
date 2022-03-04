@@ -195,17 +195,21 @@ void PlotManager::draw(GSFitManager *gsFitManager/*chi2,likelihood etc.*/,SumPdf
   auto components = sumpdf->Components();
   auto Ns = sumpdf->Weights();
   for(size_t i = 0;i<components.size();++i) {
-    GooPdf *pdf = static_cast<GooPdf*>(components.at(i));
+    auto pdf = dynamic_cast<GooPdf *>(components.at(i));
+    auto name = pdf->getName();
     Variable *N = Ns.at(i);
-    TF1Helper *single_helper = new TF1Helper(pdf,N->value*sumpdf->Norm(),index);
-    sumpdf->restore(); // GooPdf::evaluateAtPoints is called, need to restore
+    auto single_helper = new TF1Helper(pdf, N->value * sumpdf->Norm(), index);
+    sumpdf->restore();// GooPdf::evaluateAtPoints is called, need to restore
     TF1 *single_h = single_helper->getTF1();
-    if(config.find(pdf->getName())!=config.end()) {
-      single_h->SetLineColor(config[pdf->getName()].color);
-      single_h->SetLineStyle(config[pdf->getName()].style);
-      single_h->SetLineWidth(config[pdf->getName()].width);
+    if (config.find(pdf->getName()) != config.end()) {
+      single_h->SetLineColor(config[name].color);
+      single_h->SetLineStyle(config[name].style);
+      single_h->SetLineWidth(config[name].width);
     } else {
-      single_h->SetLineColor(i+2+(i>=3));
+      std::cerr << "Warning: line color, line style and line width not found in configuration for "
+                   "["
+                << name << "], set line color by order" << std::endl;
+      single_h->SetLineColor(i + 2 + (i >= 3));
       single_h->SetLineStyle(1);
       single_h->SetLineWidth(2);
     }
