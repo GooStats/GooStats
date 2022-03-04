@@ -87,7 +87,7 @@ bool SimpleDatasetController::collectInputs() {
     bool useAna = false;
     bool useNL = false;
 
-    for (const auto &component: components) { recursiveSet(component, configset, dataset, useAna, useNL); }
+    for (const auto &component: components) { recursiveSet(component, configset, dataset.get(), useAna, useNL); }
     if (useAna) {
       dataset->set("RPFtype", configset->get("RPFtype"));
       dataset->set("NLtype", configset->get("NLtype"));
