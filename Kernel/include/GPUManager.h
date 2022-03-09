@@ -11,11 +11,12 @@
 #define GPUManager_H
 #include "Module.h"
 class GPUManager : public Module {
-  public:
-    GPUManager() : Module("GPUManager") { }
-    bool preinit() final;
-  private:
-    bool report(bool siliently = false) const;
-    bool report(int gpu_id,bool siliently = false) const;
+ public:
+  GPUManager() : Module("GPUManager") {}
+  bool preinit() final;
+
+ private:
+  bool report(bool siliently = false) const;
+  bool report(int gpu_id, bool siliently = false) const;
 };
 #endif

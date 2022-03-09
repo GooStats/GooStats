@@ -1,0 +1,8 @@
+Checks: >
+  -*,
+  clang-analyzer-*,
+  google-*,
+
+WarningsAsErrors: '*'
+
+HeaderFilterRegex: ''

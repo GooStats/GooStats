@@ -15,19 +15,19 @@
  *  specrtrumdataset, with spectrum, components, exposure etc. or a pull-tem
  *  dataset. A pull term data set can be of rate or generally on anything, or a
  *  pull term on the relationship between terms.
- *  
+ *
  *  The datasetmanager is desgined to take observer pattern, and usually
  *  multiple datasetmanager will listen to one common configsetmanager.
  */
 #include "DatasetController.h"
 #include "RawSpectrumProvider.h"
 class PullDatasetController : public DatasetController {
-public:
+ public:
   PullDatasetController(ConfigsetManager *_c, const std::string &n = "pull") : DatasetController(_c, n) {}
   bool collectInputs() override;
   bool buildLikelihood() override;
 
-private:
+ private:
   std::string name;
 };
 #endif

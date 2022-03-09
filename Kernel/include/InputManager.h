@@ -10,7 +10,7 @@
 /*! \class InputManager
  *  \brief class responsible for collecting and preparing inputs
  *
- *   This class will collect raw spectrum, parse configurations, setup 
+ *   This class will collect raw spectrum, parse configurations, setup
  *   parameters and build the objects recognizable for GooFit
  */
 #ifndef InputManager_H
@@ -18,23 +18,24 @@
 class InputBuilder;
 class ParSyncManager;
 class RawSpectrumProvider;
+#include <memory>
+#include <vector>
+
 #include "ConfigsetManager.h"
 #include "DatasetManager.h"
 #include "ISpectrumBuilder.h"
-#include <memory>
-#include <vector>
 class SumLikelihoodPdf;
 #include "Module.h"
 class InputManager : public Module {
-public:
+ public:
   InputManager(int _c, const char **_v) : Module("InputManager"), argc(_c), argv(_v){};
   bool init() override;
 
-protected:
-  const int argc;   ///< command line arguments
-  const char **argv;///< command line arguments
+ protected:
+  const int argc;     ///< command line arguments
+  const char **argv;  ///< command line arguments
 
-public:
+ public:
   void setInputBuilder(InputBuilder *);
   void setParSyncManager(ParSyncManager *);
   void setRawSpectrumProvider(RawSpectrumProvider *);
@@ -56,7 +57,7 @@ public:
   void resetPars();
   [[nodiscard]] RawSpectrumProvider *getProvider() const { return provider.get(); }
 
-protected:
+ protected:
   std::shared_ptr<InputBuilder> builder;
   std::shared_ptr<ParSyncManager> parManager;
   std::shared_ptr<SumLikelihoodPdf> totalPdf;
@@ -64,7 +65,7 @@ protected:
   std::shared_ptr<ISpectrumBuilder> spcBuilder;
   std::string outName;
 
-private:
+ private:
   std::vector<double> cachedParsInit;
   std::vector<double> cachedParsErr;
   std::vector<double> cachedParsUL;
@@ -75,10 +76,10 @@ private:
      *  \defgroup Dataset part responsible for dataset
      *  @{
      */
-public:
+ public:
   void registerConfigset(ConfigsetManager *);
 
-protected:
+ protected:
   //! Config-set is the minimul data-set unit in GooStats.
   //! One config-set can contain multiple spectrum, but they
   //! In GooFit there is a even smaller unit
@@ -90,11 +91,11 @@ protected:
      *  \defgroup Dataset part responsible for dataset
      *  @{
      */
-public:
+ public:
   //! create list of datasets, controllers and associate them
   void registerController(std::shared_ptr<DatasetController> controller);
 
-protected:
+ protected:
   std::vector<std::shared_ptr<DatasetController>> controllers;
   /**@}*/
 };

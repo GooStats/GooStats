@@ -8,23 +8,24 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "SimpleOutputBuilder.h"
-#include "OutputHelper.h"
 
 #include "BatchOutputManager.h"
 #include "GSFitManager.h"
 #include "InputManager.h"
+#include "OutputHelper.h"
 #include "PlotManager.h"
 #include "TMath.h"
 #include "goofit/FitManager.h"
 #include "goofit/PDFs/GooPdf.h"
-void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputManager *inputManager,
+void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper,
+                                              InputManager *inputManager,
                                               GSFitManager *gsFitManager) {
-  for (auto dataset: inputManager->Datasets()) {
+  for (auto dataset : inputManager->Datasets()) {
     if (dataset->has<double>("exposure")) {
       double exposure = dataset->get<double>("exposure");
       outHelper->registerTerm(dataset->fullName() + ".exposure", [=]() -> double { return exposure; });
     } else {
-      std::cerr<<"Warning: exposure not found in ["<<dataset->fullName()<<"]"<<std::endl;
+      std::cerr << "Warning: exposure not found in [" << dataset->fullName() << "]" << std::endl;
     }
   }
   outHelper->registerTerm("chi2", [gsFitManager]() -> double { return gsFitManager->chi2(); });
@@ -39,12 +40,14 @@ void SimpleOutputBuilder::registerOutputTerms(OutputHelper *outHelper, InputMana
 void SimpleOutputBuilder::bindAllParameters(BatchOutputManager *batch, OutputHelper *outHelper) {
   auto addrs = outHelper->addresses();
   for (size_t i = 0; i < outHelper->names().size(); ++i) {
-    if (outHelper->names().at(i).substr(0, 9) != "_forEval_") batch->bind(outHelper->names().at(i));
+    if (outHelper->names().at(i).substr(0, 9) != "_forEval_")
+      batch->bind(outHelper->names().at(i));
   }
 }
 void SimpleOutputBuilder::fillAllParameters(BatchOutputManager *batch, OutputHelper *outHelper) {
-  for (auto name: outHelper->names())
-    if (name.substr(0, 9) != "_forEval_") batch->fill(name, outHelper->value(name));
+  for (auto name : outHelper->names())
+    if (name.substr(0, 9) != "_forEval_")
+      batch->fill(name, outHelper->value(name));
 }
 void SimpleOutputBuilder::flushOstream(BatchOutputManager *batchOut, OutputHelper *outHelper, std::ostream &out) {
   goodness["chi2"] = outHelper->value("chi2");

@@ -10,5 +10,7 @@
 #ifndef InputConfig_H
 #define InputConfig_H
 #include <string>
-struct InputConfig { std::string configFile; };
+struct InputConfig {
+  std::string configFile;
+};
 #endif

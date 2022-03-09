@@ -8,11 +8,11 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "Module.h"
-const std::string Module::list() const { 
+const std::string Module::list() const {
   std::string names;
-  for(auto dep : dependences) {
-    names+=dep.first+",";
+  for (auto dep : dependences) {
+    names += dep.first + ",";
   }
-  names=names.substr(0,names.size()-1);
+  names = names.substr(0, names.size() - 1);
   return names;
 }

@@ -10,14 +10,21 @@
 #ifndef ToyMCLikelihoodEvaluator_h
 #define ToyMCLikelihoodEvaluator_h
 #include <vector>
+
 #include "goofit/FitControl.h"
 class GSFitManager;
 class InputManager;
 class ToyMCLikelihoodEvaluator {
-  public:
-    void get_p_value(GSFitManager *gsFitManager,InputManager *,double LL,double &p,double &perr,FitControl *fit = new BinnedNllFit());
-    const std::vector<double> &getLLs() const { return LLs; }
-  private:
-    std::vector<double> LLs;
+ public:
+  void get_p_value(GSFitManager *gsFitManager,
+                   InputManager *,
+                   double LL,
+                   double &p,
+                   double &perr,
+                   FitControl *fit = new BinnedNllFit());
+  const std::vector<double> &getLLs() const { return LLs; }
+
+ private:
+  std::vector<double> LLs;
 };
 #endif

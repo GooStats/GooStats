@@ -11,22 +11,23 @@
 #define DARKNOISECONVOLUTION_PDF_HH
 #include "goofit/PDFs/GooPdf.h"
 
-class DarkNoiseConvolutionPdf: public GooPdf {
-  public:
-    DarkNoiseConvolutionPdf(std::string n,Variable *npe,GooPdf *rawPdf_,BinnedDataSet *dn_histo);
-  private:
+class DarkNoiseConvolutionPdf : public GooPdf {
+ public:
+  DarkNoiseConvolutionPdf(std::string n, Variable *npe, GooPdf *rawPdf_, BinnedDataSet *dn_histo);
+
+ private:
 #ifdef NLL_CHECK
-  __host__ fptype sumOfNll (int numVars) const;
+  __host__ fptype sumOfNll(int numVars) const;
 #endif
-    __host__ void copyHistogramToDevice (BinnedDataSet *dn_histo);
-    __host__ void setIntegrationConstants();
-    __host__ virtual fptype normalise () const;
-    GooPdf* rawPdf;
-    fptype* dev_iConsts; 
-    int id;
-    DEVICE_VECTOR<fptype>* modelWorkSpace;
-    int npe_lo;
-    int npe_hi;
-    int dn_max;
+  __host__ void copyHistogramToDevice(BinnedDataSet *dn_histo);
+  __host__ void setIntegrationConstants();
+  __host__ virtual fptype normalise() const;
+  GooPdf *rawPdf;
+  fptype *dev_iConsts;
+  int id;
+  DEVICE_VECTOR<fptype> *modelWorkSpace;
+  int npe_lo;
+  int npe_hi;
+  int dn_max;
 };
 #endif

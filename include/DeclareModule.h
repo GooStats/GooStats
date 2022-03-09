@@ -13,12 +13,9 @@ class Module;
 #include <string>
 struct ModuleRegister {
   typedef Module* (*ModuleCreator)(const std::string&);
-  ModuleRegister(const std::string &name,ModuleCreator creator);
+  ModuleRegister(const std::string& name, ModuleCreator creator);
 };
-#define DECLARE_MODULE(ModuleClass) \
-  Module* GooStats_##ModuleClass##_creator_(const std::string& name) { \
-       return new ModuleClass(name); \
-  } \
-ModuleRegister GooStats_register_Module_##ModuleClass##_ \
-(#ModuleClass, &GooStats_##ModuleClass##_creator_)
+#define DECLARE_MODULE(ModuleClass)                                                                    \
+  Module* GooStats_##ModuleClass##_creator_(const std::string& name) { return new ModuleClass(name); } \
+  ModuleRegister GooStats_register_Module_##ModuleClass##_(#ModuleClass, &GooStats_##ModuleClass##_creator_)
 #endif

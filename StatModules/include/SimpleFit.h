@@ -11,8 +11,8 @@
 #define SimpleFit_H
 #include "StatModule.h"
 class SimpleFit : public StatModule {
-  public:
-    SimpleFit(const std::string &_name="SimpleFit") : StatModule(_name) { }
-    bool run(int=0) final;
+ public:
+  SimpleFit(const std::string &_name = "SimpleFit") : StatModule(_name) {}
+  bool run(int = 0) final;
 };
 #endif

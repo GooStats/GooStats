@@ -31,20 +31,20 @@ the [OptionManager](../Kernel/include/OptionManger.h) class.
 It is at the same time a leaf node in the fitting parameter sharing tree. It inherits
 the [ConfigsetManager](../Kernel/include/ConfigsetManager.h)
 
-For example, if you combine different experiment, or dataset with completely different models, you should 
+For example, if you combine different experiment, or dataset with completely different models, you should
 put them in different `ConfigsetManager`. If you combine several data-taking runs with similar levels of backgrounds, you can
-either put them in different `ConfigsetManager`. 
+either put them in different `ConfigsetManager`.
 
-Each `ConfigsetManager` can correspond to one or more `DatasetManager`. Usually, if you perform binned fit, one 
-`ConfigsetManager` correspond to one piece of Poisson likelihood and a few pull terms. The Poisson likelihood and 
-each pull term correspond to one `DatasetManager`, respectively. 
+Each `ConfigsetManager` can correspond to one or more `DatasetManager`. Usually, if you perform binned fit, one
+`ConfigsetManager` correspond to one piece of Poisson likelihood and a few pull terms. The Poisson likelihood and
+each pull term correspond to one `DatasetManager`, respectively.
 
 ## The DatasetManager class
 
 The `ConfigsetManager` holds the raw information loaded from configuration files.
 
-The `DatasetManager` holds processed information directly needed to construct the piece of likelihood it is 
+The `DatasetManager` holds processed information directly needed to construct the piece of likelihood it is
 responsible for.
 
-The [DatasetController](../Kernel/include/DatasetController.h) class is responsible for the process of converting raw 
+The [DatasetController](../Kernel/include/DatasetController.h) class is responsible for the process of converting raw
 information to processed information.

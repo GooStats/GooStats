@@ -8,26 +8,30 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "ToyMCLikelihoodEvaluator.h"
+
+#include "GSFitManager.h"
 #include "InputManager.h"
 #include "SumLikelihoodPdf.h"
-#include "GSFitManager.h"
-void ToyMCLikelihoodEvaluator::get_p_value(GSFitManager *gsFitManager,InputManager *manager,double LL,double &p,double &perr,FitControl *fit) {
+void ToyMCLikelihoodEvaluator::get_p_value(
+    GSFitManager *gsFitManager, InputManager *manager, double LL, double &p, double &perr, FitControl *fit) {
   const OptionManager *gOp = manager->GlobalOption();
-  int N = gOp->has("toyMC_size")?gOp->get<double>("toyMC_size"):100;
-  if(N==0) return;
+  int N = gOp->has("toyMC_size") ? gOp->get<double>("toyMC_size") : 100;
+  if (N == 0)
+    return;
   SumLikelihoodPdf *totalPdf = manager->getTotalPdf();
-  totalPdf->setFitControl(fit);
+  totalPdf->setFitControl(fit, true);
   totalPdf->copyParams();
   totalPdf->cache();
   LLs.clear();
   int n = 0;
-  for(int i = 0;i<N;++i) {
+  for (int i = 0; i < N; ++i) {
     manager->fillRandomData();
     LLs.push_back(totalPdf->calculateNLL());
-    if(LLs.back()>LL) ++n;
+    if (LLs.back() > LL)
+      ++n;
   }
   totalPdf->restore();
   gsFitManager->restoreFitControl();
-  p = n*1./N;
-  perr = sqrt(p*(1-p)/N);
+  p = n * 1. / N;
+  perr = sqrt(p * (1 - p) / N);
 }

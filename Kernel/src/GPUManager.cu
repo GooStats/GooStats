@@ -7,11 +7,12 @@
 //
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
-#include "GPUManager.h"
 #include <cstdio>
+
+#include "GPUManager.h"
 #include "GooStatsException.h"
 bool GPUManager::preinit() {
-  if(!report()) {
+  if (!report()) {
     throw GooStatsException("Cannot find a free GPU!");
   }
   return true;
@@ -20,22 +21,25 @@ bool GPUManager::preinit() {
 bool GPUManager::report(bool siliently) const {
   int devicesCount(1);
   cudaGetDeviceCount(&devicesCount);
-  if(devicesCount>1000) {
-    printf("number of devices larger than 1000. this is suspicious. Please modify the code here or login to the GPU node.");
+  if (devicesCount > 1000) {
+    printf(
+        "number of devices larger than 1000. this is suspicious. Please modify the code here or login to the GPU "
+        "node.");
     return false;
   }
-  for(int deviceIndex = 0; deviceIndex < devicesCount; ++deviceIndex) {
-    printf("Checking GPU [%d]/[%d]\n",deviceIndex,devicesCount);
-    if(report(deviceIndex,siliently)) return true;
+  for (int deviceIndex = 0; deviceIndex < devicesCount; ++deviceIndex) {
+    printf("Checking GPU [%d]/[%d]\n", deviceIndex, devicesCount);
+    if (report(deviceIndex, siliently))
+      return true;
   }
   return false;
 #else
-bool GPUManager::report(bool ) const {
+bool GPUManager::report(bool) const {
   return true;
 #endif
 }
 #ifdef __CUDACC__
-bool GPUManager::report(int gpu_id,bool siliently) const {
+bool GPUManager::report(int gpu_id, bool siliently) const {
   cudaSetDevice(gpu_id);
   cudaError_t cuda_status;
   //// show memory usage of GPU
@@ -54,31 +58,31 @@ bool GPUManager::report(int gpu_id,bool siliently) const {
   //      used_db/1024.0/1024.0, free_db/1024.0/1024.0, total_db/1024.0/1024.0);
   //}
   int device;
-  cuda_status = cudaGetDevice( &device );
-  if( cudaSuccess != cuda_status ) {
-    printf("Error: cudaGetDevice fails, %s \n", cudaGetErrorString(cuda_status) );
+  cuda_status = cudaGetDevice(&device);
+  if (cudaSuccess != cuda_status) {
+    printf("Error: cudaGetDevice fails, %s \n", cudaGetErrorString(cuda_status));
     return false;
   }
   cudaDeviceProp prop;
   cuda_status = cudaGetDeviceProperties(&prop, device);
-  if( cudaSuccess != cuda_status ) {
-    printf("Error: cudaGetDeviceProperties fails, %s \n", cudaGetErrorString(cuda_status) );
+  if (cudaSuccess != cuda_status) {
+    printf("Error: cudaGetDeviceProperties fails, %s \n", cudaGetErrorString(cuda_status));
     return false;
   }
-	int *test;
-	cuda_status = cudaMalloc( (void**)&test, sizeof(int)); 
-  if( cudaSuccess != cuda_status ) {
-    printf("Error: cudaMalloc fails, %s \n", cudaGetErrorString(cuda_status) );
+  int *test;
+  cuda_status = cudaMalloc((void **)&test, sizeof(int));
+  if (cudaSuccess != cuda_status) {
+    printf("Error: cudaMalloc fails, %s \n", cudaGetErrorString(cuda_status));
     return false;
   }
-	cudaFree( test );
-  if(!siliently) {
-    printf("Running on [%s] with compute capability of %d.%d\n",prop.name,prop.major,prop.minor);
+  cudaFree(test);
+  if (!siliently) {
+    printf("Running on [%s] with compute capability of %d.%d\n", prop.name, prop.major, prop.minor);
   }
 //  if( !(prop.major>3 || prop.major==3 && prop.minor>=5) )
 //    return false;
 #else
-bool GPUManager::report(int ,bool ) const {
+bool GPUManager::report(int, bool) const {
 #endif
   return true;
 }

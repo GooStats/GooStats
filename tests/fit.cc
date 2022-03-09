@@ -8,21 +8,22 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "fit.h"
+
 #include "AnalysisManager.h"
-#include "InputManager.h"
-#include "SimpleInputBuilder.h"
-#include "OutputManager.h"
-#include "SimpleOutputBuilder.h"
-#include "SimplePlotManager.h"
 #include "GSFitManager.h"
+#include "InputManager.h"
+#include "OutputHelper.h"
+#include "OutputManager.h"
 #include "PrepareData.h"
 #include "SimpleFit.h"
-#include "OutputHelper.h"
+#include "SimpleInputBuilder.h"
+#include "SimpleOutputBuilder.h"
+#include "SimplePlotManager.h"
 namespace GooStats {
   const OutputHelper *fit(int argc, const char *argv[]) {
     AnalysisManager *ana = new AnalysisManager();
 
-    auto inputManager = new InputManager(argc,argv);
+    auto inputManager = new InputManager(argc, argv);
     inputManager->setInputBuilder(new SimpleInputBuilder());
     auto outManager = new OutputManager();
     outManager->setOutputBuilder(new SimpleOutputBuilder());
@@ -43,4 +44,4 @@ namespace GooStats {
 
     return outManager->getOutputHelper();
   }
-}
+}  // namespace GooStats

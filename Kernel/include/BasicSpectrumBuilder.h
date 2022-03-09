@@ -14,15 +14,17 @@
  */
 #ifndef BasicSpectrumBuilder_H
 #define BasicSpectrumBuilder_H
-#include "ISpectrumBuilder.h"
-#include <vector>
 #include <memory>
+#include <vector>
+
+#include "ISpectrumBuilder.h"
 class BasicSpectrumBuilder : public ISpectrumBuilder {
-  public:
-    GooPdf *buildSpectrum(const std::string &,DatasetManager*) override;
-    //! build the spectrum of name for the dataset
-    void AddSiblings(ISpectrumBuilder *) final;
-  private:
-    std::vector<std::shared_ptr<ISpectrumBuilder>> siblings;
+ public:
+  GooPdf *buildSpectrum(const std::string &, DatasetManager *) override;
+  //! build the spectrum of name for the dataset
+  void AddSiblings(ISpectrumBuilder *) final;
+
+ private:
+  std::vector<std::shared_ptr<ISpectrumBuilder>> siblings;
 };
 #endif

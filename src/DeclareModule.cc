@@ -8,7 +8,8 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "DeclareModule.h"
+
 #include "ModuleFactory.h"
-ModuleRegister::ModuleRegister(const std::string &name,ModuleCreator creator) {
-  ModuleFactory::get()->registerModule(name,creator);
+ModuleRegister::ModuleRegister(const std::string &name, ModuleCreator creator) {
+  ModuleFactory::get()->registerModule(name, creator);
 }

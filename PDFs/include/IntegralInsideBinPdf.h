@@ -13,13 +13,13 @@
 #include "goofit/PDFs/GooPdf.h"
 
 class IntegralInsideBinPdf : public GooPdf {
-  public:
-    IntegralInsideBinPdf (std::string n, Variable *x,unsigned int,GooPdf *);
-    __host__ virtual fptype normalise () const;
-  private:
-    unsigned int N;
-  fptype* dev_iConsts; 
-};
+ public:
+  IntegralInsideBinPdf(std::string n, Variable *x, unsigned int, GooPdf *);
+  __host__ virtual fptype normalise() const;
 
+ private:
+  unsigned int N;
+  fptype *dev_iConsts;
+};
 
 #endif

@@ -11,28 +11,28 @@
 #define SUM_LIKELIHOOD_PDF_HH
 
 #include <map>
+
 #include "goofit/PDFs/GooPdf.h"
 struct Variable;
 
 class SumLikelihoodPdf : public GooPdf {
-public:
-
-  SumLikelihoodPdf (std::string n, const std::vector<PdfBase*> &comps);
-  virtual ~SumLikelihoodPdf() {};
-  __host__ virtual fptype normalise () const;
-  const std::vector<PdfBase*> &Components() const { return components; }
+ public:
+  SumLikelihoodPdf(std::string n, const std::vector<PdfBase *> &comps);
+  virtual ~SumLikelihoodPdf(){};
+  __host__ virtual fptype normalise() const;
+  const std::vector<PdfBase *> &Components() const { return components; }
   void fill_random();
   void fill_Asimov();
   void cache();
   void restore();
   int Nfree();
 
-private:
+ private:
   __host__ void setData(BinnedDataSet *data);
   __host__ void setData(UnbinnedDataSet *data);
 
-protected:
-  __host__ virtual double sumOfNll (int numVars) const;
+ protected:
+  __host__ virtual double sumOfNll(int numVars) const;
 };
 
 #endif

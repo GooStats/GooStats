@@ -13,13 +13,13 @@
 #include <string>
 
 class ParSyncManager {
-  public:
+ public:
   using Level = int;
   virtual ~ParSyncManager() = default;
   virtual void init() {}
   virtual std::map<std::string, Level> getStrategies() { return m_strategies; }
 
-  private:
+ private:
   std::map<std::string, Level> m_strategies;
 };
 #endif

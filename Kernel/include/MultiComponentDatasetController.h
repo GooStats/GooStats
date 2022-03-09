@@ -14,7 +14,7 @@
 #include "DatasetController.h"
 #include "RawSpectrumProvider.h"
 class MultiComponentDatasetController : public DatasetController {
-public:
+ public:
   /// @param _c ConfigsetManger storing options
   /// @param n name of the controller, also name of the DatasetManger to be created
   explicit MultiComponentDatasetController(ConfigsetManager *_c, const std::string &n = "main")
@@ -22,4 +22,4 @@ public:
   std::vector<std::string> getComponents(DatasetManager *dataset) const;
 };
 
-#endif//BX_GOOSTATS_MULTICOMPONENTDATASETCONTROLLER_H
+#endif  //BX_GOOSTATS_MULTICOMPONENTDATASETCONTROLLER_H

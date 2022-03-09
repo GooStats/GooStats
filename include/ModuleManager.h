@@ -10,15 +10,16 @@
 #ifndef ModuleManager_H
 #define ModuleManager_H
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 class Module;
 class ModuleManager {
-  public:
-    void registerModule(const std::string &type,const std::string &name="");
-    bool initializeAllModules();
-  private:
-    bool initializeModule(Module *module);
-    std::map<std::string,std::shared_ptr<Module>> modules;
+ public:
+  void registerModule(const std::string &type, const std::string &name = "");
+  bool initializeAllModules();
+
+ private:
+  bool initializeModule(Module *module);
+  std::map<std::string, std::shared_ptr<Module>> modules;
 };
 #endif

@@ -8,11 +8,13 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "DiscoveryTest.h"
-#include "InputManager.h"
+
 #include "GSFitManager.h"
+#include "InputManager.h"
 #include "OutputManager.h"
 bool DiscoveryTest::run(int ev) {
-  if(!GlobalOption()->has("DiscoveryTest")) return true;
+  if (!GlobalOption()->has("DiscoveryTest"))
+    return true;
   auto parName = GlobalOption()->get("DiscoveryTest");
   auto var = getGSFitManager()->get_var(parName);
   var->fixed = true;
@@ -20,6 +22,6 @@ bool DiscoveryTest::run(int ev) {
   getGSFitManager()->run(ev);
   getOutputManager()->subFit(ev);
   var->fixed = false;
-  var->value = (var->upperlimit+var->lowerlimit)/2;
+  var->value = (var->upperlimit + var->lowerlimit) / 2;
   return true;
 }

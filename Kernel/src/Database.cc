@@ -10,14 +10,14 @@
 
 #include "Database.h"
 
-#define DEFINE_METHOD(T, VAR)                                                                                          \
-  template<>                                                                                                           \
-  [[nodiscard]] const std::map<std::string, T> &Database::list<T>() const {                                            \
-    return VAR;                                                                                                        \
-  }                                                                                                                    \
-  template<>                                                                                                           \
-  [[nodiscard]] std::map<std::string, T> &Database::list<T>() {                                                        \
-    return VAR;                                                                                                        \
+#define DEFINE_METHOD(T, VAR)                                               \
+  template <>                                                               \
+  [[nodiscard]] const std::map<std::string, T> &Database::list<T>() const { \
+    return VAR;                                                             \
+  }                                                                         \
+  template <>                                                               \
+  [[nodiscard]] std::map<std::string, T> &Database::list<T>() {             \
+    return VAR;                                                             \
   }
 
 EXPAND_MACRO(DEFINE_METHOD);

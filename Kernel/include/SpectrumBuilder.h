@@ -10,13 +10,13 @@
 /*! \class SpectrumBuilder
  *  \brief example builder class used by InputManager
  *
- *   This is a utlity class and is responsible for building the Configset 
+ *   This is a utlity class and is responsible for building the Configset
  */
 #ifndef SpectrumBuilder_H
 #define SpectrumBuilder_H
 #include "BasicSpectrumBuilder.h"
 class SpectrumBuilder : public BasicSpectrumBuilder {
-  public:
-    GooPdf *buildSpectrum(const std::string &,DatasetManager*) final;
+ public:
+  GooPdf *buildSpectrum(const std::string &, DatasetManager *) final;
 };
 #endif

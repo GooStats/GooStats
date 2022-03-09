@@ -17,23 +17,24 @@
  *  interpretate it as a measurement.
  */
 class ExpPullPdf : public DataPdf {
-  public:
-    ExpPullPdf(std::string n, Variable* var, 
-	   fptype ul/* upper limit */,
-	   fptype cl/* corrsponding confidence level, (0,1) */);
+ public:
+  ExpPullPdf(std::string n,
+             Variable* var,
+             fptype ul /* upper limit */,
+             fptype cl /* corrsponding confidence level, (0,1) */);
 
-    __host__ virtual fptype normalise () const{return 1;}
+  __host__ virtual fptype normalise() const { return 1; }
 
-    __host__ fptype calculateNLL() const;
-    std::unique_ptr<fptype []> fill_random() final;
-    std::unique_ptr<fptype []> fill_Asimov() final;
-    void cache() final;
-    void restore() final;
+  __host__ fptype calculateNLL() const;
+  std::unique_ptr<fptype[]> fill_random() final;
+  std::unique_ptr<fptype[]> fill_Asimov() final;
+  void cache() final;
+  void restore() final;
 
-  private:
-    const int index;
-    fptype data;
-    fptype data_backup = -99;
+ private:
+  const int index;
+  fptype data;
+  fptype data_backup = -99;
 };
 
 #endif
