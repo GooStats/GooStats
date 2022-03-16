@@ -110,7 +110,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
       }
     }
     provider->registerSpecies(txtPair.component, n, x, e0, de);
-    delete [] x;
+    delete[] x;
     f.close();
   }
 
@@ -161,7 +161,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
       for (int i = 0; i < n; ++i)
         x[i] = th1->GetBinContent(i + 1);
       provider->registerSpecies(component, n, x, e0, de);
-      delete [] x;
+      delete[] x;
     }
     for (auto file : sourceTFiles)
       file->Close();  // don't delete, ROOT will delete them
