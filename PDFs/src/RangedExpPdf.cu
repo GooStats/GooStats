@@ -10,7 +10,7 @@
 #include "RangedExpPdf.h"
 #include "goofit/Variable.h"
 
-EXEC_TARGET fptype device_RangedExpPdfs(fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_RangedExpPdfs(fptype *evt, fptype *p, unsigned int *indices) {
   const fptype x = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])];
   const fptype p0 = RO_CACHE(p[RO_CACHE(indices[1])]);
   const fptype p1 = RO_CACHE(p[RO_CACHE(indices[2])]);
@@ -19,11 +19,11 @@ EXEC_TARGET fptype device_RangedExpPdfs(fptype* evt, fptype* p, unsigned int* in
   const fptype x_H = RO_CACHE(functorConstants[cIndex + 1]);
   const fptype x_0 = (x_L + x_H) / 2;
 
-  fptype ret = (x >= x_L && x <= x_H) ? p0 * EXP(-(x - x_0) / p1) : 0;
+  fptype ret = (x >= x_L && x <= x_H) ? p0 * EXP(-(x - x_0) * p1) : 0;
   //if(THREADIDX==0) printf("p0: %lf %lf %lf %lf %lf %lf\n",x,p0,p1,x_L,x_H,ret);
   return ret;
 }
-EXEC_TARGET fptype device_inverseRangedExpPdfs(fptype* evt, fptype* p, unsigned int* indices) {
+EXEC_TARGET fptype device_inverseRangedExpPdfs(fptype *evt, fptype *p, unsigned int *indices) {
   const fptype x = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])];
   const fptype p0 = RO_CACHE(p[RO_CACHE(indices[1])]);
   const fptype p1 = RO_CACHE(p[RO_CACHE(indices[2])]);
@@ -32,7 +32,7 @@ EXEC_TARGET fptype device_inverseRangedExpPdfs(fptype* evt, fptype* p, unsigned 
   const fptype x_H = RO_CACHE(functorConstants[cIndex + 1]);
   const fptype x_0 = (x_L + x_H) / 2;
 
-  fptype ret = (x >= x_L && x <= x_H) ? 1 - p0 * EXP(-(x - x_0) / p1) : 1;
+  fptype ret = (x >= x_L && x <= x_H) ? 1 - p0 * EXP(-(x - x_0) * p1) : 1;
   //if(THREADIDX==0) printf("1-p0: %lf %lf %lf %lf %lf %lf\n",x,p0,p1,x_L,x_H,ret);
   return ret;
 }
@@ -41,7 +41,7 @@ MEM_DEVICE device_function_ptr ptr_to_RangedExpPdfs = device_RangedExpPdfs;
 MEM_DEVICE device_function_ptr ptr_to_inverseRangedExpPdfs = device_inverseRangedExpPdfs;
 
 RangedExpPdf::RangedExpPdf(
-    std::string n, Variable* npe, Variable* p0, Variable* p1, fptype x_L, fptype x_H, bool inversed)
+    std::string n, Variable *npe, Variable *p0, Variable *p1, fptype x_L, fptype x_H, bool inversed)
     : GooPdf(npe, n) {
   std::cout << "RangedExpPdf(" << n << "): p0 " << p0->value << " p1 " << p1->value << " xL " << x_L << " xH " << x_H
             << std::endl;
