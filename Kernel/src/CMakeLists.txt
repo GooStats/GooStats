@@ -25,6 +25,8 @@ add_library(
   ../include/Database.h
   ../include/MultiComponentDatasetController.h
   MultiComponetDatasetController.cc)
+add_sanitizers(GooStatsKernel)
+
 target_include_directories(
   GooStatsKernel
   PUBLIC
@@ -33,9 +35,11 @@ target_include_directories(
 target_link_libraries(GooStatsKernel PUBLIC GooStatsLib_gpu goofit_base)
 
 add_library(BestFitFixture BestFitFixture.cc)
+add_sanitizers(BestFitFixture)
 target_link_libraries(BestFitFixture PUBLIC GooStatsLib_gpu gtest_main
                                             ROOT::TreePlayer)
 
 add_library(NLLFixture NLLCheckFixture.cc)
+add_sanitizers(NLLFixture)
 target_link_libraries(NLLFixture PUBLIC GooStatsLib_gpu gtest_main
                                         GooStatsNLLCheck)

@@ -43,13 +43,17 @@ GooPdf *SimpleSpectrumBuilder::buildMC(const std::string &name, DatasetManager *
   BinnedDataSet *binned_data = loadRawSpectrum(E, name);
   bool freeScale = dataset->get<bool>(name + "_freeMCscale");
   bool freeShift = dataset->get<bool>(name + "_freeMCshift");
-  if (freeScale || freeShift) {
-    Variable *MCscale = dataset->get<Variable *>(name + "_scale");
-    Variable *MCshift = dataset->get<Variable *>(name + "_shift");
-    return new HistogramPdf(pdfName, binned_data, MCscale, MCshift, true /*already normalized*/);
-  } else {
-    return new HistogramPdf(pdfName, binned_data, nullptr, nullptr, true /*already normalized*/);
-  }
+  auto pdf = [&]() {
+    if (freeScale || freeShift) {
+      Variable *MCscale = dataset->get<Variable *>(name + "_scale");
+      Variable *MCshift = dataset->get<Variable *>(name + "_shift");
+      return new HistogramPdf(pdfName, binned_data, MCscale, MCshift, true /*already normalized*/);
+    } else {
+      return new HistogramPdf(pdfName, binned_data, nullptr, nullptr, true /*already normalized*/);
+    }
+  }();
+  delete binned_data;
+  return pdf;
 }
 GooPdf *SimpleSpectrumBuilder::buildAna(const std::string &name, DatasetManager *dataset) {
   std::string pdfName = dataset->fullName() + "." + name;

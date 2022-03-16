@@ -16,4 +16,7 @@ TEST(GooStats, simpleFit) {
   auto outputHelper = GooStats::fit(sizeof argv / sizeof argv[0], argv);
 
   EXPECT_NEAR(outputHelper->value("likelihood"), 357.95898, 0.00001);
+
+  auto lsan = std::getenv("LSAN_OPTIONS");
+  std::cout<<"LSAN_OPTIONS: ["<<(lsan?lsan:"")<<"]"<<std::endl;
 }

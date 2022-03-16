@@ -11,6 +11,7 @@ add_library(
   OutputManager.cc
   PlotManager.cc
   ToyMCLikelihoodEvaluator.cc)
+add_sanitizers(GooStatsStatModules)
 target_include_directories(
   GooStatsStatModules
   PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/StatModules/include>"

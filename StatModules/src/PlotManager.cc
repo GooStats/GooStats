@@ -73,6 +73,7 @@ void PlotManager::draw(int, const std::vector<DatasetManager *> &ds) {
   toBeSaved.insert(cc);
   if (createPdf())
     cc->Print((outName() + ".pdf").c_str(), "Title:merged");
+  delete cc;
 }
 #include "GSFitManager.h"
 TCanvas *PlotManager::drawSingleGroup(const std::string &name, const std::vector<DatasetManager *> &datasets) {
@@ -161,9 +162,9 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
                             1);
   main_pad->cd();
   // create TLegend
-  TLegend *leg = new TLegend(0.4, 0.40, 0.96, 0.96);
-  leg->SetMargin(0.15);
-  leg->SetFillStyle(0);
+  TLegend leg(0.4, 0.40, 0.96, 0.96);
+  leg.SetMargin(0.15);
+  leg.SetFillStyle(0);
   Variable *npe = *sumpdf->obsBegin();
   std::string npeFullName = npe->name;
   std::string npeName = npeFullName.substr(npeFullName.find(".") + 1);
@@ -174,10 +175,12 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
                             npe->lowerlimit,
                             npe->upperlimit);
   // fill data histogram
-  BinnedDataSet *data_spectra = sumpdf->getData();
-  for (int i = 0; i < npe->numbins; ++i) {
-    xvarHist->SetBinContent(i + 1, data_spectra->getBinContent(i));
-    xvarHist->SetBinError(i + 1, data_spectra->getBinError(i));
+  {
+    auto data_spectra = sumpdf->getData();
+    for (int i = 0; i < npe->numbins; ++i) {
+      xvarHist->SetBinContent(i + 1, data_spectra->getBinContent(i));
+      xvarHist->SetBinError(i + 1, data_spectra->getBinError(i));
+    }
   }
   // set range for Y
   auto setRangeY = [](TH1 *h, bool logY) {
@@ -207,14 +210,13 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
   xvarHist->DrawClone("e");
   toBeSaved.insert(xvarHist);
   // add to legend
-  leg->AddEntry(xvarHist,
-                TextOutputManager::data(sumpdf->getName(), sumpdf->Norm(), "days #times tons").c_str(),
-                "lpe");  // we agree it's day ton
+  leg.AddEntry(xvarHist,
+               TextOutputManager::data(sumpdf->getName(), sumpdf->Norm(), "days #times tons").c_str(),
+               "lpe");  // we agree it's day ton
   // -------------- total model
   sumpdf->cache();
-  TF1Helper *total_helper = new TF1Helper(sumpdf, 1, index);
+  auto total_h = createTF1(sumpdf, 1, index);
   sumpdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
-  TF1 *total_h = total_helper->getTF1();
   // draw total model
   //total_h->SetNpx(npe->numbins);
   total_h->SetLineColor(kRed);
@@ -224,14 +226,14 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
   toBeSaved.insert(total_h);
   // add legend for the chi^2 etc.
   if (gsFitManager->LLfit())
-    leg->AddEntry(total_h,
-                  Form("-2ln(L) %.1lf p-value %.3lf #pm %.3lf",
-                       gsFitManager->minus2lnlikelihood(),
-                       gsFitManager->LLp(),
-                       gsFitManager->LLpErr()),
-                  "l");
+    leg.AddEntry(total_h,
+                 Form("-2ln(L) %.1lf p-value %.3lf #pm %.3lf",
+                      gsFitManager->minus2lnlikelihood(),
+                      gsFitManager->LLp(),
+                      gsFitManager->LLpErr()),
+                 "l");
   else
-    leg->AddEntry(
+    leg.AddEntry(
         total_h,
         Form("#chi^{2}/NDF %.1lf / %d p-value %.3lf", gsFitManager->chi2(), gsFitManager->NDF(), gsFitManager->Prob()),
         "l");
@@ -242,9 +244,8 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
     auto pdf = dynamic_cast<GooPdf *>(components.at(i));
     auto name = pdf->getName();
     Variable *N = Ns.at(i);
-    auto single_helper = new TF1Helper(pdf, N->value * sumpdf->Norm(), index);
     sumpdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
-    TF1 *single_h = single_helper->getTF1();
+    auto single_h = createTF1(pdf, N->value * sumpdf->Norm(), index);
     if (config.find(pdf->getName()) != config.end()) {
       single_h->SetLineColor(config[name].color);
       single_h->SetLineStyle(config[name].style);
@@ -260,24 +261,24 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
     single_h->SetNpx(npe->numbins);
     single_h->DrawClone("same");
     toBeSaved.insert(single_h);
-    leg->AddEntry(single_h,
-                  TextOutputManager::rate(pdf->getName(),
-                                          N->value,
-                                          N->error,
-                                          N->upperlimit,
-                                          N->lowerlimit,
-                                          N->apply_penalty,
-                                          N->penalty_mean,
-                                          N->penalty_sigma)
-                      .c_str(),
-                  "l");
+    leg.AddEntry(single_h,
+                 TextOutputManager::rate(pdf->getName(),
+                                         N->value,
+                                         N->error,
+                                         N->upperlimit,
+                                         N->lowerlimit,
+                                         N->apply_penalty,
+                                         N->penalty_mean,
+                                         N->penalty_sigma)
+                     .c_str(),
+                 "l");
   }
   // -------------- legends
-  leg->ConvertNDCtoPad();
-  leg->SetY1NDC(0.96 - 0.04 * leg->GetNRows());
-  if (0.96 - 0.04 * leg->GetNRows() < 0.2)
-    leg->SetY1NDC(0.2);
-  leg->DrawClone();
+  leg.ConvertNDCtoPad();
+  leg.SetY1NDC(0.96 - 0.04 * leg.GetNRows());
+  if (0.96 - 0.04 * leg.GetNRows() < 0.2)
+    leg.SetY1NDC(0.2);
+  leg.DrawClone();
   //////////////////////////// for residual pad ////////////////////////////////
   curr_pad->cd();
   TPad *res_pad = new TPad(gPad->GetName() + TString(Form("_%d_res", index)),
@@ -351,12 +352,17 @@ void PlotManager::drawLikelihoodpValue(int, double LL, const std::vector<double>
     x_min -= to_sub;
     x_max -= to_sub;
   }
-  TPave *pave = new TPave(x_min, y_min, x_max, y_max, 0, "br");
-  pave->SetFillColor(3);
-  pave->SetFillStyle(3013);
-  pave->SetLineWidth(2);
-  pave->DrawClone();
+  TPave pave(x_min, y_min, x_max, y_max, 0, "br");
+  pave.SetFillColor(3);
+  pave.SetFillStyle(3013);
+  pave.SetLineWidth(2);
+  pave.DrawClone();
   toBeSaved.insert(cc);
+}
+TF1 *PlotManager::createTF1(GooPdf *pdf, double norm, int index) {
+  helpers.emplace_back(std::unique_ptr<TF1Helper>(new TF1Helper(pdf, norm, index)));
+  auto tf1 = helpers.back()->getTF1();
+  return tf1;
 }
 PlotManager::TF1Helper::TF1Helper(GooPdf *pdf, double norm, int index) {
   static int hash = -1;

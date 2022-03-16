@@ -61,10 +61,11 @@ std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>> SimpleInputBuilde
     throw GooStatsException("cmd argument format not understandable");
   }
   std::vector<ConfigsetManager *> configs;
-  auto configset = new ConfigsetManager("default", new OptionManager());
+  auto configset = new ConfigsetManager("default");
   auto parser = new SimpleOptionParser();
   parser->parse(configset, argv[1]);
   parser->parse(configset, argc - 3, argv + 3);
+  delete parser;
   configs.push_back(configset);
   return std::make_pair(configs.at(0), configs);
 }
@@ -109,6 +110,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
       }
     }
     provider->registerSpecies(txtPair.component, n, x, e0, de);
+    delete [] x;
     f.close();
   }
 
@@ -159,6 +161,7 @@ void SimpleInputBuilder::fillRawSpectrumProvider(RawSpectrumProvider *provider, 
       for (int i = 0; i < n; ++i)
         x[i] = th1->GetBinContent(i + 1);
       provider->registerSpecies(component, n, x, e0, de);
+      delete [] x;
     }
     for (auto file : sourceTFiles)
       file->Close();  // don't delete, ROOT will delete them

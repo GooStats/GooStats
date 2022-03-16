@@ -64,6 +64,7 @@ class PlotManager : public StatModule {
                     int index = 0);
 
  protected:
+  TF1 *createTF1(GooPdf *pdf,double norm,int index);
   EColor getColor(const std::string &n) const {
     return colorlibrary.find(n) != colorlibrary.end() ? colorlibrary.at(n) : kBlack;
   }
@@ -93,5 +94,6 @@ class PlotManager : public StatModule {
       {"kPink", kPink},
       {"kBlack", kBlack},
   };
+  std::vector<std::unique_ptr<TF1Helper>> helpers;
 };
 #endif

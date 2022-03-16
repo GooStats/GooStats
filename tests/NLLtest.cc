@@ -5,7 +5,7 @@
 #include "fit.h"
 #include "gtest/gtest.h"
 
-TEST(GooFit, NLLTest) {
+TEST(GooStats, NLLTest) {
   try {
     const char *argv[] = {"GooStats.exe", "toyMC.cfg", "test", "dummyOption=ShouldDiscardIt"};
     GooStats::fit(sizeof argv / sizeof argv[0], argv);
@@ -31,7 +31,7 @@ TEST(GooFit, NLLTest) {
   EXPECT_NEAR(results_obj->get_finalLL(), reference_obj->get_finalLL(), reference_obj->get_finalLL() * 5e-11);
 }
 
-TEST(GooFit, NLLTestFail) {
+TEST(GooStats, NLLTestFail) {
   try {
     const char *argv[] = {"GooStats.exe", "toyMC.cfg", "test", "dummyOption=ShouldDiscardIt"};
     GooStats::fit(sizeof argv / sizeof argv[0], argv);

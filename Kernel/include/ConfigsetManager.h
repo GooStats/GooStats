@@ -27,8 +27,7 @@
 #include "OptionManager.h"
 class ConfigsetManager : public BasicManager, public OptionManager {
  public:
-  ConfigsetManager(const std::string &name_, OptionManager *op) : BasicManager(name_), OptionManager(std::move(*op)){};
-  ConfigsetManager(BasicManager &manager, OptionManager *op) : BasicManager(manager), OptionManager(std::move(*op)){};
+  explicit ConfigsetManager(const std::string &name_) : BasicManager(name_) {}
   virtual ~ConfigsetManager() = default;
 };
 #endif

@@ -21,7 +21,8 @@
 #include "SimplePlotManager.h"
 namespace GooStats {
   const OutputHelper *fit(int argc, const char *argv[]) {
-    AnalysisManager *ana = new AnalysisManager();
+
+    auto ana = new AnalysisManager();
 
     auto inputManager = new InputManager(argc, argv);
     inputManager->setInputBuilder(new SimpleInputBuilder());

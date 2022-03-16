@@ -9,6 +9,7 @@ add_library(
   PullDatasetController.cc
   SimpleOptionParser.cc
   ../include/SimpleOptionParser.h)
+add_sanitizers(GooStatsSimpleObj)
 target_include_directories(
   GooStatsSimpleObj
   PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/SimplePackage/include>"
