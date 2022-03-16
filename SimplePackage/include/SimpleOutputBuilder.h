@@ -10,22 +10,24 @@
 /*! \class SimpleOutputBuilder
  *  \brief builder class used by OutputManager
  *
- *   This is a utlity class and is responsible for building the Configset 
+ *   This is a utlity class and is responsible for building the Configset
  */
 #ifndef SimpleOutputBuilder_H
 #define SimpleOutputBuilder_H
-#include "OutputBuilder.h"
 #include <map>
 #include <string>
+
+#include "OutputBuilder.h"
 class SimpleOutputBuilder : public OutputBuilder {
-  public:
-    //! load number of configs / location of configuration files from command-line args.
-    void registerOutputTerms(OutputHelper *, InputManager *,GSFitManager *) override;
-    void bindAllParameters(BatchOutputManager *,OutputHelper*) override;
-    void fillAllParameters(BatchOutputManager *,OutputHelper*) override;
-    void flushOstream(BatchOutputManager *,OutputHelper *,std::ostream &) override;
-    void draw(int event,GSFitManager *,PlotManager *,InputManager *) override;
-  private:
-    std::map<std::string,double> goodness;
+ public:
+  //! load number of configs / location of configuration files from command-line args.
+  void registerOutputTerms(OutputHelper *, InputManager *, GSFitManager *) override;
+  void bindAllParameters(BatchOutputManager *, OutputHelper *) override;
+  void fillAllParameters(BatchOutputManager *, OutputHelper *) override;
+  void flushOstream(BatchOutputManager *, OutputHelper *, std::ostream &) override;
+  void draw(int event, GSFitManager *, PlotManager *, InputManager *) override;
+
+ private:
+  std::map<std::string, double> goodness;
 };
 #endif

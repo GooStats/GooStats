@@ -14,10 +14,14 @@
 
 // unit: neutrino / cm^2 / day
 class ReactorSpectrumPdf : public GooPdf {
-  public:
-    ReactorSpectrumPdf (std::string n, Variable *x, const std::vector<Variable *> &fractions,
-	const std::vector<double> &coefficients,fptype power,fptype distance);
-    __host__ virtual fptype normalise () const;
+ public:
+  ReactorSpectrumPdf(std::string n,
+                     Variable *x,
+                     const std::vector<Variable *> &fractions,
+                     const std::vector<double> &coefficients,
+                     fptype power,
+                     fptype distance);
+  __host__ virtual fptype normalise() const;
 };
 
 #endif

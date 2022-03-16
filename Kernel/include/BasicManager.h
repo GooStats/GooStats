@@ -10,18 +10,21 @@
 #ifndef BasicManager_H
 #define BasicManager_H
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 using Level = int;
 class Variable;
 class BasicManager {
-  public:
+ public:
   explicit BasicManager(std::string name_);
   const std::string &name() const { return m_name; }
 
-  static void setParSyncConfig(const std::map<std::string, int> &configs) { s_configs = configs; s_vars = {}; }
+  static void setParSyncConfig(const std::map<std::string, int> &configs) {
+    s_configs = configs;
+    s_vars = {};
+  }
   static void dump();
 
   Variable *createVar(const std::string &key, double val, double err, double min, double max);
@@ -29,7 +32,7 @@ class BasicManager {
   bool hasVar(const std::string &key) const;
   Variable *var(const std::string &key) const;
 
-  private:
+ private:
   std::string getKey(const std::string &key) const;
   const std::string m_name;
   std::vector<std::string> m_parents;

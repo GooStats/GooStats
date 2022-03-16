@@ -15,10 +15,9 @@
 class OptionManager;
 
 class IOptionParser {
-public:
-    virtual bool parse(OptionManager *, const std::string &fileName) = 0;
-    virtual bool parse(OptionManager *, int argc, const char *argv[]) = 0;
+ public:
+  virtual bool parse(OptionManager *, const std::string &fileName) = 0;
+  virtual bool parse(OptionManager *, int argc, const char *argv[]) = 0;
 };
 
-
-#endif //GOOSTATS_IOPTIONPARSER_H
+#endif  //GOOSTATS_IOPTIONPARSER_H

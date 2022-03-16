@@ -11,21 +11,23 @@
 #define OptionManager_H
 #include <map>
 #include <string>
+
 #include "Database.h"
 #include "Utility.h"
 // protocol for option configset class
 class OptionManager : public Database {
-public:
+ public:
   // can be fileName or key=value sentence
-  template<class T = double>
+  template <class T = double>
   T getOrConvert(const std::string &key) const {
-      if(has(key)) {
-        auto v = GooStats::Utility::convert<T>(get(key));
-        if(has<double>(key) && get<double>(key)!=v) throw GooStatsException("Inconsistent status!");
-        return v;
-      }
-      return get<double>(key);
+    if (has(key)) {
+      auto v = GooStats::Utility::convert<T>(get(key));
+      if (has<double>(key) && get<double>(key) != v)
+        throw GooStatsException("Inconsistent status!");
+      return v;
     }
+    return get<double>(key);
+  }
   //! yes(key): if user forgot to put key, program will throw
   bool yes(const std::string &key) const;
   //! hasAndYes(key): if user forgot to put key, program return false

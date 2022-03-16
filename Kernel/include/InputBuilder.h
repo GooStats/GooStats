@@ -10,15 +10,16 @@
 /*! \class InputBuilder
  *  \brief builder class used by InputManager
  *
- *   This is a utlity class and is responsible for building the Configset 
+ *   This is a utlity class and is responsible for building the Configset
  */
 #ifndef InputBuilder_H
 #define InputBuilder_H
 class SumLikelihoodPdf;
-#include "IOptionParser.h"
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "IOptionParser.h"
 class ConfigsetManager;
 class DatasetController;
 class DatasetManager;
@@ -28,14 +29,13 @@ class RawSpectrumProvider;
 class ISpectrumBuilder;
 class PdfBase;
 class InputBuilder {
-  public:
+ public:
   virtual ~InputBuilder(){};
   //! load the name of output file from command-line args.
   virtual std::string loadOutputFileName(int, const char **, std::vector<ConfigsetManager *> configsets = {}) = 0;
   //! load number of configs / location of configuration files from command-line args.
-  virtual std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>>
-  buildConfigsetManagers(ParSyncManager *parManager, int argc,
-                                                                 const char **argv) = 0;
+  virtual std::pair<ConfigsetManager *, std::vector<ConfigsetManager *>> buildConfigsetManagers(
+      ParSyncManager *parManager, int argc, const char **argv) = 0;
   //! fill raw spectrum providers
   virtual void fillRawSpectrumProvider(RawSpectrumProvider *, ConfigsetManager *) = 0;
   //! create list of vars, so DatasetManager can call ConfigManager::var(name)
@@ -47,8 +47,10 @@ class InputBuilder {
   //! fill data spectra
   virtual bool fillDataSpectra(DatasetManager *dataset, RawSpectrumProvider *provider) = 0;
   //! build the raw spectra used for convolution
-  virtual PdfBase *recursiveBuild(const std::string &name, DatasetManager *, RawSpectrumProvider *,
-                              ISpectrumBuilder *) = 0;
+  virtual PdfBase *recursiveBuild(const std::string &name,
+                                  DatasetManager *,
+                                  RawSpectrumProvider *,
+                                  ISpectrumBuilder *) = 0;
   //! build the components of datasetmanager
   virtual bool buildComponenets(DatasetManager *, RawSpectrumProvider *provider, ISpectrumBuilder *) = 0;
   //! build the total pdf from the datasets

@@ -10,22 +10,26 @@
 #ifndef SHIFTED_HISTOGRAM_PDF_HH
 #define SHIFTED_HISTOGRAM_PDF_HH
 
-#include "goofit/PDFs/GooPdf.h"
 #include "goofit/BinnedDataSet.h"
+#include "goofit/PDFs/GooPdf.h"
 
 class HistogramPdf : public GooPdf {
-public:
-  HistogramPdf (std::string n, BinnedDataSet* x,Variable *scale = nullptr,Variable *shift = nullptr,bool alreadyNormalized = false);
-  __host__ virtual fptype normalise () const;
-  __host__ void extractHistogram (thrust::host_vector<fptype>& host_hist) {host_hist = *dev_base_histogram;}
-  __host__ void copyHistogramToDevice (thrust::host_vector<fptype>& host_histogram);
+ public:
+  HistogramPdf(std::string n,
+               BinnedDataSet* x,
+               Variable* scale = nullptr,
+               Variable* shift = nullptr,
+               bool alreadyNormalized = false);
+  __host__ virtual fptype normalise() const;
+  __host__ void extractHistogram(thrust::host_vector<fptype>& host_hist) { host_hist = *dev_base_histogram; }
+  __host__ void copyHistogramToDevice(thrust::host_vector<fptype>& host_histogram);
 
-private:
-  DEVICE_VECTOR<fptype>* dev_base_histogram; 
-//  DEVICE_VECTOR<fptype>* dev_smoothed_histogram; 
+ private:
+  DEVICE_VECTOR<fptype>* dev_base_histogram;
+  //  DEVICE_VECTOR<fptype>* dev_smoothed_histogram;
   fptype* host_constants;
 
-  static unsigned int totalHistograms; 
+  static unsigned int totalHistograms;
 };
 
 #endif

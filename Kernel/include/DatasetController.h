@@ -25,7 +25,7 @@
 class ConfigsetManager;
 class RawSpectrumProvider;
 class DatasetController {
-public:
+ public:
   DatasetController(ConfigsetManager *_c, std::string n = "LL") : configset(_c), name(std::move(n)){};
   DatasetController() = delete;
   virtual ~DatasetController() = default;
@@ -37,7 +37,7 @@ public:
   DatasetManager *getDataset() { return dataset.get(); }
   [[nodiscard]] const std::string &getName() const { return name; }
 
-protected:
+ protected:
   ConfigsetManager *const configset;
   std::shared_ptr<DatasetManager> dataset;
   const std::string name;

@@ -19,17 +19,17 @@ DEVICE_VECTOR<fptype> *dev_vec_mv_n0[100];
 DEVICE_VECTOR<fptype> *dev_vec_mv_n1[100];
 MEM_CONSTANT fptype dev_mv_m0[100];
 MEM_CONSTANT fptype dev_mv_m1[100];
-template<MultiVariatePdf::MVLLType T>
+template <MultiVariatePdf::MVLLType T>
 EXEC_TARGET fptype MVLL(const fptype k, const fptype n0, const fptype n1, const fptype m0, const fptype m1);
-#include "MultiVariatePdf.icc"// concrete implementation of the MultiVariate Likelihood
-template<MultiVariatePdf::MVLLType T>
+#include "MultiVariatePdf.icc"  // concrete implementation of the MultiVariate Likelihood
+template <MultiVariatePdf::MVLLType T>
 EXEC_TARGET fptype device_MV(fptype *evt, fptype *, unsigned int *indices) {
   const fptype mv_val = evt[RO_CACHE(indices[2 + RO_CACHE(indices[0])])];
   const int cIndex = RO_CACHE(indices[1]);
   const fptype mv_lo = RO_CACHE(functorConstants[cIndex]);
   const fptype mv_step = RO_CACHE(functorConstants[cIndex + 1]);
   const int mv_bin =
-          (int) FLOOR((mv_val - mv_lo) / mv_step);// no problem with FLOOR: start from 0.5, which corresponse to bin=0
+      (int)FLOOR((mv_val - mv_lo) / mv_step);  // no problem with FLOOR: start from 0.5, which corresponse to bin=0
   const int MVid = RO_CACHE(indices[2]);
   const fptype m0 = RO_CACHE(dev_mv_m0[MVid]);
   const fptype m1 = RO_CACHE(dev_mv_m1[MVid]);
@@ -49,27 +49,48 @@ MEM_DEVICE device_function_ptr ptr_to_MV_StefanoDavini = device_MV<MultiVariateP
 #include "goofit/PDFs/SumPdf.h"
 const std::vector<int> MultiVariatePdf::get_pdfids(const std::vector<GooPdf *> &pdfs) {
   std::vector<int> ids;
-  for (auto pdf: pdfs) ids.push_back(SumPdf::registerFunc(static_cast<PdfBase *>(pdf)));
+  for (auto pdf : pdfs)
+    ids.push_back(SumPdf::registerFunc(static_cast<PdfBase *>(pdf)));
   return ids;
 }
 const std::vector<int> MultiVariatePdf::get_Nids(const std::vector<Variable *> &rates) {
   std::vector<int> ids;
-  for (auto rate: rates) ids.push_back(registerParameter(rate));
+  for (auto rate : rates)
+    ids.push_back(registerParameter(rate));
   return ids;
 }
-MultiVariatePdf::MultiVariatePdf(std::string n, MVLLType MVLLtype, Variable *mv_var, BinnedDataSet *data,
-                                 const std::vector<BinnedDataSet *> &refs, const std::vector<GooPdf *> &pdf_0_,
-                                 const std::vector<GooPdf *> &pdf_1_, const std::vector<Variable *> &rate_0_,
-                                 const std::vector<Variable *> &rate_1_, int startbin_,
-                                 int endbin_ /*startbin<=bin<endbin*/, const SumPdf *sumpdf_, double binVolume_)
-    : GooPdf(mv_var, n), pdf_0(get_pdfids(pdf_0_)), pdf_1(get_pdfids(pdf_1_)), rate_0(get_Nids(rate_0_)),
-      rate_1(get_Nids(rate_1_)), binVolume(binVolume_), sumpdf(sumpdf_), MVid(totalPdf++), sum_k(-99), I0(-99), I1(-99),
-      Nbin(data->getNumBins()), startbin(startbin_ - static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)),
-      endbin(endbin_ - static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)), dev_iConsts(0LL) {
+MultiVariatePdf::MultiVariatePdf(std::string n,
+                                 MVLLType MVLLtype,
+                                 Variable *mv_var,
+                                 BinnedDataSet *data,
+                                 const std::vector<BinnedDataSet *> &refs,
+                                 const std::vector<GooPdf *> &pdf_0_,
+                                 const std::vector<GooPdf *> &pdf_1_,
+                                 const std::vector<Variable *> &rate_0_,
+                                 const std::vector<Variable *> &rate_1_,
+                                 int startbin_,
+                                 int endbin_ /*startbin<=bin<endbin*/,
+                                 const SumPdf *sumpdf_,
+                                 double binVolume_)
+    : GooPdf(mv_var, n),
+      pdf_0(get_pdfids(pdf_0_)),
+      pdf_1(get_pdfids(pdf_1_)),
+      rate_0(get_Nids(rate_0_)),
+      rate_1(get_Nids(rate_1_)),
+      binVolume(binVolume_),
+      sumpdf(sumpdf_),
+      MVid(totalPdf++),
+      sum_k(-99),
+      I0(-99),
+      I1(-99),
+      Nbin(data->getNumBins()),
+      startbin(startbin_ - static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)),
+      endbin(endbin_ - static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit)),
+      dev_iConsts(0LL) {
   copyTH1DToGPU(data, refs);
   std::vector<unsigned int> pindices;
   pindices.push_back(registerConstants(2));
-  pindices.push_back(MVid /* index of the dn_histo used by this pdf*/);// 1
+  pindices.push_back(MVid /* index of the dn_histo used by this pdf*/);  // 1
   switch (MVLLtype) {
     case MVLLType::StefanoDavini:
       GET_FUNCTION_ADDR(ptr_to_MV_StefanoDavini);
@@ -79,13 +100,16 @@ MultiVariatePdf::MultiVariatePdf(std::string n, MVLLType MVLLtype, Variable *mv_
   }
   initialise(pindices);
 
-  gooMalloc((void **) &dev_iConsts, 3 * sizeof(fptype));
+  gooMalloc((void **)&dev_iConsts, 3 * sizeof(fptype));
   fptype host_iConsts[3];
   host_iConsts[0] = mv_var->lowerlimit;
   host_iConsts[1] = (mv_var->upperlimit - mv_var->lowerlimit) / mv_var->numbins;
   MEMCPY_TO_SYMBOL(
-          functorConstants, host_iConsts, 2 * sizeof(fptype), cIndex * sizeof(fptype),
-          cudaMemcpyHostToDevice);// cIndex is a member derived from PdfBase and is set inside registerConstants method
+      functorConstants,
+      host_iConsts,
+      2 * sizeof(fptype),
+      cIndex * sizeof(fptype),
+      cudaMemcpyHostToDevice);  // cIndex is a member derived from PdfBase and is set inside registerConstants method
   host_iConsts[1] = mv_var->upperlimit;
   host_iConsts[2] = mv_var->numbins;
   MEMCPY(dev_iConsts, host_iConsts, 3 * sizeof(fptype), cudaMemcpyHostToDevice);
@@ -99,7 +123,9 @@ void MultiVariatePdf::copyTH1DToGPU(BinnedDataSet *data, const std::vector<Binne
   copyTH1DToGPU(refs.at(1), I1, dev_address, dev_vec_mv_n1[MVid]);
   MEMCPY_TO_SYMBOL(dev_mv_n1, dev_address, sizeof(fptype *), MVid * sizeof(fptype *), cudaMemcpyHostToDevice);
 }
-void MultiVariatePdf::copyTH1DToGPU(BinnedDataSet *data, fptype &sum, fptype *dev_address[1],
+void MultiVariatePdf::copyTH1DToGPU(BinnedDataSet *data,
+                                    fptype &sum,
+                                    fptype *dev_address[1],
                                     DEVICE_VECTOR<fptype> *&dev_vec_address) {
   thrust::host_vector<fptype> host_histogram;
   unsigned int numbins = data->getNumBins();
@@ -107,7 +133,7 @@ void MultiVariatePdf::copyTH1DToGPU(BinnedDataSet *data, fptype &sum, fptype *de
   for (unsigned int i = 0; i < numbins; ++i) {
     fptype curr = data->getBinContent(i);
     sum += curr;
-    host_histogram.push_back(curr);// warning: you should normalize the histogram yourself.
+    host_histogram.push_back(curr);  // warning: you should normalize the histogram yourself.
   }
   dev_vec_address = new DEVICE_VECTOR<fptype>(host_histogram);
   dev_address[0] = thrust::raw_pointer_cast(dev_vec_address->data());
@@ -118,7 +144,8 @@ __host__ fptype MultiVariatePdf::normalise() const {
   return 1;
 }
 __host__ double MultiVariatePdf::calculateNLL() const {
-  if (IsChisquareFit()) return 0;
+  if (IsChisquareFit())
+    return 0;
   return GooPdf::calculateNLL();
 }
 __host__ fptype MultiVariatePdf::sumOfNll(int __attribute__((__unused__)) numVars) const {
@@ -127,20 +154,23 @@ __host__ fptype MultiVariatePdf::sumOfNll(int __attribute__((__unused__)) numVar
   calculate_m0m1();
   static thrust::plus<fptype> cudaPlus;
   thrust::counting_iterator<int> binIndex(0);
-  thrust::constant_iterator<fptype *> startendstep(dev_iConsts);// 3*fptype lo, hi and step for npe
-  thrust::constant_iterator<int> eventSize(1);                  // 1: only npe
+  thrust::constant_iterator<fptype *> startendstep(dev_iConsts);  // 3*fptype lo, hi and step for npe
+  thrust::constant_iterator<int> eventSize(1);                    // 1: only npe
   fptype dummy = 0;
   BinnedMetricTaker modalor(const_cast<MultiVariatePdf *>(this), getMetricPointer("ptr_to_Eval"));
-  logL = thrust::transform_reduce(
-          thrust::make_zip_iterator(thrust::make_tuple(binIndex, eventSize, startendstep)),
-          thrust::make_zip_iterator(thrust::make_tuple(binIndex + Nbin, eventSize, startendstep)), modalor, dummy,
-          cudaPlus);
+  logL =
+      thrust::transform_reduce(thrust::make_zip_iterator(thrust::make_tuple(binIndex, eventSize, startendstep)),
+                               thrust::make_zip_iterator(thrust::make_tuple(binIndex + Nbin, eventSize, startendstep)),
+                               modalor,
+                               dummy,
+                               cudaPlus);
   //}
 #ifdef NLL_CHECK
   DEVICE_VECTOR<fptype> dev_logLs(Nbin);
   thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(binIndex, eventSize, startendstep)),
                     thrust::make_zip_iterator(thrust::make_tuple(binIndex + Nbin, eventSize, startendstep)),
-                    dev_logLs.begin(), modalor);
+                    dev_logLs.begin(),
+                    modalor);
   thrust::host_vector<fptype> logLs(dev_logLs);
   thrust::host_vector<fptype> k(*dev_vec_mv_k[MVid]);
   thrust::host_vector<fptype> n0(*dev_vec_mv_n0[MVid]);
@@ -154,9 +184,16 @@ __host__ fptype MultiVariatePdf::sumOfNll(int __attribute__((__unused__)) numVar
   MEMCPY_FROM_SYMBOL(&m1, dev_mv_m1, sizeof(fptype), MVid * sizeof(fptype), cudaMemcpyDeviceToHost);
   for (unsigned int i = 0; i < logLs.size(); ++i) {
     sum += logLs[i];
-    printf("log(L)MV %.15le e %lf user %lf\n k %.2lf n0 %.2lf n1 %.2lf m0 %.10le m1 %.10le L %.15le\n", sum,
-           (startbin + endbin) / 2. + static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit), (i + 0.5) * de + lo, k[i],
-           n0[i], n1[i], m0, m1, logLs[i]);
+    printf("log(L)MV %.15le e %lf user %lf\n k %.2lf n0 %.2lf n1 %.2lf m0 %.10le m1 %.10le L %.15le\n",
+           sum,
+           (startbin + endbin) / 2. + static_cast<int>((*(sumpdf->obsCBegin()))->lowerlimit),
+           (i + 0.5) * de + lo,
+           k[i],
+           n0[i],
+           n1[i],
+           m0,
+           m1,
+           logLs[i]);
   }
 #endif
   return logL;
@@ -164,7 +201,7 @@ __host__ fptype MultiVariatePdf::sumOfNll(int __attribute__((__unused__)) numVar
 void MultiVariatePdf::calculate_m0m1() const {
   fptype N0 = 0, N1 = 0;
   auto rateIdit = rate_0.begin();
-  for (auto pdfId: pdf_0) {
+  for (auto pdfId : pdf_0) {
     const double scale = sumpdf->Norm() * binVolume * host_params[*rateIdit];
     N0 += thrust::reduce(componentWorkSpace[pdfId]->begin() + startbin, componentWorkSpace[pdfId]->begin() + endbin) *
           scale;
@@ -172,21 +209,25 @@ void MultiVariatePdf::calculate_m0m1() const {
     thrust::host_vector<fptype> values(*componentWorkSpace[pdfId]);
     double sum = 0;
     int i = static_cast<int>((*(sumpdf->obsBegin()))->lowerlimit);
-    for (auto value: values) {
+    for (auto value : values) {
       sum += value;
       printf("N%d [%d](%d)<%lf>-><%lf> <%lf>\n", 0, pdfId, i, i + 0.5, value * scale, sum * scale);
       ++i;
     }
-    printf("N0 %lf [%d] a(%d)-b(%d)->(%lf) tot 0-%d (%lf)\n", N0, pdfId, startbin, endbin,
+    printf("N0 %lf [%d] a(%d)-b(%d)->(%lf) tot 0-%d (%lf)\n",
+           N0,
+           pdfId,
+           startbin,
+           endbin,
            thrust::reduce(componentWorkSpace[pdfId]->begin() + startbin, componentWorkSpace[pdfId]->begin() + endbin) *
-                   scale,
+               scale,
            componentWorkSpace[pdfId]->size(),
            thrust::reduce(componentWorkSpace[pdfId]->begin(), componentWorkSpace[pdfId]->end()) * scale);
 #endif
     ++rateIdit;
   }
   rateIdit = rate_1.begin();
-  for (auto pdfId: pdf_1) {
+  for (auto pdfId : pdf_1) {
     const double scale = sumpdf->Norm() * binVolume * host_params[*rateIdit];
     N1 += thrust::reduce(componentWorkSpace[pdfId]->begin() + startbin, componentWorkSpace[pdfId]->begin() + endbin) *
           scale;
@@ -194,14 +235,18 @@ void MultiVariatePdf::calculate_m0m1() const {
     thrust::host_vector<fptype> values(*componentWorkSpace[pdfId]);
     double sum = 0;
     int i = static_cast<int>((*(sumpdf->obsBegin()))->lowerlimit);
-    for (auto value: values) {
+    for (auto value : values) {
       sum += value;
       printf("N%d [%d](%d)<%lf>-><%lf> <%lf>\n", 1, pdfId, i, i + 0.5, value * scale, sum * scale);
       ++i;
     }
-    printf("N1 %lf [%d] a(%d)-b(%d)->(%lf) tot 0-%d (%lf)\n", N1, pdfId, startbin, endbin,
+    printf("N1 %lf [%d] a(%d)-b(%d)->(%lf) tot 0-%d (%lf)\n",
+           N1,
+           pdfId,
+           startbin,
+           endbin,
            thrust::reduce(componentWorkSpace[pdfId]->begin() + startbin, componentWorkSpace[pdfId]->begin() + endbin) *
-                   scale,
+               scale,
            componentWorkSpace[pdfId]->size(),
            thrust::reduce(componentWorkSpace[pdfId]->begin(), componentWorkSpace[pdfId]->end()) * scale);
 #endif

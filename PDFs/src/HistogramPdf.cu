@@ -10,14 +10,14 @@
 #include "HistogramPdf.h"
 #include "goofit/Variable.h"
 
-MEM_CONSTANT fptype *dev_raw_histograms[100];// Multiple histograms for the case of multiple PDFs
+MEM_CONSTANT fptype *dev_raw_histograms[100];  // Multiple histograms for the case of multiple PDFs
 MEM_CONSTANT fptype *dev_quenched_histograms[100];
 unsigned int HistogramPdf::totalHistograms = 0;
 
 EXEC_TARGET fptype device_EvalRawHistogram(fptype *evt, fptype *, unsigned int *indices) {
   const fptype lo = RO_CACHE(functorConstants[RO_CACHE(indices[2])]);
   const fptype step = RO_CACHE(functorConstants[RO_CACHE(indices[2]) + 1]);
-  const int bin = (int) FLOOR((evt[RO_CACHE(indices[RO_CACHE(indices[0]) + 2])] - lo) / step);
+  const int bin = (int)FLOOR((evt[RO_CACHE(indices[RO_CACHE(indices[0]) + 2])] - lo) / step);
 
   return RO_CACHE((dev_raw_histograms[RO_CACHE(indices[1])])[bin]);
 }
@@ -32,7 +32,8 @@ EXEC_TARGET fptype device_ScaleShiftEvalRawHistogram(fptype *evt, fptype *p, uns
   fptype bin_fp = (val - lo) / step - 0.5;
   auto bin_lo = FLOOR(bin_fp);
   const int wid = RO_CACHE(indices[1]);
-  if (bin_lo < 0) return RO_CACHE((dev_raw_histograms[wid])[0]);
+  if (bin_lo < 0)
+    return RO_CACHE((dev_raw_histograms[wid])[0]);
   if (bin_lo >= RO_CACHE(indices[5]) - 1 /*bin_max*/)
     return RO_CACHE((dev_raw_histograms[wid])[RO_CACHE(indices[5]) - 1]);
   const fptype y_lo = RO_CACHE((dev_raw_histograms[wid])[static_cast<int>(bin_lo)]);
@@ -56,7 +57,8 @@ double CalculateRealNorm(BinnedDataSet *data) {
 
   for (unsigned i = start; i < n_pts; i++) {
     unsigned factor = 2;
-    if (i == start || i + 1 == n_pts) factor = 1;
+    if (i == start || i + 1 == n_pts)
+      factor = 1;
     else if ((i - start) % 2 == 1)
       factor = 4;
 
@@ -65,23 +67,25 @@ double CalculateRealNorm(BinnedDataSet *data) {
   real_norm_ /= 3.;
 
   // take care of first interval if number of points was even
-  if (start == 1) real_norm_ += 0.5 * (data->getBinContent(0) + data->getBinContent(1));
+  if (start == 1)
+    real_norm_ += 0.5 * (data->getBinContent(0) + data->getBinContent(1));
 
   real_norm_ *= de;
   return real_norm_;
 }
-__host__ HistogramPdf::HistogramPdf(std::string n, BinnedDataSet *hist, Variable *scale, Variable *shift,
-                                    bool alreadyNormalized)
+__host__ HistogramPdf::HistogramPdf(
+    std::string n, BinnedDataSet *hist, Variable *scale, Variable *shift, bool alreadyNormalized)
     : GooPdf(*(hist->varsBegin()), n) {
   int numVars = hist->numVariables();
-  if (numVars != 1) abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " only valid for 1-D histogram", this);
+  if (numVars != 1)
+    abortWithCudaPrintFlush(__FILE__, __LINE__, getName() + " only valid for 1-D histogram", this);
   Variable *energy = *(hist->varsBegin());
   host_constants = new fptype[3];
 
   std::vector<unsigned int> pindices;
-  pindices.push_back(totalHistograms);// 1
+  pindices.push_back(totalHistograms);  // 1
 
-  pindices.push_back(registerConstants(2));// 2
+  pindices.push_back(registerConstants(2));  // 2
   if (scale && shift) {
     pindices.push_back(registerParameter(scale));
     pindices.push_back(registerParameter(shift));
@@ -101,8 +105,8 @@ __host__ HistogramPdf::HistogramPdf(std::string n, BinnedDataSet *hist, Variable
     fptype curr = hist->getBinContent(i);
     host_histogram.push_back(curr / norm);
   }
-  MEMCPY_TO_SYMBOL(functorConstants, host_constants, 2 * sizeof(fptype), cIndex * sizeof(fptype),
-                   cudaMemcpyHostToDevice);
+  MEMCPY_TO_SYMBOL(
+      functorConstants, host_constants, 2 * sizeof(fptype), cIndex * sizeof(fptype), cudaMemcpyHostToDevice);
 
   copyHistogramToDevice(host_histogram);
 
@@ -118,8 +122,8 @@ __host__ void HistogramPdf::copyHistogramToDevice(thrust::host_vector<fptype> &h
   dev_base_histogram = new DEVICE_VECTOR<fptype>(host_histogram);
   static fptype *dev_address[1];
   dev_address[0] = thrust::raw_pointer_cast(dev_base_histogram->data());
-  MEMCPY_TO_SYMBOL(dev_raw_histograms, dev_address, sizeof(fptype *), totalHistograms * sizeof(fptype *),
-                   cudaMemcpyHostToDevice);
+  MEMCPY_TO_SYMBOL(
+      dev_raw_histograms, dev_address, sizeof(fptype *), totalHistograms * sizeof(fptype *), cudaMemcpyHostToDevice);
   totalHistograms++;
 }
 

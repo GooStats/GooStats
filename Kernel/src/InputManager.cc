@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "InputManager.h"
+
 #include "GooStatsException.h"
 #include "InputBuilder.h"
 #include "MultiComponentDatasetController.h"
@@ -55,10 +56,12 @@ void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
 
 void InputManager::initializeConfigsets() {
   auto configs_pair = builder->buildConfigsetManagers(parManager.get(), argc, argv);
-  globalConfigset = std::shared_ptr<ConfigsetManager>(configs_pair.first);
+  globalConfigset = std::shared_ptr<ConfigsetManager>(new ConfigsetManager(*configs_pair.first));
   auto configs = configs_pair.second;
-  if (configs.empty()) throw GooStatsException("No configset found");
-  for (auto configset: configs) {
+  if (configs.empty()) {
+    throw GooStatsException("No configset found");
+  }
+  for (auto configset : configs) {
     registerConfigset(configset);
     configset->printAllOptions();
     builder->createVariables(configset);
@@ -67,13 +70,15 @@ void InputManager::initializeConfigsets() {
 }
 
 void InputManager::fillRawSpectrumProvider() {
-  for (const auto &configset: configsets) builder->fillRawSpectrumProvider(provider.get(), configset.get());
+  for (const auto &configset : configsets) {
+    builder->fillRawSpectrumProvider(provider.get(), configset.get());
+  }
 }
 
 void InputManager::initializeDatasets() {
-  for (const auto &config: configsets) {
+  for (const auto &config : configsets) {
     auto _controllers = builder->buildDatasetsControllers(config.get());
-    for (const auto &controller: _controllers) {
+    for (const auto &controller : _controllers) {
       this->registerController(controller);
       auto dataset = controller->createDataset();
       controller->collectInputs();
@@ -90,12 +95,16 @@ void InputManager::fillRandomData() { getTotalPdf()->fill_random(); }
 void InputManager::fillAsimovData() { getTotalPdf()->fill_Asimov(); }
 std::vector<ConfigsetManager *> InputManager::Configsets() {
   std::vector<ConfigsetManager *> configsets_;
-  for (const auto &configset: configsets) { configsets_.push_back(configset.get()); }
+  for (const auto &configset : configsets) {
+    configsets_.push_back(configset.get());
+  }
   return configsets_;
 }
 std::vector<ConfigsetManager *> InputManager::Configsets() const {
   std::vector<ConfigsetManager *> configsets_;
-  for (auto configset: configsets) { configsets_.push_back(configset.get()); }
+  for (auto configset : configsets) {
+    configsets_.push_back(configset.get());
+  }
   return configsets_;
 }
 void InputManager::cachePars() {
@@ -106,7 +115,7 @@ void InputManager::cachePars() {
   cachedParsUL.clear();
   cachedParsLL.clear();
   cachedParsFix.clear();
-  for (auto par: pars) {
+  for (auto par : pars) {
     cachedParsInit.push_back(par->value);
     cachedParsErr.push_back(par->error);
     cachedParsUL.push_back(par->upperlimit);
@@ -135,11 +144,15 @@ void InputManager::registerController(std::shared_ptr<DatasetController> control
 }
 std::vector<DatasetController *> InputManager::Controllers() {
   std::vector<DatasetController *> _controllers;
-  for (const auto &controller: controllers) { _controllers.push_back(controller.get()); }
+  for (const auto &controller : controllers) {
+    _controllers.push_back(controller.get());
+  }
   return _controllers;
 }
 std::vector<DatasetManager *> InputManager::Datasets() {
   std::vector<DatasetManager *> datasets;
-  for (auto controller: controllers) { datasets.push_back(controller->getDataset()); }
+  for (auto controller : controllers) {
+    datasets.push_back(controller->getDataset());
+  }
   return datasets;
 }

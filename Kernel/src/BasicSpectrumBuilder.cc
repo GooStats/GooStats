@@ -8,14 +8,16 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "BasicSpectrumBuilder.h"
+
 #include "DatasetManager.h"
 void BasicSpectrumBuilder::AddSiblings(ISpectrumBuilder *s) {
   siblings.push_back(std::shared_ptr<ISpectrumBuilder>(s));
 }
-GooPdf *BasicSpectrumBuilder::buildSpectrum(const std::string &name,DatasetManager *dataset) {
-  for(auto sibling : siblings) {
-    GooPdf *pdf = sibling->buildSpectrum(name,dataset);
-    if(pdf) return pdf;
+GooPdf *BasicSpectrumBuilder::buildSpectrum(const std::string &name, DatasetManager *dataset) {
+  for (auto sibling : siblings) {
+    GooPdf *pdf = sibling->buildSpectrum(name, dataset);
+    if (pdf)
+      return pdf;
   }
   return nullptr;
 }

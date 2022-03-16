@@ -18,12 +18,12 @@ class GooPdf;
 #include <string>
 class DatasetManager;
 class ISpectrumBuilder {
-  public:
-    virtual ~ISpectrumBuilder() {};
-    //! build the spectrum of name for the dataset
-    virtual void AddSiblings(ISpectrumBuilder *) = 0;
-    virtual GooPdf *buildSpectrum(const std::string &, DatasetManager *) = 0;
-    //! build a specific type of spectrum
-    typedef GooPdf *(SpectrumBuilderFun)(const std::string &, DatasetManager*);
+ public:
+  virtual ~ISpectrumBuilder(){};
+  //! build the spectrum of name for the dataset
+  virtual void AddSiblings(ISpectrumBuilder *) = 0;
+  virtual GooPdf *buildSpectrum(const std::string &, DatasetManager *) = 0;
+  //! build a specific type of spectrum
+  typedef GooPdf *(SpectrumBuilderFun)(const std::string &, DatasetManager *);
 };
 #endif

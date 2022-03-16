@@ -13,23 +13,23 @@
 #include "goofit/PDFs/GooPdf.h"
 
 class GeneralConvolutionPdf : public GooPdf {
-public:
+ public:
+  GeneralConvolutionPdf(
+      std::string n, Variable* x, Variable* intvar, GooPdf* model, GooPdf* resolution, bool syn_loading = false);
+  __host__ virtual fptype normalise() const;
+  __host__ void setIntegrationConstants(
+      fptype intvar_lo, fptype intvar_hi, int intvar_numbins, fptype obs_lo, fptype obs_hi, int obs_numbins);
 
-  GeneralConvolutionPdf (std::string n, Variable* x, Variable* intvar, GooPdf* model, GooPdf* resolution, bool syn_loading = false); 
-  __host__ virtual fptype normalise () const;
-  __host__ void setIntegrationConstants (fptype intvar_lo, fptype intvar_hi, int intvar_numbins, fptype obs_lo, fptype obs_hi, int obs_numbins);
-
-protected:
+ protected:
   GooPdf* model;
-  GooPdf* resolution; 
+  GooPdf* resolution;
 
-  fptype* host_iConsts; 
-  fptype* dev_iConsts; 
+  fptype* host_iConsts;
+  fptype* dev_iConsts;
   DEVICE_VECTOR<fptype>* modelWorkSpace;
-  DEVICE_VECTOR<fptype>* resolWorkSpace; 
+  DEVICE_VECTOR<fptype>* resolWorkSpace;
   int modelWorkSpaceIndex;
   int resolWorkSpaceIndex;
 };
-
 
 #endif

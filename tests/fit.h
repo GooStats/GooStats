@@ -9,9 +9,9 @@
 /*****************************************************************************/
 #ifndef fit_H
 #define fit_H
-class OutputHelper;
+#include "AnalysisManager.h"
 
 namespace GooStats {
-  const OutputHelper *fit(int argc, const char *argv[]);
+  double fit(int argc, const char *argv[]);
 }
 #endif

@@ -58,6 +58,6 @@ TEST(GooStats, BasicManagerTest) {
   ASSERT_NE(extra1, extra3);
   ASSERT_NE(extra2, extra3);
 
-  Variable *extra4 = manager2->linkVar("extra2","extra");
-  ASSERT_EQ(extra4,extra2);
+  Variable *extra4 = manager2->linkVar("extra2", "extra");
+  ASSERT_EQ(extra4, extra2);
 }

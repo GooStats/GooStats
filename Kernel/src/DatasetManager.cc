@@ -8,50 +8,51 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "DatasetManager.h"
+
 #include "DatasetController.h"
 #include "GooStatsException.h"
 #include "goofit/PDFs/GooPdf.h"
 
-#define DEFINE_DatasetManager(T, var, ZERO)                                                                            \
-  template<>                                                                                                           \
-  void DatasetManager::set<T>(const std::string &_name, T x, bool checkDuplicate) {                                    \
-    if (var.find(_name) == var.end() || !checkDuplicate) {                                                             \
-      var[_name] = x;                                                                                                  \
-    } else {                                                                                                           \
-      std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) duplicate request to insert terms <" << _name   \
-                << ">" << std::endl;                                                                                   \
-      throw GooStatsException("Duplicate terms");                                                                      \
-    }                                                                                                                  \
-  }                                                                                                                    \
-  template<>                                                                                                           \
-  T DatasetManager::get<T>(const std::string &_name, bool checkEmpty) {                                                \
-    if (var.find(_name) != var.end()) {                                                                                \
-      return var.at(_name);                                                                                            \
-    } else {                                                                                                           \
-      if (checkEmpty) {                                                                                                \
-        std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) request non-existed terms <" << _name << ">"  \
-                  << std::endl;                                                                                        \
-        throw GooStatsException("Item not found");                                                                     \
-      }                                                                                                                \
-      return ZERO;                                                                                                     \
-    }                                                                                                                  \
-  }                                                                                                                    \
-  template<>                                                                                                           \
-  T DatasetManager::get<T>(const std::string &_name, bool checkEmpty) const {                                          \
-    if (var.find(_name) != var.end()) {                                                                                \
-      return var.at(_name);                                                                                            \
-    } else {                                                                                                           \
-      if (checkEmpty) {                                                                                                \
-        std::cerr << fullName() << " Warning: (" << __func__ << "<" #T ">) request non-existed terms <" << _name       \
-                  << ">" << std::endl;                                                                                 \
-        throw GooStatsException("Item not found");                                                                     \
-      }                                                                                                                \
-      return ZERO;                                                                                                     \
-    }                                                                                                                  \
-  }                                                                                                                    \
-  template<>                                                                                                           \
-  bool DatasetManager::has<T>(const std::string &_name) const {                                                        \
-    return var.find(_name) != var.end();                                                                               \
+#define DEFINE_DatasetManager(T, var, ZERO)                                                                           \
+  template <>                                                                                                         \
+  void DatasetManager::set<T>(const std::string &_name, T x, bool checkDuplicate) {                                   \
+    if (var.find(_name) == var.end() || !checkDuplicate) {                                                            \
+      var[_name] = x;                                                                                                 \
+    } else {                                                                                                          \
+      std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) duplicate request to insert terms <" << _name  \
+                << ">" << std::endl;                                                                                  \
+      throw GooStatsException("Duplicate terms");                                                                     \
+    }                                                                                                                 \
+  }                                                                                                                   \
+  template <>                                                                                                         \
+  T DatasetManager::get<T>(const std::string &_name, bool checkEmpty) {                                               \
+    if (var.find(_name) != var.end()) {                                                                               \
+      return var.at(_name);                                                                                           \
+    } else {                                                                                                          \
+      if (checkEmpty) {                                                                                               \
+        std::cerr << fullName() << " Error: (" << __func__ << "<" #T ">) request non-existed terms <" << _name << ">" \
+                  << std::endl;                                                                                       \
+        throw GooStatsException("Item not found");                                                                    \
+      }                                                                                                               \
+      return ZERO;                                                                                                    \
+    }                                                                                                                 \
+  }                                                                                                                   \
+  template <>                                                                                                         \
+  T DatasetManager::get<T>(const std::string &_name, bool checkEmpty) const {                                         \
+    if (var.find(_name) != var.end()) {                                                                               \
+      return var.at(_name);                                                                                           \
+    } else {                                                                                                          \
+      if (checkEmpty) {                                                                                               \
+        std::cerr << fullName() << " Warning: (" << __func__ << "<" #T ">) request non-existed terms <" << _name      \
+                  << ">" << std::endl;                                                                                \
+        throw GooStatsException("Item not found");                                                                    \
+      }                                                                                                               \
+      return ZERO;                                                                                                    \
+    }                                                                                                                 \
+  }                                                                                                                   \
+  template <>                                                                                                         \
+  bool DatasetManager::has<T>(const std::string &_name) const {                                                       \
+    return var.find(_name) != var.end();                                                                              \
   }
 
 DEFINE_DatasetManager(std::string, m_str, "");

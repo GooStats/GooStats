@@ -9,20 +9,22 @@
 /*****************************************************************************/
 #ifndef NLLCheckFixture_H
 #define NLLCheckFixture_H
-#include "gtest/gtest.h"
-#include <vector>
 #include <string>
-class NLLCheckFixture : public ::testing::Test { 
-  public: 
-    NLLCheckFixture();
-    void SetUp();
-    void TearDown();
-    ~NLLCheckFixture();
-  protected:
-    void load_result(const std::string &path,const std::string &type,std::vector<double> &LLs,double &finalLL);
-    std::vector<double> reference_LL;
-    std::vector<double> new_LL;
-    double reference_finalLL;
-    double new_finalLL;
+#include <vector>
+
+#include "gtest/gtest.h"
+class NLLCheckFixture : public ::testing::Test {
+ public:
+  NLLCheckFixture();
+  void SetUp();
+  void TearDown();
+  ~NLLCheckFixture();
+
+ protected:
+  void load_result(const std::string &path, const std::string &type, std::vector<double> &LLs, double &finalLL);
+  std::vector<double> reference_LL;
+  std::vector<double> new_LL;
+  double reference_finalLL;
+  double new_finalLL;
 };
 #endif

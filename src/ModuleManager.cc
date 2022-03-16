@@ -8,21 +8,22 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "ModuleManager.h"
-#include "ModuleFactory.h"
+
 #include "GooStatsException.h"
 #include "Module.h"
-void ModuleManager::registerModule(const std::string &type,const std::string &name) {
-  const std::string &usedName(name==""?type:name);
-  modules[usedName] = std::shared_ptr<Module>(ModuleFactory::get()->create(type,usedName));
+#include "ModuleFactory.h"
+void ModuleManager::registerModule(const std::string &type, const std::string &name) {
+  const std::string &usedName(name == "" ? type : name);
+  modules[usedName] = std::shared_ptr<Module>(ModuleFactory::get()->create(type, usedName));
 }
 bool ModuleManager::initializeAllModules() {
-  for(auto module : modules) 
-    if(!initializeModule(module.second.get())) 
-      throw GooStatsException("Cannot initialize ("+module.first+")");
+  for (auto module : modules)
+    if (!initializeModule(module.second.get()))
+      throw GooStatsException("Cannot initialize (" + module.first + ")");
   return true;
 }
 bool ModuleManager::initializeModule(Module *module) {
-  for(auto module_ : modules) {
+  for (auto module_ : modules) {
     module->registerDependence(module_.second.get());
   }
   return true;

@@ -8,11 +8,13 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "SimpleFit.h"
-#include "OptionManager.h"
+
 #include "GSFitManager.h"
+#include "OptionManager.h"
 #include "OutputManager.h"
 bool SimpleFit::run(int ev) {
-  if(GlobalOption()->has("SimpleFit")&&!GlobalOption()->yes("SimpleFit")) return true;
+  if (GlobalOption()->has("SimpleFit") && !GlobalOption()->yes("SimpleFit"))
+    return true;
   getGSFitManager()->run(ev);
   getOutputManager()->subFit(ev);
   return true;

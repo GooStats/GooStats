@@ -11,14 +11,12 @@
 #ifndef GOOSTATS_SIMPLEOPTIONPARSER_H
 #define GOOSTATS_SIMPLEOPTIONPARSER_H
 
-
 #include "IOptionParser.h"
 
 class SimpleOptionParser : public IOptionParser {
-public:
-    bool parse(OptionManager *, const std::string &fileName) final;
-    bool parse(OptionManager *, int argc, const char *argv[]) final;
+ public:
+  bool parse(OptionManager *, const std::string &fileName) final;
+  bool parse(OptionManager *, int argc, const char *argv[]) final;
 };
 
-
-#endif //GOOSTATS_SIMPLEOPTIONPARSER_H
+#endif  //GOOSTATS_SIMPLEOPTIONPARSER_H

@@ -10,13 +10,14 @@
 #ifndef IBDPdf_H
 #define IBDPdf_H
 
-#include "goofit/PDFs/GooPdf.h" 
+#include "goofit/PDFs/GooPdf.h"
 
 class IBDPdf : public GooPdf {
-public:
-  IBDPdf (std::string n, Variable *eNeu); // ePos dos not include the energy of two gammas. They will be included by the response function
-    __host__ virtual fptype normalise () const;
-
+ public:
+  IBDPdf(
+      std::string n,
+      Variable *eNeu);  // ePos dos not include the energy of two gammas. They will be included by the response function
+  __host__ virtual fptype normalise() const;
 };
 
 #endif

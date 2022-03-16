@@ -14,12 +14,11 @@
 
 // bx-> needed for MLP fit
 class RangedExpPdf : public GooPdf {
-public:
+ public:
+  RangedExpPdf(std::string n, Variable* npe, Variable* p0, Variable* p1, fptype x_L, fptype x_H, bool inversed);
+  __host__ virtual fptype normalise() const;
 
-  RangedExpPdf (std::string n, Variable *npe,Variable* p0, Variable* p1, fptype x_L, fptype x_H, bool inversed);
-  __host__ virtual fptype normalise () const;
-
-protected:
+ protected:
   std::vector<unsigned int> pindices;
 };
 

@@ -8,6 +8,7 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "PullDatasetController.h"
+
 #include "ConfigsetManager.h"
 #include "DatasetManager.h"
 #include "GooStatsException.h"
@@ -15,7 +16,7 @@
 #include "goofit/Variable.h"
 bool PullDatasetController::collectInputs() {
   try {
-    const auto &varName = dataset->name().substr(0, dataset->name().size() - 5);// remove _pull
+    const auto &varName = dataset->name().substr(0, dataset->name().size() - 5);  // remove _pull
     dataset->set("varName", varName);
     auto var = configset->var(varName);
     dataset->set("var", var);
@@ -59,18 +60,24 @@ bool PullDatasetController::buildLikelihood() {
     std::cout << "Creating gauss pull [" << dataset->get<std::string>("varName") << "] with exposure ["
               << dataset->get<double>("exposure") << "] and par (" << dataset->get<double>("mean") << ") ± ("
               << dataset->get<double>("sigma") << ") " << std::endl;
-    GooPdf *pdf =
-            new PullPdf(dataset->fullName(), dataset->get<Variable *>("var"), dataset->get<double>("mean"),
-                        dataset->get<double>("sigma"), dataset->get<double>("exposure"), dataset->get<bool>("half"));
+    GooPdf *pdf = new PullPdf(dataset->fullName(),
+                              dataset->get<Variable *>("var"),
+                              dataset->get<double>("mean"),
+                              dataset->get<double>("sigma"),
+                              dataset->get<double>("exposure"),
+                              dataset->get<bool>("half"));
     dataset->setLikelihood(pdf);
   } else if (type == "poisson") {
     std::cout << "Creating poisson pull [" << dataset->get<std::string>("varName") << "] with exposure ["
               << dataset->get<double>("exposure") << "] and par S (" << dataset->get<double>("mu_sig") << ") B ("
               << dataset->get<double>("mu_bkg") << ") eff (" << dataset->get<Variable *>("eff")->value << ")"
               << std::endl;
-    GooPdf *pdf = new PoissonPullPdf(dataset->fullName(), dataset->get<Variable *>("var"),
-                                     dataset->get<Variable *>("eff"), dataset->get<double>("exposure"),
-                                     dataset->get<double>("mu_sig"), dataset->get<double>("mu_bkg"));
+    GooPdf *pdf = new PoissonPullPdf(dataset->fullName(),
+                                     dataset->get<Variable *>("var"),
+                                     dataset->get<Variable *>("eff"),
+                                     dataset->get<double>("exposure"),
+                                     dataset->get<double>("mu_sig"),
+                                     dataset->get<double>("mu_bkg"));
     dataset->setLikelihood(pdf);
   } else {
     throw GooStatsException("Unknown Pull type: [" + type + "]");

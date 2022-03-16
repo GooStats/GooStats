@@ -10,31 +10,29 @@
 #include "SumLikelihoodPdf.h"
 #include "goofit/Variable.h"
 
-SumLikelihoodPdf::SumLikelihoodPdf (std::string n, const std::vector<PdfBase*> &comps)
-  : GooPdf(0,n) 
-{
+SumLikelihoodPdf::SumLikelihoodPdf(std::string n, const std::vector<PdfBase *> &comps) : GooPdf(0, n) {
   components = comps;
 
   std::vector<unsigned int> pindices;
-  initialise(pindices); 
-} 
+  initialise(pindices);
+}
 
-__host__ fptype SumLikelihoodPdf::normalise () const {
-  host_normalisation[parameters] = 1.0; 
-  return 1; 
+__host__ fptype SumLikelihoodPdf::normalise() const {
+  host_normalisation[parameters] = 1.0;
+  return 1;
 }
 
 #include "goofit/PDFs/SumPdf.h"
 #ifdef NLL_CHECK
 #include "GooStatsNLLCheck.h"
 #endif
-__host__ double SumLikelihoodPdf::sumOfNll (int ) const {
+__host__ double SumLikelihoodPdf::sumOfNll(int) const {
   double ret = 0;
 #if defined(NLL_CHECK)
-  GooStatsNLLCheck::get()->init("NLL_CHECK_gpu.root","gpu");
+  GooStatsNLLCheck::get()->init("NLL_CHECK_gpu.root", "gpu");
 #endif
-  for(unsigned int i = 0;i<components.size();++i) {
-    auto nll = dynamic_cast<GooPdf*>(components.at(i))->calculateNLL();
+  for (unsigned int i = 0; i < components.size(); ++i) {
+    auto nll = dynamic_cast<GooPdf *>(components.at(i))->calculateNLL();
     ret += nll;
 #if defined(NLL_CHECK)
     GooStatsNLLCheck::get()->new_LL(ret);
@@ -44,47 +42,53 @@ __host__ double SumLikelihoodPdf::sumOfNll (int ) const {
   GooStatsNLLCheck::get()->record_finalLL(ret);
   GooStatsNLLCheck::get()->save();
   GooStatsNLLCheck::get()->print();
-  std::cerr<<"Debug abort."<<std::endl;
+  std::cerr << "Debug abort." << std::endl;
   throw std::exception();
 #endif
-#if defined(RPF_CHECK) || defined(convolution_CHECK) || defined(NL_CHECK) || defined(spectrum_CHECK) || defined(Quenching_CHECK) || defined(Mask_CHECK)
-  printf("final log(L) %.12le\n",ret);
-  std::cerr<<"Debug abort."<<std::endl;
+#if defined(RPF_CHECK) || defined(convolution_CHECK) || defined(NL_CHECK) || defined(spectrum_CHECK) || \
+    defined(Quenching_CHECK) || defined(Mask_CHECK)
+  printf("final log(L) %.12le\n", ret);
+  std::cerr << "Debug abort." << std::endl;
   throw std::exception();
 #endif
-  return ret; 
+  return ret;
 }
 #include "DataPdf.h"
 void SumLikelihoodPdf::fill_random() {
-  for(unsigned int i = 0;i<components.size();++i) {
-    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
-    if(pdf) pdf->fill_random();
+  for (unsigned int i = 0; i < components.size(); ++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf *>(components.at(i));
+    if (pdf)
+      pdf->fill_random();
   }
 }
 void SumLikelihoodPdf::fill_Asimov() {
-  for(unsigned int i = 0;i<components.size();++i) {
-    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
-    if(pdf) pdf->fill_Asimov();
+  for (unsigned int i = 0; i < components.size(); ++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf *>(components.at(i));
+    if (pdf)
+      pdf->fill_Asimov();
   }
 }
 void SumLikelihoodPdf::cache() {
-  for(unsigned int i = 0;i<components.size();++i) {
-    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
-    if(pdf) pdf->cache();
+  for (unsigned int i = 0; i < components.size(); ++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf *>(components.at(i));
+    if (pdf)
+      pdf->cache();
   }
 }
 void SumLikelihoodPdf::restore() {
-  for(unsigned int i = 0;i<components.size();++i) {
-    DataPdf *pdf = dynamic_cast<DataPdf*>(components.at(i));
-    if(pdf) pdf->restore();
+  for (unsigned int i = 0; i < components.size(); ++i) {
+    DataPdf *pdf = dynamic_cast<DataPdf *>(components.at(i));
+    if (pdf)
+      pdf->restore();
   }
 }
 int SumLikelihoodPdf::Nfree() {
-  int NfreePar = 0; 
+  int NfreePar = 0;
   parCont params;
-  getParameters(params); 
-  for(auto par: params) {
-    if(!(par->fixed || par->error == 0)) NfreePar++;
+  getParameters(params);
+  for (auto par : params) {
+    if (!(par->fixed || par->error == 0))
+      NfreePar++;
   }
   return NfreePar;
 }

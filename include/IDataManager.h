@@ -13,7 +13,7 @@
 struct Variable;
 // Synchronized parameter sets
 class IDataManager {
-  public:
+ public:
   virtual const std::string &name() const = 0;
   virtual Variable *createVar(const std::string &key, double val, double err, double min, double max) = 0;
   virtual Variable *linkVar(const std::string &key, const std::string &source) = 0;

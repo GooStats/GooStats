@@ -10,17 +10,18 @@
 #ifndef NeutrinoOscillationPdf_H
 #define NeutrinoOscillationPdf_H
 
-#include "goofit/PDFs/GooPdf.h" 
+#include "goofit/PDFs/GooPdf.h"
 
 class NeutrinoOscillationPdf : public GooPdf {
-public:
-  NeutrinoOscillationPdf (std::string n, Variable *eNeu, std::vector<Variable*> sinThetas_2, std::vector<Variable*>deltaM2s, fptype distance);
-    __host__ virtual fptype normalise () const;
+ public:
+  NeutrinoOscillationPdf(std::string n,
+                         Variable *eNeu,
+                         std::vector<Variable *> sinThetas_2,
+                         std::vector<Variable *> deltaM2s,
+                         fptype distance);
+  __host__ virtual fptype normalise() const;
 
-
-
-private:
-
+ private:
 };
 
 #endif

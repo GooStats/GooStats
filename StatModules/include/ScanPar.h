@@ -11,8 +11,8 @@
 #define ScanPar_H
 #include "StatModule.h"
 class ScanPar : public StatModule {
-  public:
-    ScanPar(const std::string &_name="ScanPar") : StatModule(_name) { }
-    bool run(int=0) final;
+ public:
+  ScanPar(const std::string &_name = "ScanPar") : StatModule(_name) {}
+  bool run(int = 0) final;
 };
 #endif

@@ -13,7 +13,10 @@
 
 TEST(GooStats, simpleFit) {
   const char *argv[] = {"GooStats.exe", "toyMC.cfg", "test", "dummyOption=ShouldDiscardIt"};
-  auto outputHelper = GooStats::fit(sizeof argv / sizeof argv[0], argv);
+  auto LL = GooStats::fit(sizeof argv / sizeof argv[0], argv);
 
-  EXPECT_NEAR(outputHelper->value("likelihood"), 357.95898, 0.00001);
+  EXPECT_NEAR(LL, 357.95898, 0.00001);
+
+  auto lsan = std::getenv("LSAN_OPTIONS");
+  std::cout << "LSAN_OPTIONS: [" << (lsan ? lsan : "") << "]" << std::endl;
 }

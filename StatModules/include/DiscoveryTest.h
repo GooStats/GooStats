@@ -11,8 +11,8 @@
 #define DiscoveryTest_H
 #include "StatModule.h"
 class DiscoveryTest : public StatModule {
-  public:
-    DiscoveryTest(const std::string &_name="DiscoveryTest") : StatModule(_name) { }
-    bool run(int=0) final;
+ public:
+  DiscoveryTest(const std::string &_name = "DiscoveryTest") : StatModule(_name) {}
+  bool run(int = 0) final;
 };
 #endif

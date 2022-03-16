@@ -10,9 +10,10 @@
 #ifndef GooStatsException_H
 #define GooStatsException_H
 #include <stdexcept>
+
 #include "TSystem.h"
 class GooStatsException : public std::runtime_error {
-  public:
-    GooStatsException(const std::string &what) : std::runtime_error(what) { gSystem->StackTrace(); }
+ public:
+  GooStatsException(const std::string &what) : std::runtime_error(what) { gSystem->StackTrace(); }
 };
 #endif

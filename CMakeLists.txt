@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(GOOSTATS)
 
 add_subdirectory(extern/GooStats/GooFit)
-INITIALIZE_CUDA()
+initialize_cuda()
 
 add_library(GooFit::goofit_lib ALIAS goofit_lib)
 add_library(GooFit::PDFs ALIAS PDFs)
@@ -13,7 +13,7 @@ if(GOOFIT_DEVICE STREQUAL CUDA)
   enable_language(CUDA)
 endif()
 
-### Options ###
+# Options ###
 if(MV_CHECK)
   add_definitions("-DMV_CHECK")
 endif()
@@ -33,22 +33,24 @@ if(Mask_CHECK)
   add_definitions("-DMask_CHECK")
 endif()
 
-
 add_subdirectory(PDFs) # gpu: GooStatsPDFs
 add_subdirectory(Kernel) # GooStatsKernel, GooStatsNLLCheck, TestFixture
-## also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
+# also gpu: GooStatsLib_gpu -> linked to GooStatsKernel
 add_subdirectory(StatModules) # GooStatsStatModules
 add_subdirectory(SimplePackage) # GooStatsSimple
 add_subdirectory(src) # GooStatsExperimental
 
 add_library(GooStatsLib INTERFACE)
-target_link_libraries(GooStatsLib 
-  INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules GooStatsExperimental GooStatsPDFs)
+target_link_libraries(
+  GooStatsLib INTERFACE GooStatsKernel GooStatsSimple GooStatsStatModules
+                        GooStatsExperimental GooStatsPDFs)
 target_compile_features(GooStatsLib INTERFACE cxx_std_11)
 
 add_library(GooStatsLib_NLL INTERFACE)
-target_link_libraries(GooStatsLib_NLL
-  INTERFACE GooStatsKernel GooStatsSimple_NLL GooStatsStatModules GooStatsExperimental GooStatsPDFs_NLL)
+target_link_libraries(
+  GooStatsLib_NLL
+  INTERFACE GooStatsKernel GooStatsSimple_NLL GooStatsStatModules
+            GooStatsExperimental GooStatsPDFs_NLL)
 target_compile_features(GooStatsLib_NLL INTERFACE cxx_std_11)
 
 enable_testing()

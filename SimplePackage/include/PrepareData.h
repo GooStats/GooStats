@@ -11,11 +11,12 @@
 #define PrepareData_H
 #include "StatModule.h"
 class PrepareData : public StatModule {
-  public:
-    PrepareData(const std::string &_name="PrepareData") : StatModule(_name) { }
-    bool init() final;
-    bool run(int event = 0) final;
-  private:
-    int seed;
+ public:
+  PrepareData(const std::string &_name = "PrepareData") : StatModule(_name) {}
+  bool init() final;
+  bool run(int event = 0) final;
+
+ private:
+  int seed;
 };
 #endif

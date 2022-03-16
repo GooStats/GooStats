@@ -7,69 +7,69 @@
 //
 // All rights reserved. 2022 copyrighted.
 /*****************************************************************************/
-#include "SimpleInputBuilder.h"
+#include "BasicSpectrumBuilder.h"
 #include "ConfigsetManager.h"
-#include "gtest/gtest.h"
 #include "ParSyncManager.h"
-#include "SimpleDatasetController.h"
-#include "Utility.h"
 #include "PullDatasetController.h"
 #include "RawSpectrumProvider.h"
-#include "BasicSpectrumBuilder.h"
+#include "SimpleDatasetController.h"
+#include "SimpleInputBuilder.h"
+#include "Utility.h"
 #include "goofit/BinnedDataSet.h"
 #include "goofit/PDFs/GooPdf.h"
+#include "gtest/gtest.h"
 
 TEST(GooStats, SimpleInputBuilder) {
   int argc = 5;
-  const char *argv[] = {"run.exe","../toyMC.cfg","output","arg1=33","arg2=99a"};
+  const char *argv[] = {"run.exe", "../toyMC.cfg", "output", "arg1=33", "arg2=99a"};
   InputBuilder *builder = new SimpleInputBuilder();
 
   /// initializeConfigset
   ParSyncManager parSyncManager;
-  auto configs_pair  = builder->buildConfigsetManagers(&parSyncManager,argc,argv);
+  auto configs_pair = builder->buildConfigsetManagers(&parSyncManager, argc, argv);
   auto configs = configs_pair.second;
-  ASSERT_EQ(configs.size(),1);
+  ASSERT_EQ(configs.size(), 1);
   auto config = configs.at(0);
-  ASSERT_EQ(config->get("pullPars"),"gaus_Epeak");
+  ASSERT_EQ(config->get("pullPars"), "gaus_Epeak");
 
   builder->createVariables(config);
-  ASSERT_DOUBLE_EQ(config->var("gaus")->value,10);
+  ASSERT_DOUBLE_EQ(config->var("gaus")->value, 10);
   BasicManager::dump();
 
   /// installSpectrumBuilder
   BasicSpectrumBuilder spcBuilder;
   RawSpectrumProvider provider;
-  builder->installSpectrumBuilder(&spcBuilder,&provider);
+  builder->installSpectrumBuilder(&spcBuilder, &provider);
 
   /// load outName
   auto output = builder->loadOutputFileName(argc, argv);
-  ASSERT_EQ(output,"output");
-  ASSERT_NE(output,"something else");
+  ASSERT_EQ(output, "output");
+  ASSERT_NE(output, "something else");
 
   /// fillRawSpectrumProvider
   builder->fillRawSpectrumProvider(&provider, config);
-  ASSERT_EQ(provider.n("default.main"),100);
-  ASSERT_EQ(provider.n("fbkg"),100);
+  ASSERT_EQ(provider.n("default.main"), 100);
+  ASSERT_EQ(provider.n("fbkg"), 100);
 
   /// initializeDatasets
   auto controllers = builder->buildDatasetsControllers(config);
-  ASSERT_EQ(controllers.size(),2);
+  ASSERT_EQ(controllers.size(), 2);
   auto major = controllers.at(0);
-  ASSERT_NE(dynamic_cast<SimpleDatasetController*>(major.get()),nullptr);
+  ASSERT_NE(dynamic_cast<SimpleDatasetController *>(major.get()), nullptr);
   auto majorData = major->createDataset();
-  ASSERT_NE(majorData,nullptr);
+  ASSERT_NE(majorData, nullptr);
 
   major->collectInputs();
-  ASSERT_EQ(majorData->get<std::vector<std::string>>("components"), std::vector<std::string> ({"gaus","fbkg"}));
+  ASSERT_EQ(majorData->get<std::vector<std::string>>("components"), std::vector<std::string>({"gaus", "fbkg"}));
 
-  builder->fillDataSpectra(majorData,&provider);
-  auto data = majorData->get<BinnedDataSet*>("data");
-  ASSERT_EQ(data->getBinContent(20),226);
+  builder->fillDataSpectra(majorData, &provider);
+  auto data = majorData->get<BinnedDataSet *>("data");
+  ASSERT_EQ(data->getBinContent(20), 226);
 
   builder->buildComponenets(majorData, &provider, &spcBuilder);
-  auto pdfs = majorData->get<std::vector<PdfBase*>>("pdfs");
-  auto gaus = static_cast<GooPdf*>(pdfs.at(0));
-  auto eVis = majorData->get<Variable*>("Evis");
+  auto pdfs = majorData->get<std::vector<PdfBase *>>("pdfs");
+  auto gaus = static_cast<GooPdf *>(pdfs.at(0));
+  auto eVis = majorData->get<Variable *>("Evis");
   {
     gaus->setData(data);
     std::vector<double> points;
@@ -87,6 +87,5 @@ TEST(GooStats, SimpleInputBuilder) {
   }
 
   auto pull = controllers.at(1);
-  ASSERT_NE(dynamic_cast<PullDatasetController*>(pull.get()),nullptr);
-
+  ASSERT_NE(dynamic_cast<PullDatasetController *>(pull.get()), nullptr);
 }

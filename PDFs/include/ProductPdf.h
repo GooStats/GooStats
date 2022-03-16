@@ -11,23 +11,23 @@
 #define PRODUCT_PDF_HH
 
 #include <map>
+
 #include "goofit/PDFs/GooPdf.h"
-template<class T>
+template <class T>
 class DumperPdf;
 class SumLikelihoodPdf;
 class BinnedDataSet;
 
 class ProductPdf : public GooPdf {
-public:
+ public:
+  ProductPdf(std::string n, const std::vector<PdfBase *> &comps, Variable *npe, fptype norm = 1, fptype shift = 0);
+  __host__ virtual fptype normalise() const;
 
-  ProductPdf (std::string n, const std::vector<PdfBase*> &comps, Variable *npe,fptype norm = 1,fptype shift = 0);
-  __host__ virtual fptype normalise () const;
-
-protected:
-  void set_startstep(fptype norm,fptype shift); 
-  void register_components(const std::vector<PdfBase*> &comps,int N);
+ protected:
+  void set_startstep(fptype norm, fptype shift);
+  void register_components(const std::vector<PdfBase *> &comps, int N);
   std::vector<unsigned int> pindices;
-  fptype* dev_iConsts; 
+  fptype *dev_iConsts;
   int workSpaceIndex;
   fptype norm;
   mutable bool m_updated;

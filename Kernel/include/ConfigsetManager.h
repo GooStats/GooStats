@@ -19,15 +19,15 @@
  */
 #ifndef ConfigsetManagers_H
 #define ConfigsetManagers_H
+#include <memory>
+#include <vector>
+
 #include "BasicManager.h"
 #include "DatasetController.h"
 #include "OptionManager.h"
-#include <memory>
-#include <vector>
 class ConfigsetManager : public BasicManager, public OptionManager {
-public:
-  ConfigsetManager(const std::string &name_, OptionManager *op) : BasicManager(name_), OptionManager(std::move(*op)){};
-  ConfigsetManager(BasicManager &manager, OptionManager *op) : BasicManager(manager), OptionManager(std::move(*op)){};
+ public:
+  explicit ConfigsetManager(const std::string &name_) : BasicManager(name_) {}
   virtual ~ConfigsetManager() = default;
 };
 #endif

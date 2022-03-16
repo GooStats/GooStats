@@ -8,10 +8,11 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "RawSpectrumProvider.h"
-#include "GooStatsException.h"
+
 #include <iostream>
-bool RawSpectrumProvider::registerSpecies(const std::string &name, int n_, const double *real_, double e0_,
-                                          double de_) {
+
+#include "GooStatsException.h"
+bool RawSpectrumProvider::registerSpecies(const std::string &name, int n_, const double *real_, double e0_, double de_) {
   if (n_map.find(name) != n_map.end()) {
     std::cerr << "Try to add [" << name << "] which already exists" << std::endl;
     //throw GooStatsException("RawSpectrumProvider::registerSpecies Duplicate entries");
@@ -20,7 +21,8 @@ bool RawSpectrumProvider::registerSpecies(const std::string &name, int n_, const
   std::cout << "RawSpectrumProvider::registerSpecies Register [" << name << "]" << std::endl;
   n_map.insert(make_pair(name, n_));
   std::vector<double> real{};
-  for (auto i = 0; i < n_; ++i) real.push_back(real_[i]);
+  for (auto i = 0; i < n_; ++i)
+    real.push_back(real_[i]);
   real_map.insert(make_pair(name, real));
   e0_map.insert(make_pair(name, e0_));
   de_map.insert(make_pair(name, de_));
@@ -48,35 +50,40 @@ bool RawSpectrumProvider::registerComplexSpecies(const std::string &name, const 
 }
 const std::map<std::string, std::map<std::string, double>> &RawSpectrumProvider::get_br_map() const { return br_map; }
 size_t RawSpectrumProvider::n(const std::string &name) const {
-  if (real_map.find(name) != real_map.end()) return real_map.at(name).size();
+  if (real_map.find(name) != real_map.end())
+    return real_map.at(name).size();
   else {
     std::cerr << "trying to fetch [" << name << "] while RawSpectrumProvider does not have it" << std::endl;
     throw GooStatsException("Raw array not ready");
   }
 }
 const std::vector<double> &RawSpectrumProvider::pdf(const std::string &name) const {
-  if (real_map.find(name) != real_map.end()) return real_map.at(name);
+  if (real_map.find(name) != real_map.end())
+    return real_map.at(name);
   else {
     std::cerr << "trying to fetch [" << name << "] while RawSpectrumProvider does not have it" << std::endl;
     throw GooStatsException("Raw array not ready");
   }
 }
 double RawSpectrumProvider::e0(const std::string &name) const {
-  if (e0_map.find(name) != e0_map.end()) return e0_map.at(name);
+  if (e0_map.find(name) != e0_map.end())
+    return e0_map.at(name);
   else {
     std::cerr << "trying to fetch [" << name << "] while RawSpectrumProvider does not have it" << std::endl;
     throw GooStatsException("Raw array not ready");
   }
 }
 double RawSpectrumProvider::de(const std::string &name) const {
-  if (de_map.find(name) != de_map.end()) return de_map.at(name);
+  if (de_map.find(name) != de_map.end())
+    return de_map.at(name);
   else {
     std::cerr << "trying to fetch [" << name << "] while RawSpectrumProvider does not have it" << std::endl;
     throw GooStatsException("Raw array not ready");
   }
 }
 double RawSpectrumProvider::peakE(const std::string &name) const {
-  if (peakE_map.find(name) != peakE_map.end()) return peakE_map.at(name);
+  if (peakE_map.find(name) != peakE_map.end())
+    return peakE_map.at(name);
   else {
     std::cerr << "trying to fetch [" << name << "] while RawSpectrumProvider does not have it" << std::endl;
     throw GooStatsException("Raw array not ready");

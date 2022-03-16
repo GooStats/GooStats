@@ -11,11 +11,11 @@
 #define SimplePlotManager_H
 #include "PlotManager.h"
 class SimplePlotManager : public PlotManager {
-  public:
-    void draw(int event,const std::vector<DatasetManager*> &datasets) final;
-    using PlotManager::draw;
-  private:
-    virtual std::map<std::string,std::vector<DatasetManager*>>
-      groupByName(const std::vector<DatasetManager*>&);
+ public:
+  void draw(int event, const std::vector<DatasetManager *> &datasets) final;
+  using PlotManager::draw;
+
+ private:
+  virtual std::map<std::string, std::vector<DatasetManager *>> groupByName(const std::vector<DatasetManager *> &);
 };
 #endif

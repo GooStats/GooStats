@@ -16,28 +16,31 @@
  *  \brief The simplest Gaussian pull
  */
 class PoissonPullPdf : public DataPdf {
-  public:
-    PoissonPullPdf(std::string n, Variable* var,Variable *eff,
-	fptype mt/* mt is the exposure of the subsidiary exp. */,
-	fptype k,fptype b=0);
+ public:
+  PoissonPullPdf(std::string n,
+                 Variable* var,
+                 Variable* eff,
+                 fptype mt /* mt is the exposure of the subsidiary exp. */,
+                 fptype k,
+                 fptype b = 0);
 
-    __host__ virtual fptype normalise () const{return 1;}
+  __host__ virtual fptype normalise() const { return 1; }
 
-    __host__ fptype calculateNLL() const;
-    std::unique_ptr<fptype []> fill_random() final;
-    std::unique_ptr<fptype []> fill_Asimov() final;
-    void cache() final;
-    void restore() final;
-    int NDF() final { return 0; }
-    int Nfree() final { return 1; }
+  __host__ fptype calculateNLL() const;
+  std::unique_ptr<fptype[]> fill_random() final;
+  std::unique_ptr<fptype[]> fill_Asimov() final;
+  void cache() final;
+  void restore() final;
+  int NDF() final { return 0; }
+  int Nfree() final { return 1; }
 
-  private:
-    const int index;
-    const int index_e;
-    int data;
-    int data_backup = -99;
-    const fptype bkg;
-    const fptype masstime;
+ private:
+  const int index;
+  const int index_e;
+  int data;
+  int data_backup = -99;
+  const fptype bkg;
+  const fptype masstime;
 };
 
 #endif

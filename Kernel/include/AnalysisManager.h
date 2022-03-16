@@ -10,19 +10,20 @@
 #ifndef ANALYSIS_MANAGER_H
 #define ANALYSIS_MANAGER_H
 class Module;
-#include <memory>
 #include <list>
+#include <memory>
 class AnalysisManager {
-  public:
-    AnalysisManager();
-    bool registerModule(Module *module);
-    bool hasModule(const std::string &name) const;
-    virtual bool init();
-    virtual bool run(int event = 0);
-    virtual bool finish();
-    bool checkGPU() const;
-  private:
-    std::list<std::shared_ptr<Module> > modules;
+ public:
+  AnalysisManager();
+  bool registerModule(std::unique_ptr<Module> module);
+  bool hasModule(const std::string &name) const;
+  virtual bool init();
+  virtual bool run(int event = 0);
+  virtual bool finish();
+  bool checkGPU() const;
+
+ private:
+  std::list<std::unique_ptr<Module> > modules;
 };
-#define information() Form("%s : line %d",__FILE__, __LINE__)
+#define information() Form("%s : line %d", __FILE__, __LINE__)
 #endif

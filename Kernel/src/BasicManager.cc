@@ -8,11 +8,13 @@
 // All rights reserved. 2018 copyrighted.
 /*****************************************************************************/
 #include "BasicManager.h"
+
+#include <iostream>
+#include <utility>
+
 #include "GooStatsException.h"
 #include "ParSyncManager.h"
 #include "goofit/Variable.h"
-#include <iostream>
-#include <utility>
 
 std::map<std::string, Level> BasicManager::s_configs;
 std::map<std::string, std::shared_ptr<Variable>> BasicManager::s_vars;
@@ -49,14 +51,16 @@ std::shared_ptr<Variable> BasicManager::getVariable(const std::string &key) cons
   }
 }
 void BasicManager::dump() {
-  for (const auto &pair: s_vars) {
+  for (const auto &pair : s_vars) {
     std::cout << pair.first << " " << pair.second << " " << pair.second->value << " ± " << pair.second->error << " ["
               << pair.second->lowerlimit << "," << pair.second->upperlimit << "] fixed? "
               << (pair.second->fixed ? "yes" : "no") << std::endl;
   }
 }
 std::string BasicManager::getKey(const std::string &key) const {
-  if (s_configs.find(key) == s_configs.end()) { return m_name + "." + key; }
+  if (s_configs.find(key) == s_configs.end()) {
+    return m_name + "." + key;
+  }
   auto level = s_configs.at(key);
   return (level < m_parents.size() ? m_parents.at(level) : m_name) + "." + key;
 }

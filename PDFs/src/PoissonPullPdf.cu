@@ -10,46 +10,46 @@
 #include "PoissonPullPdf.h"
 
 #define M_PI_L 3.141592653589793238462643383279502884L
-__host__ PoissonPullPdf::PoissonPullPdf(std::string n, Variable* var, Variable *eff,
-    fptype mt,fptype k,fptype b) :
-  DataPdf(nullptr, n),
-  index (registerParameter(var)),
-  index_e (registerParameter(eff)),
-  data(k),
-  bkg(b),
-  masstime(mt)
-{}
+__host__ PoissonPullPdf::PoissonPullPdf(std::string n, Variable* var, Variable* eff, fptype mt, fptype k, fptype b)
+    : DataPdf(nullptr, n),
+      index(registerParameter(var)),
+      index_e(registerParameter(eff)),
+      data(k),
+      bkg(b),
+      masstime(mt) {}
 
-
-__host__ double PoissonPullPdf::calculateNLL () const {
+__host__ double PoissonPullPdf::calculateNLL() const {
   const double var = host_params[index];
   const double eff = host_params[index_e];
-  double lambda = var*masstime*eff+bkg;
-  double ret = -(data*log(lambda)-lgamma(data+1.)-lambda);
+  double lambda = var * masstime * eff + bkg;
+  double ret = -(data * log(lambda) - lgamma(data + 1.) - lambda);
   // Stirling's approximation: lgamma(n+1) = 0.5*log(2*pi)+(n+0.5)*log(n)-n+O(1/n);
-  if(IsChisquareFit()) ret = ret*2;
+  if (IsChisquareFit())
+    ret = ret * 2;
 #ifdef NLL_CHECK
-  printf("log(L) %.12le pull d %3d MT %.12le mu %.12le eff %.12le b %.12le\n",ret, data,masstime,host_params[index],eff,bkg);
+  printf("log(L) %.12le pull d %3d MT %.12le mu %.12le eff %.12le b %.12le\n",
+         ret,
+         data,
+         masstime,
+         host_params[index],
+         eff,
+         bkg);
 #endif
   return ret;
 }
 
 #include "TRandom.h"
-std::unique_ptr<fptype []> PoissonPullPdf::fill_random() {
+std::unique_ptr<fptype[]> PoissonPullPdf::fill_random() {
   std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
-  data = gRandom->Poisson(host_params[index]*masstime+bkg);
+  data = gRandom->Poisson(host_params[index] * masstime + bkg);
   h_ptr[0] = data;
   return h_ptr;
 }
-std::unique_ptr<fptype []> PoissonPullPdf::fill_Asimov() {
+std::unique_ptr<fptype[]> PoissonPullPdf::fill_Asimov() {
   std::unique_ptr<fptype[]> h_ptr(new fptype[1]);
-  data = host_params[index]*masstime+bkg;
+  data = host_params[index] * masstime + bkg;
   h_ptr[0] = data;
   return h_ptr;
 }
-void PoissonPullPdf::cache() {
-  data_backup = data;
-}
-void PoissonPullPdf::restore() {
-  data = data_backup;
-}
+void PoissonPullPdf::cache() { data_backup = data; }
+void PoissonPullPdf::restore() { data = data_backup; }
