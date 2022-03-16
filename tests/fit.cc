@@ -20,29 +20,31 @@
 #include "SimpleOutputBuilder.h"
 #include "SimplePlotManager.h"
 namespace GooStats {
-  const OutputHelper *fit(int argc, const char *argv[]) {
+  double fit(int argc, const char *argv[]) {
 
-    auto ana = new AnalysisManager();
+    auto ana = std::unique_ptr<AnalysisManager>(new AnalysisManager{});
 
-    auto inputManager = new InputManager(argc, argv);
+    auto inputManager = std::unique_ptr<InputManager>(new InputManager(argc, argv));
     inputManager->setInputBuilder(new SimpleInputBuilder());
-    auto outManager = new OutputManager();
+    auto outManager = std::unique_ptr<OutputManager>(new OutputManager());
+    auto out_ptr = outManager.get();
     outManager->setOutputBuilder(new SimpleOutputBuilder());
     outManager->setPlotManager(new SimplePlotManager());
 
-    StatModule::setup(inputManager);
-    StatModule::setup(new GSFitManager());
-    StatModule::setup(outManager);
+    StatModule::setup(inputManager.get());
+    auto gsFit = std::unique_ptr<GSFitManager>(new GSFitManager{});
+    StatModule::setup(gsFit.get());
+    StatModule::setup(outManager.get());
 
-    ana->registerModule(inputManager);
-    ana->registerModule(new PrepareData());
-    ana->registerModule(new SimpleFit());
-    ana->registerModule(outManager);
+    ana->registerModule(std::move(inputManager));
+    ana->registerModule(std::unique_ptr<PrepareData>(new PrepareData()));
+    ana->registerModule(std::unique_ptr<SimpleFit>(new SimpleFit()));
+    ana->registerModule(std::move(outManager));
 
     ana->init();
     ana->run();
     ana->finish();
 
-    return outManager->getOutputHelper();
+    return out_ptr->getOutputHelper()->value("likelihood");
   }
 }  // namespace GooStats

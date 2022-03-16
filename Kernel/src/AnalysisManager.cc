@@ -14,15 +14,15 @@
 #include "GPUManager.h"
 #include "GooStatsException.h"
 #include "Module.h"
-AnalysisManager::AnalysisManager() { registerModule(new GPUManager()); }
+AnalysisManager::AnalysisManager() { registerModule(std::unique_ptr<GPUManager>(new GPUManager{})); }
 bool AnalysisManager::init() {
   bool ok = true;
-  for (auto mod : modules) {
+  for (auto &mod : modules) {
     ok &= mod->preinit();
     if (!ok)
       throw GooStatsException("PreInit phase return false. check dependences of [" + mod->name() + "]");
   }
-  for (auto mod : modules)
+  for (auto &mod : modules)
     ok &= mod->init();
   return ok;
 }
@@ -30,7 +30,7 @@ bool AnalysisManager::init() {
 bool AnalysisManager::run(int) {
   // load number of events
   auto GlobalOption = [this]() -> const OptionManager * {
-    for (auto mod : modules)
+    for (auto &mod : modules)
       if (mod->name() == "InputManager")
         return static_cast<const InputManager *>(mod.get())->GlobalOption();
     return nullptr;
@@ -40,7 +40,7 @@ bool AnalysisManager::run(int) {
   if (GlobalOption()->has("repeat"))
     N_event = GlobalOption()->get<double>("repeat");
   for (unsigned long long event = 0; event < N_event; ++event) {
-    for (auto mod : modules) {
+    for (auto &mod : modules) {
       ok &= mod->run(event);
       if (!ok)
         break;
@@ -50,21 +50,20 @@ bool AnalysisManager::run(int) {
 }
 bool AnalysisManager::finish() {
   bool ok = true;
-  for (auto mod : modules)
+  for (auto &mod : modules)
     ok &= mod->finish();
-  for (auto mod : modules)
+  for (auto &mod : modules)
     ok &= mod->postfinish();
   return ok;
 }
 
-bool AnalysisManager::registerModule(Module *module) {
-  modules.push_back(std::shared_ptr<Module>(module));
-  // remember to AnalysisManager::registerDependence before AnalysisManager::registerModule
+bool AnalysisManager::registerModule(std::unique_ptr<Module> module) {
   std::cout << "[" << module->name() << "](" << module->list() << ") registered" << std::endl;
+  modules.push_back(std::move(module));
   return true;
 }
 bool AnalysisManager::hasModule(const std::string &name) const {
-  for (auto mod : modules)
+  for (auto &mod : modules)
     if (mod->name() == name)
       return true;
   return false;

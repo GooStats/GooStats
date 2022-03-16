@@ -56,10 +56,11 @@ void InputManager::setRawSpectrumProvider(RawSpectrumProvider *p) {
 
 void InputManager::initializeConfigsets() {
   auto configs_pair = builder->buildConfigsetManagers(parManager.get(), argc, argv);
-  globalConfigset = std::shared_ptr<ConfigsetManager>(configs_pair.first);
+  globalConfigset = std::shared_ptr<ConfigsetManager>(new ConfigsetManager(*configs_pair.first));
   auto configs = configs_pair.second;
-  if (configs.empty())
+  if (configs.empty()) {
     throw GooStatsException("No configset found");
+  }
   for (auto configset : configs) {
     registerConfigset(configset);
     configset->printAllOptions();
@@ -69,8 +70,9 @@ void InputManager::initializeConfigsets() {
 }
 
 void InputManager::fillRawSpectrumProvider() {
-  for (const auto &configset : configsets)
+  for (const auto &configset : configsets) {
     builder->fillRawSpectrumProvider(provider.get(), configset.get());
+  }
 }
 
 void InputManager::initializeDatasets() {
