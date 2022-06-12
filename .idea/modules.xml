@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file:///$PROJECT_DIR$/.idea/GooStats.iml" filepath="/$PROJECT_DIR$/.idea/GooStats.iml" />
+      <module fileurl="file://$PROJECT_ROOT$/.idea/GooStats.iml" filepath="$PROJECT_ROOT$/.idea/GooStats.iml" />
     </modules>
   </component>
 </project>
