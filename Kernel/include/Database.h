@@ -15,24 +15,42 @@
 #include <string>
 
 #include "GooStatsException.h"
+#include "Utility.h"
 
 class Database {
  public:
-  template <class T = std::string>
+  template<class T>
   void set(std::string key, T val, bool check = true) {
+    // don't use = delete
+    // = delete will throw error at linking stage, not easy for debugging.
+    // static_assert will throw error at compiling stage.
     static_assert(!std::is_same<T, const char *>::value,
                   "const char* type explicitly deleted due to high probability "
                   "of wrong usage. use std::string() to "
                   "wrap your values!");
-    auto &data = list<T>();
-    if (data.find(key) == data.end() || !check) {
-      if (has(key)) {
-        std::cerr << "Warning: duplicate key [" << key << "] found. old [" << get<T>(key) << "] new [" << val << "]"
-                  << std::endl;
+    setImpl(key,val,check);
+  }
+  template<>
+  void set<std::string>(std::string key, std::string val, bool check) {
+    std::string type = "string";
+    if(key.find(":")!=std::string::npos) {
+      auto head = GooStats::Utility::split(key, ":");
+      if (head.size() != 2) {
+        std::cout << "Cannot split <" << key << ">" << std::endl;
+        throw GooStatsException("illegal format");
       }
-      data[key] = val;
+      key = head.at(0);
+      type = head.at(1);
+    }
+    if(type=="double") {
+      setImpl<double>(key, std::stod(val), check);
+    } else if(type=="int") {
+      setImpl<int>(key,std::stoi(val),check);
+    } else if(type=="string") {
+      setImpl<std::string>(key,val,check);
     } else {
-      throw GooStatsException("Duplicate key <" + key + "> insertion");
+      std::cerr<<"Unkown type <"<<type<<">"<<std::endl;
+      throw GooStatsException("illegal type");
     }
   }
 
@@ -59,6 +77,20 @@ class Database {
   [[nodiscard]] const std::map<std::string, T> &list() const = delete;
 
  private:
+  template <class T>
+  void setImpl(std::string key, T val, bool check = true) {
+    auto &data = list<T>();
+    if (data.find(key) == data.end() || !check) {
+      if (has<T>(key)) {
+        std::cerr << "Warning: duplicate key [" << key << "] found. old [" << get<T>(key) << "] new [" << val << "]"
+                  << std::endl;
+      }
+      data[key] = val;
+    } else {
+      throw GooStatsException("Duplicate key <" + key + "> insertion");
+    }
+  }
+
   template <class T = std::string>
   [[nodiscard]] std::map<std::string, T> &list() = delete;
 

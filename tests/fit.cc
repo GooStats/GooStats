@@ -21,6 +21,7 @@
 #include "SimplePlotManager.h"
 namespace GooStats {
   double fit(int argc, const char *argv[]) {
+
     auto ana = std::unique_ptr<AnalysisManager>(new AnalysisManager{});
 
     auto inputManager = std::unique_ptr<InputManager>(new InputManager(argc, argv));

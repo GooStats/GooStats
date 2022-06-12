@@ -16,4 +16,7 @@ TEST(GooStats, DatabaseTest) {
   ASSERT_EQ(a.get("A"), "99");
   std::map<std::string, std::string> ref{{"A", "99"}};
   ASSERT_EQ(const_cast<const Database&>(a).list(), ref);
+  a.set("A:double", std::string("99"));
+  a.set("A", 99.0,false);
+  ASSERT_DOUBLE_EQ(a.get<double>("A"),99);
 }

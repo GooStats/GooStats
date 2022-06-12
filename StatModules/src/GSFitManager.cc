@@ -47,9 +47,9 @@ bool GSFitManager::run(int) {
 }
 void GSFitManager::restoreFitControl() {
   if (LLfit())
-    sumpdf()->setFitControl(new BinnedNllFit{}, true);
+    sumpdf()->setFitControl(new BinnedNllFit {}, true);
   else
-    sumpdf()->setFitControl(new BinnedChisqFit{}, true);
+    sumpdf()->setFitControl(new BinnedChisqFit {}, true);
 }
 SumLikelihoodPdf *GSFitManager::sumpdf() { return getInputManager()->getTotalPdf(); }
 const SumLikelihoodPdf *GSFitManager::sumpdf() const { return getInputManager()->getTotalPdf(); }
@@ -94,13 +94,13 @@ void GSFitManager::eval() {
   m_minim_conv = FitManager::minim_conv;
   m_hesse_conv = FitManager::hesse_conv;
   // likelihood
-  sumpdf()->setFitControl(new BinnedNllFit{}, true);
+  sumpdf()->setFitControl(new BinnedNllFit {}, true);
   sumpdf()->copyParams();
   m_likelihood = sumpdf()->calculateNLL();
   // p-value
   toyMC.get_p_value(this, getInputManager(), minus2lnlikelihood() / 2, m_LLp, m_LLpErr);
   // chi2
-  sumpdf()->setFitControl(new BinnedChisqFit{}, true);
+  sumpdf()->setFitControl(new BinnedChisqFit {}, true);
   sumpdf()->copyParams();
   m_chi2 = sumpdf()->calculateNLL();
   // NDF
