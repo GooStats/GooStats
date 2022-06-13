@@ -37,6 +37,9 @@ bool PullDatasetController::collectInputs() {
       var->apply_penalty = true;
       var->penalty_mean = dataset->get<double>("mean");
       var->penalty_sigma = dataset->get<double>("sigma");
+      if(dataset->get<bool>("half")) {
+        var->penalty_sigma = -fabs(var->penalty_sigma);
+      }
     } else if (type == "poisson") {
       dataset->set("eff", configset->var(varName + "_eff"));
       dataset->set("mu_sig", configset->getOrConvert(varName + "_sig"));
