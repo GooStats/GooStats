@@ -89,4 +89,8 @@ class Database {
 
 EXPAND_MACRO(DECLARE_METHOD);
 
+template<>
+void Database::set<std::string>(std::string key, std::string val, bool check);
+
+
 #endif  //BX_GOOSTATS_DATABASE_H
