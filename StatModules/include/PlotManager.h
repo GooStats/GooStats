@@ -61,7 +61,8 @@ class PlotManager : public StatModule {
   virtual void draw(GSFitManager *gsFitManager,
                     SumPdf *pdf,
                     std::map<std::string, Config> config = std::map<std::string, Config>(),
-                    int index = 0);
+                    int index = 0,
+                    DatasetManager *dataset = nullptr);
 
  protected:
   TF1 *createTF1(GooPdf *pdf,double norm,int index);
