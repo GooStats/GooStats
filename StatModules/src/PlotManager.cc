@@ -239,12 +239,12 @@ void PlotManager::draw(
   auto components = pdf->Components();
   auto Ns = pdf->Weights();
   for (size_t i = 0; i < components.size(); ++i) {
-    auto pdf = dynamic_cast<GooPdf *>(components.at(i));
-    auto name = pdf->getName();
+    auto comp = dynamic_cast<GooPdf *>(components.at(i));
+    auto name = comp->getName();
     Variable *N = Ns.at(i);
     pdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
-    auto single_h = createTF1(pdf, N->value * pdf->Norm(), index);
-    if (config.find(pdf->getName()) != config.end()) {
+    auto single_h = createTF1(comp, N->value * pdf->Norm(), index);
+    if (config.find(comp->getName()) != config.end()) {
       single_h->SetLineColor(config[name].color);
       single_h->SetLineStyle(config[name].style);
       single_h->SetLineWidth(config[name].width);
@@ -260,7 +260,7 @@ void PlotManager::draw(
     single_h->DrawClone("same");
     toBeSaved.insert(single_h);
     leg.AddEntry(single_h,
-                 TextOutputManager::rate(pdf->getName(),
+                 TextOutputManager::rate(comp->getName(),
                                          N->value,
                                          N->error,
                                          N->upperlimit,
