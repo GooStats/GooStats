@@ -34,10 +34,19 @@ bool PullDatasetController::collectInputs() {
       dataset->set("mean", configset->getOrConvert(varName + "_centroid"));
       dataset->set("sigma", configset->getOrConvert(varName + "_sigma"));
       dataset->set("half", configset->hasAndYes(varName + "_half"));
+      var->apply_penalty = true;
+      var->penalty_mean = dataset->get<double>("mean");
+      var->penalty_sigma = dataset->get<double>("sigma");
+      if(dataset->get<bool>("half")) {
+        var->penalty_sigma = -fabs(var->penalty_sigma);
+      }
     } else if (type == "poisson") {
       dataset->set("eff", configset->var(varName + "_eff"));
       dataset->set("mu_sig", configset->getOrConvert(varName + "_sig"));
       dataset->set("mu_bkg", configset->getOrConvert(varName + "_bkg"));
+      var->apply_penalty = true;
+      var->penalty_mean = dataset->get<double>("mu_sig");
+      var->penalty_sigma = dataset->get<double>("mu_bkg");
     } else {
       throw GooStatsException("Unknown Pull type: [" + configset->get(varName + "_pullType") + "]");
     }

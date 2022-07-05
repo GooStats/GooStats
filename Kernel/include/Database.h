@@ -15,25 +15,20 @@
 #include <string>
 
 #include "GooStatsException.h"
+#include "Utility.h"
 
 class Database {
  public:
-  template <class T = std::string>
+  template<class T>
   void set(std::string key, T val, bool check = true) {
+    // don't use = delete
+    // = delete will throw error at linking stage, not easy for debugging.
+    // static_assert will throw error at compiling stage.
     static_assert(!std::is_same<T, const char *>::value,
                   "const char* type explicitly deleted due to high probability "
                   "of wrong usage. use std::string() to "
                   "wrap your values!");
-    auto &data = list<T>();
-    if (data.find(key) == data.end() || !check) {
-      if (has(key)) {
-        std::cerr << "Warning: duplicate key [" << key << "] found. old [" << get<T>(key) << "] new [" << val << "]"
-                  << std::endl;
-      }
-      data[key] = val;
-    } else {
-      throw GooStatsException("Duplicate key <" + key + "> insertion");
-    }
+    setImpl(key,val,check);
   }
 
   template <class T = std::string>
@@ -59,6 +54,20 @@ class Database {
   [[nodiscard]] const std::map<std::string, T> &list() const = delete;
 
  private:
+  template <class T>
+  void setImpl(std::string key, T val, bool check = true) {
+    auto &data = list<T>();
+    if (data.find(key) == data.end() || !check) {
+      if (has<T>(key)) {
+        std::cerr << "Warning: duplicate key [" << key << "] found. old [" << get<T>(key) << "] new [" << val << "]"
+                  << std::endl;
+      }
+      data[key] = val;
+    } else {
+      throw GooStatsException("Duplicate key <" + key + "> insertion");
+    }
+  }
+
   template <class T = std::string>
   [[nodiscard]] std::map<std::string, T> &list() = delete;
 
@@ -79,5 +88,9 @@ class Database {
   [[nodiscard]] std::map<std::string, T> &Database::list<T>();
 
 EXPAND_MACRO(DECLARE_METHOD);
+
+template<>
+void Database::set<std::string>(std::string key, std::string val, bool check);
+
 
 #endif  //BX_GOOSTATS_DATABASE_H

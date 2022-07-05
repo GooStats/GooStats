@@ -64,7 +64,7 @@ class PlotManager : public StatModule {
                     int index = 0);
 
  protected:
-  TF1 *createTF1(GooPdf *pdf, double norm, int index);
+  TF1 *createTF1(GooPdf *pdf,double norm,int index);
   EColor getColor(const std::string &n) const {
     return colorlibrary.find(n) != colorlibrary.end() ? colorlibrary.at(n) : kBlack;
   }

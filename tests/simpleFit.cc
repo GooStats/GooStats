@@ -18,5 +18,5 @@ TEST(GooStats, simpleFit) {
   EXPECT_NEAR(LL, 357.95898, 0.00001);
 
   auto lsan = std::getenv("LSAN_OPTIONS");
-  std::cout << "LSAN_OPTIONS: [" << (lsan ? lsan : "") << "]" << std::endl;
+  std::cout<<"LSAN_OPTIONS: ["<<(lsan?lsan:"")<<"]"<<std::endl;
 }
