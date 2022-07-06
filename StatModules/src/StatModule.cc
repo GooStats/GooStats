@@ -23,4 +23,6 @@ const GSFitManager *StatModule::getGSFitManager() const {
   return static_cast<const GSFitManager *>(infoHolder.find("GSFitManager"));
 }
 OutputManager *StatModule::getOutputManager() { return static_cast<OutputManager *>(infoHolder.find("OutputManager")); }
-const OptionManager *StatModule::GlobalOption() const { return getInputManager()->GlobalOption(); }
+[[deprecated]] const OptionManager *StatModule::GlobalOption() const {
+  return getInputManager()->GlobalOption();
+}

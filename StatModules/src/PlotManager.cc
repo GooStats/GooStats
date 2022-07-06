@@ -142,15 +142,13 @@ TCanvas *PlotManager::drawSingleGroup(const std::string &name, const std::vector
     }
     if (configs.size() == 0)
       std::cout << "colors/linestyles are not set or size are not consistent, default styles are used" << std::endl;
-    draw(getGSFitManager(), sumpdf, configs, i);
+    draw(getGSFitManager(), sumpdf, configs, i, dataset);
   }
 
   return cc;
 }
-void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
-                       SumPdf *sumpdf,
-                       std::map<std::string, Config> config,
-                       int index) {
+void PlotManager::draw(
+    GSFitManager *gsFitManager, SumPdf *pdf, std::map<std::string, Config> config, int index, DatasetManager *dataset) {
   TPad *curr_pad = static_cast<TPad *>(gPad);
   //////////////////////////// for main pad ///////////////////////////////////
   curr_pad->cd();
@@ -165,18 +163,18 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
   TLegend leg(0.4, 0.40, 0.96, 0.96);
   leg.SetMargin(0.15);
   leg.SetFillStyle(0);
-  Variable *npe = *sumpdf->obsBegin();
+  Variable *npe = *pdf->obsBegin();
   std::string npeFullName = npe->name;
   std::string npeName = npeFullName.substr(npeFullName.find(".") + 1);
   // -------------- data histogram
-  TH1D *xvarHist = new TH1D((sumpdf->getName() + "_data").c_str(),
-                            (sumpdf->getName() + "_data").c_str(),
+  TH1D *xvarHist = new TH1D((pdf->getName() + "_data").c_str(),
+                            (pdf->getName() + "_data").c_str(),
                             npe->numbins,
                             npe->lowerlimit,
                             npe->upperlimit);
   // fill data histogram
   {
-    auto data_spectra = sumpdf->getData();
+    auto data_spectra = pdf->getData();
     for (int i = 0; i < npe->numbins; ++i) {
       xvarHist->SetBinContent(i + 1, data_spectra->getBinContent(i));
       xvarHist->SetBinError(i + 1, data_spectra->getBinError(i));
@@ -211,12 +209,12 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
   toBeSaved.insert(xvarHist);
   // add to legend
   leg.AddEntry(xvarHist,
-               TextOutputManager::data(sumpdf->getName(), sumpdf->Norm(), "days #times tons").c_str(),
+               TextOutputManager::data(pdf->getName(), pdf->Norm(), "days #times tons").c_str(),
                "lpe");  // we agree it's day ton
   // -------------- total model
-  sumpdf->cache();
-  auto total_h = createTF1(sumpdf, 1, index);
-  sumpdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
+  pdf->cache();
+  auto total_h = createTF1(pdf, 1, index);
+  pdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
   // draw total model
   //total_h->SetNpx(npe->numbins);
   total_h->SetLineColor(kRed);
@@ -238,15 +236,15 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
         Form("#chi^{2}/NDF %.1lf / %d p-value %.3lf", gsFitManager->chi2(), gsFitManager->NDF(), gsFitManager->Prob()),
         "l");
   // -------------- components
-  auto components = sumpdf->Components();
-  auto Ns = sumpdf->Weights();
+  auto components = pdf->Components();
+  auto Ns = pdf->Weights();
   for (size_t i = 0; i < components.size(); ++i) {
-    auto pdf = dynamic_cast<GooPdf *>(components.at(i));
-    auto name = pdf->getName();
+    auto comp = dynamic_cast<GooPdf *>(components.at(i));
+    auto name = comp->getName();
     Variable *N = Ns.at(i);
-    sumpdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
-    auto single_h = createTF1(pdf, N->value * sumpdf->Norm(), index);
-    if (config.find(pdf->getName()) != config.end()) {
+    pdf->restore();  // GooPdf::evaluateAtPoints is called, need to restore
+    auto single_h = createTF1(comp, N->value * pdf->Norm(), index);
+    if (config.find(comp->getName()) != config.end()) {
       single_h->SetLineColor(config[name].color);
       single_h->SetLineStyle(config[name].style);
       single_h->SetLineWidth(config[name].width);
@@ -262,7 +260,7 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
     single_h->DrawClone("same");
     toBeSaved.insert(single_h);
     leg.AddEntry(single_h,
-                 TextOutputManager::rate(pdf->getName(),
+                 TextOutputManager::rate(comp->getName(),
                                          N->value,
                                          N->error,
                                          N->upperlimit,
@@ -293,8 +291,8 @@ void PlotManager::draw(GSFitManager *gsFitManager /*chi2,likelihood etc.*/,
   res_pad->SetTopMargin(0.05);
   res_pad->SetBottomMargin(0.05);
   TH1 *res = (TH1 *)xvarHist->DrawClone("e");
-  res->SetName((sumpdf->getName() + Form("_%d_res", index)).c_str());
-  res->SetTitle((sumpdf->getName() + Form(" %d res", index)).c_str());
+  res->SetName((pdf->getName() + Form("_%d_res", index)).c_str());
+  res->SetTitle((pdf->getName() + Form(" %d res", index)).c_str());
   toBeSaved.insert(res);
   res->GetYaxis()->SetTitle("D-M / #sqrt{D}");
   res->GetYaxis()->SetTitleSize(0.1);
