@@ -24,6 +24,5 @@ const GSFitManager *StatModule::getGSFitManager() const {
 }
 OutputManager *StatModule::getOutputManager() { return static_cast<OutputManager *>(infoHolder.find("OutputManager")); }
 [[deprecated]] const OptionManager *StatModule::GlobalOption() const {
-  std::cerr << "deprecated!" << std::endl;
   return getInputManager()->GlobalOption();
 }
